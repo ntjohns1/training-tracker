@@ -1,0 +1,24 @@
+{
+    "id": 221,
+    "name": "Hanging Straight Leg Raise",
+    "muscleGroupId": 12,
+    "youtubeId": "7FwGZ8qY5OU",
+    "exerciseType": "bodyweight-only",
+    "userId": null,
+    "createdAt": "2022-11-21T23:28:14.769Z",
+    "updatedAt": "2022-11-21T23:28:15.342Z",
+    "deletedAt": null,
+    "mgSubType": null,
+    "notes": [
+        {
+            "id": 1319238,
+            "exerciseId": 221,
+            "userId": 1518614,
+            "noteId": 1378654,
+            "dayExerciseId": 92915187,
+            "createdAt": "2025-03-11T13:27:46.588Z",
+            "updatedAt": "2025-03-11T13:29:15.384Z",
+            "text": "Knees at 110 degrees"
+        }
+    ]
+}

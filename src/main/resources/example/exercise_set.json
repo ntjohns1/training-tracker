@@ -1,0 +1,17 @@
+{
+  "id": 156620837,
+  "dayExerciseId": 121219664,
+  "position": 0,
+  "setType": "regular",
+  "weight": 35,
+  "weightTarget": null,
+  "weightTargetMin": null,
+  "weightTargetMax": null,
+  "reps": 8,
+  "repsTarget": null,
+  "bodyweight": null,
+  "unit": "lb",
+  "createdAt": "2025-06-12T00:44:33.064Z",
+  "finishedAt": "2025-06-13T19:16:44.499Z",
+  "status": "complete"
+}

@@ -1,0 +1,37 @@
+{
+  "id": 790173,
+  "key": "wzzidovd6137",
+  "userId": 1518614,
+  "name": "2025 P6",
+  "days": 5,
+  "unit": "lb",
+  "sourceTemplateId": 16909,
+  "sourceMesoId": null,
+  "microRirs": 32108,
+  "createdAt": "2025-06-12T00:44:33.064Z",
+  "updatedAt": "2025-07-05T16:02:18.167Z",
+  "finishedAt": null,
+  "deletedAt": null,
+  "firstMicroCompletedAt": "2025-06-19T20:16:44.012Z",
+  "firstWorkoutCompletedAt": "2025-06-13T20:19:45.802Z",
+  "firstExerciseCompletedAt": "2025-06-13T19:16:49.001Z",
+  "firstSetCompletedAt": "2025-06-13T19:16:44.810Z",
+  "lastMicroFinishedAt": "2025-07-02T13:49:49.037Z",
+  "lastSetCompletedAt": "2025-07-05T16:00:02.611Z",
+  "lastSetSkippedAt": null,
+  "lastWorkoutCompletedAt": "2025-07-05T16:02:18.077Z",
+  "lastWorkoutFinishedAt": "2025-07-05T16:02:18.077Z",
+  "lastWorkoutSkippedAt": null,
+  "lastWorkoutPartialedAt": null,
+  "weeks": 5,
+  "notes": [
+      {
+          "id": 13571,
+          "mesoId": 790173,
+          "noteId": 1634147,
+          "createdAt": "2025-07-05T19:06:19.128Z",
+          "updatedAt": "2025-07-05T19:06:19.128Z",
+          "text": "For P7: \nBack to cable Lateral Raises"
+      }
+  ]
+}

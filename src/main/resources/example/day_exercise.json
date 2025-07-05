@@ -1,0 +1,48 @@
+{
+  "id": 121219682,
+  "dayId": 19749539,
+  "exerciseId": 161,
+  "position": 3,
+  "jointPain": 0,
+  "createdAt": "2025-06-12T00:44:33.064Z",
+  "updatedAt": "2025-06-18T20:24:42.341Z",
+  "sourceDayExerciseId": null,
+  "muscleGroupId": 6,
+  "sets": [
+      {
+          "id": 156620877,
+          "dayExerciseId": 121219682,
+          "position": 0,
+          "setType": "regular",
+          "weight": 115,
+          "weightTarget": null,
+          "weightTargetMin": null,
+          "weightTargetMax": null,
+          "reps": 7,
+          "repsTarget": null,
+          "bodyweight": null,
+          "unit": "lb",
+          "createdAt": "2025-06-12T00:44:33.064Z",
+          "finishedAt": "2025-06-18T20:24:27.587Z",
+          "status": "complete"
+      },
+      {
+          "id": 156620878,
+          "dayExerciseId": 121219682,
+          "position": 1,
+          "setType": "regular",
+          "weight": 115,
+          "weightTarget": null,
+          "weightTargetMin": null,
+          "weightTargetMax": null,
+          "reps": 7,
+          "repsTarget": null,
+          "bodyweight": null,
+          "unit": "lb",
+          "createdAt": "2025-06-12T00:44:33.064Z",
+          "finishedAt": "2025-06-18T20:24:36.532Z",
+          "status": "complete"
+      }
+  ],
+  "status": "complete"
+}
