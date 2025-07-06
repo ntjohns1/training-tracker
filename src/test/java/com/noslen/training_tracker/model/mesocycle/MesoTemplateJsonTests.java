@@ -1,5 +1,4 @@
 package com.noslen.training_tracker.model.mesocycle;
 
-public class Week {
-
+public class MesoTemplateJsonTests {
 }
