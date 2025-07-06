@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+// 3. TODO
 @JsonTest
 public class DayMuscleGroupJsonTests {
 

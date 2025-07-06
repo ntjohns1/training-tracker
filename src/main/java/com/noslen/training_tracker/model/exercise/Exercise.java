@@ -4,13 +4,9 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,26 +18,55 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "exercises")
+@Table(name = "exercises")  
+@JsonInclude(JsonInclude.Include.ALWAYS)
 public class Exercise {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    @JsonProperty("id")
     private Long id;
 
+    @Column(name = "name")
+    @JsonProperty("name")
     private String name;
 
-    @OneToOne
-    @JoinColumn(name = "muscle_group_id")
+    @Column(name = "muscle_group_id")
+    @JsonProperty("muscleGroupId")
     private Long muscleGroupId;
+    
+    @Column(name = "youtube_id")
+    @JsonProperty("youtubeId")
     private String youtubeId;
+    
+    @Column(name = "exercise_type")
+    @JsonProperty("exerciseType")
     private String exerciseType;
-    // #TODO: Add user_id
+    
+    // #TODO: Foreign Key relationship to User
+    @Column(name = "user_id")
+    @JsonProperty("userId")
     private Long userId;
+    
+    @Column(name = "created_at")
+    @JsonProperty("createdAt")
     private Instant createdAt;
+    
+    @Column(name = "updated_at")
+    @JsonProperty("updatedAt")
     private Instant updatedAt;
+    
+    @Column(name = "deleted_at")
+    @JsonProperty("deletedAt")
     private Instant deletedAt;
+    
+    @Column(name = "mg_sub_type")
+    @JsonProperty("mgSubType")
     private String mgSubType;
+    
+    @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL)
+    @JsonProperty("notes")
     private List<ExerciseNote> notes;
 
     @Override

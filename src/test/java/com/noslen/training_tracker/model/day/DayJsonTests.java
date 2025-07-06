@@ -13,6 +13,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+// 2.TODO
 @JsonTest
 public class DayJsonTests {
 
