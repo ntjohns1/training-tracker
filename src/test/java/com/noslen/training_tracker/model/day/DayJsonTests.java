@@ -85,7 +85,8 @@ public class DayJsonTests {
                 + "}";
 
         // Parse JSON into Day object
-        Day day = json.parse(jsonContent).getObject();
+        ClassPathResource resource = new ClassPathResource("example/day.json");
+        Day day = json.readObject(resource.getFile());
 
         // Assert that the Day object has the expected properties
         assertThat(day.getId()).isEqualTo(19749541L);
