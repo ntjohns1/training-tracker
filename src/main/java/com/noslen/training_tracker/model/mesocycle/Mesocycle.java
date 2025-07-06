@@ -1,4 +1,4 @@
-package com.noslen.training_tracker.model;
+package com.noslen.training_tracker.model.mesocycle;
 
 public class Mesocycle {
 
