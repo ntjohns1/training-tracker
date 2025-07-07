@@ -23,12 +23,8 @@ public class MesoNote {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    // TODO: Join with Mesocycle
     private Long mesoId;
     private Long userId;
-
-    // TODO: Investigate this field
     private Long noteId;
     private Instant createdAt;
     private Instant updatedAt;

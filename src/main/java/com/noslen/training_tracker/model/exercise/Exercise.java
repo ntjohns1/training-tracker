@@ -44,7 +44,6 @@ public class Exercise {
     @JsonProperty("exerciseType")
     private String exerciseType;
     
-    // #TODO: Foreign Key relationship to User
     @Column(name = "user_id")
     @JsonProperty("userId")
     private Long userId;
