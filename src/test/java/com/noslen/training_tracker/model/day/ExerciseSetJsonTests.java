@@ -11,7 +11,6 @@ import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-// 5. TODO
 @JsonTest
 public class ExerciseSetJsonTests {
 
