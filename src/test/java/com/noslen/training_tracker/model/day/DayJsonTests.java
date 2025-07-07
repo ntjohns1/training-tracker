@@ -9,11 +9,9 @@ import org.springframework.core.io.ClassPathResource;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-// 2.TODO
 @JsonTest
 public class DayJsonTests {
 
@@ -39,11 +37,10 @@ public class DayJsonTests {
                 .finishedAt(Instant.parse("2025-06-21T16:51:05.182Z"))
                 .label(null)
                 .notes(new ArrayList<>())
-                .exercises(new ArrayList<>()) // We'll add exercises in a more detailed test
-                .muscleGroups(new ArrayList<>()) // We'll add muscle groups in a more detailed test
+                .exercises(new ArrayList<>())
+                .muscleGroups(new ArrayList<>())
                 .build();
 
-        // Assert that the serialized Day matches expected JSON structure
         assertThat(json.write(day)).hasJsonPathNumberValue("@.id");
         assertThat(json.write(day)).extractingJsonPathNumberValue("@.id").isEqualTo(19749541);
         assertThat(json.write(day)).hasJsonPathNumberValue("@.mesoId");
@@ -67,22 +64,6 @@ public class DayJsonTests {
     @Test
     public void dayDeserializationTest() throws IOException {
         // Create sample JSON content
-        String jsonContent = "{"
-                + "\"id\": 19749541,"
-                + "\"mesoId\": 790173,"
-                + "\"week\": 1,"
-                + "\"position\": 0,"
-                + "\"createdAt\": \"2025-06-12T00:44:33.064Z\","
-                + "\"updatedAt\": \"2025-06-21T16:51:05.289Z\","
-                + "\"bodyweight\": 161,"
-                + "\"bodyweightAt\": \"2025-06-12T00:48:59.703Z\","
-                + "\"unit\": \"lb\","
-                + "\"finishedAt\": \"2025-06-21T16:51:05.182Z\","
-                + "\"label\": null,"
-                + "\"notes\": [],"
-                + "\"exercises\": [],"
-                + "\"muscleGroups\": []"
-                + "}";
 
         // Parse JSON into Day object
         ClassPathResource resource = new ClassPathResource("example/day.json");
@@ -101,8 +82,11 @@ public class DayJsonTests {
         assertThat(day.getFinishedAt()).isEqualTo(Instant.parse("2025-06-21T16:51:05.182Z"));
         assertThat(day.getLabel()).isNull();
         assertThat(day.getNotes()).isEmpty();
-        assertThat(day.getExercises()).isEmpty();
-        assertThat(day.getMuscleGroups()).isEmpty();
+        // The JSON actually contains exercises and muscle groups
+        assertThat(day.getExercises()).isNotEmpty();
+        assertThat(day.getExercises().size()).isEqualTo(6);
+        assertThat(day.getMuscleGroups()).isNotEmpty();
+        assertThat(day.getMuscleGroups().size()).isEqualTo(4);
     }
 
     @Test

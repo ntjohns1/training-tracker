@@ -53,8 +53,7 @@ public class ExerciseSet {
 
         ExerciseSet that = (ExerciseSet) o;
 
-        if (!Objects.equals(id,
-                            that.id)) return false;
+        if (!id.equals(that.id)) return false;
         if (!Objects.equals(dayExerciseId,
                             that.dayExerciseId))
             return false;
@@ -72,15 +71,14 @@ public class ExerciseSet {
                             that.intensity)) return false;
         if (!Objects.equals(createdAt,
                             that.createdAt)) return false;
-        if (!Objects.equals(updatedAt,
-                            that.updatedAt)) return false;
-        return Objects.equals(dayExercise,
-                              that.dayExercise);
+        return Objects.equals(updatedAt,
+                            that.updatedAt);
+        // Removed dayExercise comparison to break circular reference
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
+        int result = id.hashCode();
         result = 31 * result + (dayExerciseId != null ? dayExerciseId.hashCode() : 0);
         result = 31 * result + (position != null ? position.hashCode() : 0);
         result = 31 * result + (setType != null ? setType.hashCode() : 0);
@@ -90,7 +88,7 @@ public class ExerciseSet {
         result = 31 * result + (intensity != null ? intensity.hashCode() : 0);
         result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
         result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
-        result = 31 * result + (dayExercise != null ? dayExercise.hashCode() : 0);
+        // Removed dayExercise from hashCode calculation to break circular reference
         return result;
     }
 }
