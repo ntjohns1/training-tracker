@@ -32,7 +32,6 @@ public class ExerciseJsonTests {
                 .notes(new ArrayList<>())
                 .build();
 
-        System.out.println("JSON content: " + json.write(exercise).getJson());
         assertThat(json.write(exercise)).hasJsonPathNumberValue("@.id");
         assertThat(json.write(exercise)).extractingJsonPathNumberValue("@.id").isEqualTo(221);
         assertThat(json.write(exercise)).hasJsonPathStringValue("@.name");

@@ -4,8 +4,9 @@ package com.noslen.training_tracker.model.exercise;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.json.JacksonTester;
 import org.junit.jupiter.api.Test;
+    import org.springframework.core.io.ClassPathResource;
 
-import java.io.IOException;
+    import java.io.IOException;
 import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,18 +47,9 @@ public class ExerciseNoteJsonTests {
 
     @Test
     void exerciseNoteDeserializationTest() throws IOException {
-        String jsonContent = "{"
-                + "\"id\": 1248357,"
-                + "\"exerciseId\": 191,"
-                + "\"userId\": 1518614,"
-                + "\"noteId\": 1304638,"
-                + "\"dayExerciseId\": 121219737,"
-                + "\"createdAt\": \"2025-02-09T18:07:46.567Z\","
-                + "\"updatedAt\": \"2025-06-29T18:39:37.789Z\","
-                + "\"text\": \"Big chest all the way through\""
-                + "}";
 
-        ExerciseNote note = json.parse(jsonContent).getObject();
+        ClassPathResource resource = new ClassPathResource("example/exercise_note.json");
+        ExerciseNote note = json.readObject(resource.getFile());
 
         assertThat(note.getId()).isEqualTo(1248357L);
         assertThat(note.getExerciseId()).isEqualTo(191L);
