@@ -1,10 +1,7 @@
 package com.noslen.training_tracker.model.mesocycle;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.Objects;
-
-import com.noslen.training_tracker.model.day.Day;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
