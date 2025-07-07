@@ -98,12 +98,8 @@ public class DayExercise {
         if (!Objects.equals(muscleGroupId,
                             that.muscleGroupId))
             return false;
-        if (!Objects.equals(status,
-                            that.status)) return false;
-        if (!Objects.equals(sets,
-                            that.sets)) return false;
-        return Objects.equals(day,
-                              that.day);
+        return !Objects.equals(status,
+                            that.status);
     }
 
     @Override
@@ -118,8 +114,6 @@ public class DayExercise {
         result = 31 * result + (sourceDayExerciseId != null ? sourceDayExerciseId.hashCode() : 0);
         result = 31 * result + (muscleGroupId != null ? muscleGroupId.hashCode() : 0);
         result = 31 * result + (status != null ? status.hashCode() : 0);
-        result = 31 * result + (sets != null ? sets.hashCode() : 0);
-        result = 31 * result + (day != null ? day.hashCode() : 0);
         return result;
     }
 }

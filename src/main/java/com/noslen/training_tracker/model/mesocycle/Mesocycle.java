@@ -2,8 +2,9 @@ package com.noslen.training_tracker.model.mesocycle;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 
-import com.noslen.training_tracker.model.day.Day;
+import com.noslen.training_tracker.model.mesocycle.MesoNote;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -48,5 +49,111 @@ public class Mesocycle {
     private Instant lastWorkoutFinishedAt;
     private Instant lastWorkoutSkippedAt;
     private Instant lastWorkoutPartialedAt;
-    private List<Day> weeks;
+    private Integer weeks;
+    private List<MesoNote> notes;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Mesocycle mesocycle = (Mesocycle) o;
+
+        if (!Objects.equals(id,
+                            mesocycle.id)) return false;
+        if (!Objects.equals(key,
+                            mesocycle.key)) return false;
+        if (!Objects.equals(userId,
+                            mesocycle.userId)) return false;
+        if (!Objects.equals(name,
+                            mesocycle.name)) return false;
+        if (!Objects.equals(days,
+                            mesocycle.days)) return false;
+        if (!Objects.equals(unit,
+                            mesocycle.unit)) return false;
+        if (!Objects.equals(sourceTemplateId,
+                            mesocycle.sourceTemplateId))
+            return false;
+        if (!Objects.equals(sourceMesoId,
+                            mesocycle.sourceMesoId))
+            return false;
+        if (!Objects.equals(microRirs,
+                            mesocycle.microRirs)) return false;
+        if (!Objects.equals(createdAt,
+                            mesocycle.createdAt)) return false;
+        if (!Objects.equals(updatedAt,
+                            mesocycle.updatedAt)) return false;
+        if (!Objects.equals(finishedAt,
+                            mesocycle.finishedAt)) return false;
+        if (!Objects.equals(deletedAt,
+                            mesocycle.deletedAt)) return false;
+        if (!Objects.equals(firstMicroCompletedAt,
+                            mesocycle.firstMicroCompletedAt))
+            return false;
+        if (!Objects.equals(firstWorkoutCompletedAt,
+                            mesocycle.firstWorkoutCompletedAt))
+            return false;
+        if (!Objects.equals(firstExerciseCompletedAt,
+                            mesocycle.firstExerciseCompletedAt))
+            return false;
+        if (!Objects.equals(firstSetCompletedAt,
+                            mesocycle.firstSetCompletedAt))
+            return false;
+        if (!Objects.equals(lastMicroFinishedAt,
+                            mesocycle.lastMicroFinishedAt))
+            return false;
+        if (!Objects.equals(lastSetCompletedAt,
+                            mesocycle.lastSetCompletedAt))
+            return false;
+        if (!Objects.equals(lastSetSkippedAt,
+                            mesocycle.lastSetSkippedAt))
+            return false;
+        if (!Objects.equals(lastWorkoutCompletedAt,
+                            mesocycle.lastWorkoutCompletedAt))
+            return false;
+        if (!Objects.equals(lastWorkoutFinishedAt,
+                            mesocycle.lastWorkoutFinishedAt))
+            return false;
+        if (!Objects.equals(lastWorkoutSkippedAt,
+                            mesocycle.lastWorkoutSkippedAt))
+            return false;
+        if (!Objects.equals(lastWorkoutPartialedAt,
+                            mesocycle.lastWorkoutPartialedAt))
+            return false;
+        if (!Objects.equals(weeks,
+                            mesocycle.weeks)) return false;
+        return Objects.equals(notes,
+                              mesocycle.notes);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (key != null ? key.hashCode() : 0);
+        result = 31 * result + (userId != null ? userId.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (days != null ? days.hashCode() : 0);
+        result = 31 * result + (unit != null ? unit.hashCode() : 0);
+        result = 31 * result + (sourceTemplateId != null ? sourceTemplateId.hashCode() : 0);
+        result = 31 * result + (sourceMesoId != null ? sourceMesoId.hashCode() : 0);
+        result = 31 * result + (microRirs != null ? microRirs.hashCode() : 0);
+        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+        result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
+        result = 31 * result + (finishedAt != null ? finishedAt.hashCode() : 0);
+        result = 31 * result + (deletedAt != null ? deletedAt.hashCode() : 0);
+        result = 31 * result + (firstMicroCompletedAt != null ? firstMicroCompletedAt.hashCode() : 0);
+        result = 31 * result + (firstWorkoutCompletedAt != null ? firstWorkoutCompletedAt.hashCode() : 0);
+        result = 31 * result + (firstExerciseCompletedAt != null ? firstExerciseCompletedAt.hashCode() : 0);
+        result = 31 * result + (firstSetCompletedAt != null ? firstSetCompletedAt.hashCode() : 0);
+        result = 31 * result + (lastMicroFinishedAt != null ? lastMicroFinishedAt.hashCode() : 0);
+        result = 31 * result + (lastSetCompletedAt != null ? lastSetCompletedAt.hashCode() : 0);
+        result = 31 * result + (lastSetSkippedAt != null ? lastSetSkippedAt.hashCode() : 0);
+        result = 31 * result + (lastWorkoutCompletedAt != null ? lastWorkoutCompletedAt.hashCode() : 0);
+        result = 31 * result + (lastWorkoutFinishedAt != null ? lastWorkoutFinishedAt.hashCode() : 0);
+        result = 31 * result + (lastWorkoutSkippedAt != null ? lastWorkoutSkippedAt.hashCode() : 0);
+        result = 31 * result + (lastWorkoutPartialedAt != null ? lastWorkoutPartialedAt.hashCode() : 0);
+        result = 31 * result + (weeks != null ? weeks.hashCode() : 0);
+        result = 31 * result + (notes != null ? notes.hashCode() : 0);
+        return result;
+    }
 }
