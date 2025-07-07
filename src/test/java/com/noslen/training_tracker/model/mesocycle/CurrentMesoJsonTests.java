@@ -64,7 +64,7 @@ public class CurrentMesoJsonTests {
 
     @Test
     void testDeserialize() throws IOException {
-        
+
         ClassPathResource resource = new ClassPathResource("example/current_meso.json");
         CurrentMeso currentMeso = json.readObject(resource.getFile());
 
