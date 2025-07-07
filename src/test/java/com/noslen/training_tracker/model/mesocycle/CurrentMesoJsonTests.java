@@ -4,6 +4,7 @@ import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.json.JacksonTester;
 import org.junit.jupiter.api.Test;
+import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -18,7 +19,6 @@ public class CurrentMesoJsonTests {
 
     @Test
     void testSerialize() throws IOException {
-        // Create a CurrentMeso instance with minimal fields for serialization test
         CurrentMeso currentMeso = CurrentMeso.builder()
                 .id(790173L)
                 .key("wzzidovd6137")
@@ -41,48 +41,57 @@ public class CurrentMesoJsonTests {
                 .weeks(new ArrayList<>())
                 .build();
 
-        // Assert that the serialized JSON matches the expected format
-        assertThat(json.write(currentMeso)).isEqualToJson("current_meso.json");
-
-        // Verify specific fields
-        assertThat(json.write(currentMeso)).extractingJsonPathStringValue("$.key")
-                .isEqualTo("wzzidovd6137");
-        assertThat(json.write(currentMeso)).extractingJsonPathStringValue("$.name")
-                .isEqualTo("2025 P6");
-        assertThat(json.write(currentMeso)).extractingJsonPathNumberValue("$.days")
-                .isEqualTo(5);
+        assertThat(json.write(currentMeso)).hasJsonPathNumberValue("@.id");
+        assertThat(json.write(currentMeso)).extractingJsonPathNumberValue("@.id").isEqualTo(790173);
+        assertThat(json.write(currentMeso)).hasJsonPathStringValue("@.key");
+        assertThat(json.write(currentMeso)).extractingJsonPathStringValue("@.key").isEqualTo("wzzidovd6137");
+        assertThat(json.write(currentMeso)).hasJsonPathNumberValue("@.userId");
+        assertThat(json.write(currentMeso)).extractingJsonPathNumberValue("@.userId").isEqualTo(1518614);
+        assertThat(json.write(currentMeso)).hasJsonPathStringValue("@.name");
+        assertThat(json.write(currentMeso)).extractingJsonPathStringValue("@.name").isEqualTo("2025 P6");
+        assertThat(json.write(currentMeso)).hasJsonPathNumberValue("@.days");
+        assertThat(json.write(currentMeso)).extractingJsonPathNumberValue("@.days").isEqualTo(5);
+        assertThat(json.write(currentMeso)).hasJsonPathStringValue("@.unit");
+        assertThat(json.write(currentMeso)).extractingJsonPathStringValue("@.unit").isEqualTo("lb");
+        assertThat(json.write(currentMeso)).hasJsonPathNumberValue("@.sourceTemplateId");
+        assertThat(json.write(currentMeso)).extractingJsonPathNumberValue("@.sourceTemplateId").isEqualTo(16909);
+        assertThat(json.write(currentMeso)).hasJsonPathNumberValue("@.microRirs");
+        assertThat(json.write(currentMeso)).extractingJsonPathNumberValue("@.microRirs").isEqualTo(32108);
+        assertThat(json.write(currentMeso)).hasJsonPathValue("@.createdAt");
+        assertThat(json.write(currentMeso)).hasJsonPathValue("@.updatedAt");
+        assertThat(json.write(currentMeso)).hasJsonPathArrayValue("weeks");
     }
 
     @Test
     void testDeserialize() throws IOException {
-        String jsonContent = "{"
-                + "\"id\": 790173,"
-                + "\"key\": \"wzzidovd6137\","
-                + "\"userId\": 1518614,"
-                + "\"name\": \"2025 P6\","
-                + "\"days\": 5,"
-                + "\"unit\": \"lb\","
-                + "\"sourceTemplateId\": 16909,"
-                + "\"sourceMesoId\": null,"
-                + "\"microRirs\": 32108,"
-                + "\"createdAt\": \"2025-06-12T00:44:33.064Z\","
-                + "\"updatedAt\": \"2025-07-05T16:02:18.167Z\","
-                + "\"weeks\": []"
-                + "}";
+        
+        ClassPathResource resource = new ClassPathResource("example/current_meso.json");
+        CurrentMeso currentMeso = json.readObject(resource.getFile());
 
-        // Parse the JSON string into a CurrentMeso object
-        CurrentMeso currentMeso = json.parse(jsonContent).getObject();
-
-        // Verify the parsed object has the expected values
-        assertThat(currentMeso.getId()).isEqualTo(790173L);
+        assertThat(currentMeso.getId()).isEqualTo(790173);
         assertThat(currentMeso.getKey()).isEqualTo("wzzidovd6137");
-        assertThat(currentMeso.getUserId()).isEqualTo(1518614L);
+        assertThat(currentMeso.getUserId()).isEqualTo(1518614);
         assertThat(currentMeso.getName()).isEqualTo("2025 P6");
         assertThat(currentMeso.getDays()).isEqualTo(5);
         assertThat(currentMeso.getUnit()).isEqualTo("lb");
         assertThat(currentMeso.getSourceTemplateId()).isEqualTo(16909L);
+        assertThat(currentMeso.getSourceMesoId()).isNull();
         assertThat(currentMeso.getMicroRirs()).isEqualTo(32108L);
         assertThat(currentMeso.getCreatedAt()).isEqualTo(Instant.parse("2025-06-12T00:44:33.064Z"));
         assertThat(currentMeso.getUpdatedAt()).isEqualTo(Instant.parse("2025-07-05T16:02:18.167Z"));
+        assertThat(currentMeso.getFinishedAt()).isNull();
+        assertThat(currentMeso.getDeletedAt()).isNull();
+        assertThat(currentMeso.getFirstMicroCompletedAt()).isEqualTo(Instant.parse("2025-06-19T20:16:44.012Z"));
+        assertThat(currentMeso.getFirstWorkoutCompletedAt()).isEqualTo(Instant.parse("2025-06-13T20:19:45.802Z"));
+        assertThat(currentMeso.getFirstExerciseCompletedAt()).isEqualTo(Instant.parse("2025-06-13T19:16:49.001Z"));
+        assertThat(currentMeso.getFirstSetCompletedAt()).isEqualTo(Instant.parse("2025-06-13T19:16:44.810Z"));
+        assertThat(currentMeso.getLastMicroFinishedAt()).isEqualTo(Instant.parse("2025-07-02T13:49:49.037Z"));
+        assertThat(currentMeso.getLastSetCompletedAt()).isEqualTo(Instant.parse("2025-07-05T16:00:02.611Z"));
+        assertThat(currentMeso.getLastSetSkippedAt()).isNull();
+        assertThat(currentMeso.getLastWorkoutCompletedAt()).isEqualTo(Instant.parse("2025-07-05T16:02:18.077Z"));
+        assertThat(currentMeso.getLastWorkoutFinishedAt()).isEqualTo(Instant.parse("2025-07-05T16:02:18.077Z"));
+        assertThat(currentMeso.getLastWorkoutSkippedAt()).isNull();
+        assertThat(currentMeso.getLastWorkoutPartialedAt()).isNull();
+        assertThat(currentMeso.getWeeks()).isNotEmpty();
     }
 }
