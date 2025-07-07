@@ -17,9 +17,6 @@ public class DayJsonTests {
 
     @Autowired
     private JacksonTester<Day> json;
-    
-    @Autowired
-    private JacksonTester<Day[]> jsonList;
 
     @Test
     public void daySerializationTest() throws IOException {
@@ -118,7 +115,7 @@ public class DayJsonTests {
         
         // Muscle Groups
         assertThat(day.getMuscleGroups()).isNotEmpty();
-        assertThat(day.getMuscleGroups().size()).isEqualTo(4); // Based on the example JSON
+        assertThat(day.getMuscleGroups().size()).isEqualTo(4);
         
         var firstMuscleGroup = day.getMuscleGroups().get(0);
         assertThat(firstMuscleGroup.getId()).isEqualTo(89102468L);
