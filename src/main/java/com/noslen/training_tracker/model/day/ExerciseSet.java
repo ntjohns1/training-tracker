@@ -73,7 +73,6 @@ public class ExerciseSet {
                             that.createdAt)) return false;
         return Objects.equals(updatedAt,
                             that.updatedAt);
-        // Removed dayExercise comparison to break circular reference
     }
 
     @Override
@@ -88,7 +87,6 @@ public class ExerciseSet {
         result = 31 * result + (intensity != null ? intensity.hashCode() : 0);
         result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
         result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
-        // Removed dayExercise from hashCode calculation to break circular reference
         return result;
     }
 }

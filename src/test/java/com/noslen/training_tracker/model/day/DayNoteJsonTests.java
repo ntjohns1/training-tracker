@@ -4,6 +4,7 @@ import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.json.JacksonTester;
+import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -18,7 +19,7 @@ public class DayNoteJsonTests {
 
     @Test
     public void dayNoteSerializationTest() throws IOException {
-        // Create a DayNote object with all necessary properties
+
         DayNote dayNote = DayNote.builder()
                 .id(57650L)
                 .dayId(19749552L)
@@ -29,7 +30,6 @@ public class DayNoteJsonTests {
                 .updatedAt(Instant.parse("2025-07-05T19:07:06.751Z"))
                 .build();
 
-        // Assert that the serialized DayNote matches expected JSON structure
         assertThat(json.write(dayNote)).hasJsonPathNumberValue("@.id");
         assertThat(json.write(dayNote)).extractingJsonPathNumberValue("@.id").isEqualTo(57650);
         assertThat(json.write(dayNote)).hasJsonPathNumberValue("@.dayId");
@@ -44,4 +44,18 @@ public class DayNoteJsonTests {
         assertThat(json.write(dayNote)).hasJsonPathStringValue("@.updatedAt");
     }
 
+    @Test
+    public void dayNoteDeserializationTest() throws IOException {
+
+        ClassPathResource resource = new ClassPathResource("example/day_note.json");
+        DayNote dayNote = json.readObject(resource.getFile());
+
+        assertThat(dayNote.getId()).isEqualTo(57650);
+        assertThat(dayNote.getDayId()).isEqualTo(19749552);
+        assertThat(dayNote.getNoteId()).isEqualTo(1634150);
+        assertThat(dayNote.getPinned()).isFalse();
+        assertThat(dayNote.getText()).isEqualTo("Machine Chest Press broken");
+        assertThat(dayNote.getCreatedAt()).isEqualTo(Instant.parse("2025-07-05T19:07:06.751Z"));
+        assertThat(dayNote.getUpdatedAt()).isEqualTo(Instant.parse("2025-07-05T19:07:06.751Z"));
+    }
 }

@@ -100,7 +100,6 @@ public class DayExercise {
             return false;
         return !Objects.equals(status,
                             that.status);
-        // Removed sets and day comparison to break circular reference
     }
 
     @Override
@@ -115,7 +114,6 @@ public class DayExercise {
         result = 31 * result + (sourceDayExerciseId != null ? sourceDayExerciseId.hashCode() : 0);
         result = 31 * result + (muscleGroupId != null ? muscleGroupId.hashCode() : 0);
         result = 31 * result + (status != null ? status.hashCode() : 0);
-        // Removed sets and day from hashCode calculation to break circular reference
         return result;
     }
 }
