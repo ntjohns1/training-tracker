@@ -113,7 +113,7 @@ public class DayJsonTests {
         assertThat(firstSet.getDayExerciseId()).isEqualTo(121219691L);
         assertThat(firstSet.getPosition()).isEqualTo(0);
         assertThat(firstSet.getSetType()).isEqualTo("regular");
-        assertThat(firstSet.getWeight()).isEqualTo(35.0);
+        assertThat(firstSet.getWeight()).isEqualTo(35.0f);
         assertThat(firstSet.getReps()).isEqualTo(9);
         
         // Muscle Groups

@@ -29,18 +29,24 @@ public class ExerciseSet {
     
     @Column(name = "set_type")
     private String setType;
-    
-    private Double weight;
+    private Float weight;
+    private Float weightTarget;
+    private Float weightTargetMin;
+    private Float weightTargetMax;
     private Integer reps;
-    private Integer rir;
-    private Double intensity;
-    
+    private Integer repsTarget;
+    private Float bodyweight;
+    private String unit;
+
+
     @Column(name = "created_at")
     private Instant createdAt;
-    
+
     @Column(name = "updated_at")
-    private Instant updatedAt;
-    
+     private Instant finishedAt;
+
+    private String status;
+
     @ManyToOne
     @JoinColumn(name = "day_exercise_id", insertable = false, updatable = false)
     @JsonBackReference
@@ -53,7 +59,8 @@ public class ExerciseSet {
 
         ExerciseSet that = (ExerciseSet) o;
 
-        if (!id.equals(that.id)) return false;
+        if (!Objects.equals(id,
+                            that.id)) return false;
         if (!Objects.equals(dayExerciseId,
                             that.dayExerciseId))
             return false;
@@ -63,30 +70,50 @@ public class ExerciseSet {
                             that.setType)) return false;
         if (!Objects.equals(weight,
                             that.weight)) return false;
+        if (!Objects.equals(weightTarget,
+                            that.weightTarget)) return false;
+        if (!Objects.equals(weightTargetMin,
+                            that.weightTargetMin))
+            return false;
+        if (!Objects.equals(weightTargetMax,
+                            that.weightTargetMax))
+            return false;
         if (!Objects.equals(reps,
                             that.reps)) return false;
-        if (!Objects.equals(rir,
-                            that.rir)) return false;
-        if (!Objects.equals(intensity,
-                            that.intensity)) return false;
+        if (!Objects.equals(repsTarget,
+                            that.repsTarget)) return false;
+        if (!Objects.equals(bodyweight,
+                            that.bodyweight)) return false;
+        if (!Objects.equals(unit,
+                            that.unit)) return false;
         if (!Objects.equals(createdAt,
                             that.createdAt)) return false;
-        return Objects.equals(updatedAt,
-                            that.updatedAt);
+        if (!Objects.equals(finishedAt,
+                            that.finishedAt)) return false;
+        if (!Objects.equals(status,
+                            that.status)) return false;
+        return Objects.equals(dayExercise,
+                              that.dayExercise);
     }
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
+        int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (dayExerciseId != null ? dayExerciseId.hashCode() : 0);
         result = 31 * result + (position != null ? position.hashCode() : 0);
         result = 31 * result + (setType != null ? setType.hashCode() : 0);
         result = 31 * result + (weight != null ? weight.hashCode() : 0);
+        result = 31 * result + (weightTarget != null ? weightTarget.hashCode() : 0);
+        result = 31 * result + (weightTargetMin != null ? weightTargetMin.hashCode() : 0);
+        result = 31 * result + (weightTargetMax != null ? weightTargetMax.hashCode() : 0);
         result = 31 * result + (reps != null ? reps.hashCode() : 0);
-        result = 31 * result + (rir != null ? rir.hashCode() : 0);
-        result = 31 * result + (intensity != null ? intensity.hashCode() : 0);
+        result = 31 * result + (repsTarget != null ? repsTarget.hashCode() : 0);
+        result = 31 * result + (bodyweight != null ? bodyweight.hashCode() : 0);
+        result = 31 * result + (unit != null ? unit.hashCode() : 0);
         result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
-        result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
+        result = 31 * result + (finishedAt != null ? finishedAt.hashCode() : 0);
+        result = 31 * result + (status != null ? status.hashCode() : 0);
+        result = 31 * result + (dayExercise != null ? dayExercise.hashCode() : 0);
         return result;
     }
 }
