@@ -1,7 +1,5 @@
 {
-  "1": {
-      "id": 6159088,
-      "muscleGroupId": 1,
-      "mgProgressionType": "regular"
-  }
+  "id": 6159088,
+  "muscleGroupId": 1,
+  "mgProgressionType": "regular"
 }

@@ -28,28 +28,37 @@ public class ExerciseJsonTests {
                 .exerciseType("bodyweight-only")
                 .createdAt(Instant.parse("2022-11-21T23:28:14.769Z"))
                 .updatedAt(Instant.parse("2022-11-21T23:28:15.342Z"))
-                .mgSubType("vertical")
                 .notes(new ArrayList<>())
                 .build();
 
-        System.out.println("JSON content: " + json.write(exercise).getJson());
-        assertThat(json.write(exercise)).hasJsonPathNumberValue("@.id");
+        ExerciseNote note = ExerciseNote.builder()
+                .id(1319238L)
+                .exerciseId(221L)
+                .userId(1518614L)
+                .noteId(1378654L)
+                .dayExerciseId(92915187L)
+                .createdAt(Instant.parse("2025-03-11T13:27:46.588Z"))
+                .updatedAt(Instant.parse("2025-03-11T13:29:15.384Z"))
+                .text("Knees at 110 degrees")
+                .build();
+
+        exercise.getNotes().add(note);
+
+        ClassPathResource resource = new ClassPathResource("example/exercise.json");
+        assertThat(json.write(exercise)).isEqualToJson(resource);
+
         assertThat(json.write(exercise)).extractingJsonPathNumberValue("@.id").isEqualTo(221);
-        assertThat(json.write(exercise)).hasJsonPathStringValue("@.name");
         assertThat(json.write(exercise)).extractingJsonPathStringValue("@.name")
                 .isEqualTo("Hanging Straight Leg Raise");
-        assertThat(json.write(exercise)).hasJsonPathNumberValue("@.muscleGroupId");
         assertThat(json.write(exercise)).extractingJsonPathNumberValue("@.muscleGroupId").isEqualTo(12);
-        assertThat(json.write(exercise)).hasJsonPathStringValue("@.youtubeId");
         assertThat(json.write(exercise)).extractingJsonPathStringValue("@.youtubeId").isEqualTo("45v5678dA6BC");
-        assertThat(json.write(exercise)).hasJsonPathStringValue("@.exerciseType");
         assertThat(json.write(exercise)).extractingJsonPathStringValue("@.exerciseType").isEqualTo("bodyweight-only");
-        assertThat(json.write(exercise)).hasJsonPath("@.userId");
-        assertThat(json.write(exercise)).hasJsonPathValue("@.createdAt");
-        assertThat(json.write(exercise)).hasJsonPathValue("@.updatedAt");
-        assertThat(json.write(exercise)).hasJsonPath("@.deletedAt");
-        assertThat(json.write(exercise)).hasJsonPath("@.mgSubType");
-        assertThat(json.write(exercise)).hasJsonPathArrayValue("@.notes");
+        assertThat(json.write(exercise)).extractingJsonPathNumberValue("@.userId").isNull();
+        assertThat(json.write(exercise)).extractingJsonPathValue("@.createdAt").isEqualTo("2022-11-21T23:28:14.769Z");
+        assertThat(json.write(exercise)).extractingJsonPathValue("@.updatedAt").isEqualTo("2022-11-21T23:28:15.342Z");
+        assertThat(json.write(exercise)).extractingJsonPathNumberValue("@.deletedAt").isNull();
+        assertThat(json.write(exercise)).extractingJsonPathStringValue("@.mgSubType").isNull();
+        assertThat(json.write(exercise)).hasJsonPath("@.notes");
     }
 
     @Test

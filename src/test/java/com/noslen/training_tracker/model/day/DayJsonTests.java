@@ -9,23 +9,18 @@ import org.springframework.core.io.ClassPathResource;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-// 2.TODO
 @JsonTest
 public class DayJsonTests {
 
     @Autowired
     private JacksonTester<Day> json;
-    
-    @Autowired
-    private JacksonTester<Day[]> jsonList;
 
     @Test
     public void daySerializationTest() throws IOException {
-        // Create a Day object with all necessary properties
+
         Day day = Day.builder()
                 .id(19749541L)
                 .mesoId(790173L)
@@ -39,11 +34,10 @@ public class DayJsonTests {
                 .finishedAt(Instant.parse("2025-06-21T16:51:05.182Z"))
                 .label(null)
                 .notes(new ArrayList<>())
-                .exercises(new ArrayList<>()) // We'll add exercises in a more detailed test
-                .muscleGroups(new ArrayList<>()) // We'll add muscle groups in a more detailed test
+                .exercises(new ArrayList<>())
+                .muscleGroups(new ArrayList<>())
                 .build();
 
-        // Assert that the serialized Day matches expected JSON structure
         assertThat(json.write(day)).hasJsonPathNumberValue("@.id");
         assertThat(json.write(day)).extractingJsonPathNumberValue("@.id").isEqualTo(19749541);
         assertThat(json.write(day)).hasJsonPathNumberValue("@.mesoId");
@@ -66,28 +60,10 @@ public class DayJsonTests {
 
     @Test
     public void dayDeserializationTest() throws IOException {
-        // Create sample JSON content
-        String jsonContent = "{"
-                + "\"id\": 19749541,"
-                + "\"mesoId\": 790173,"
-                + "\"week\": 1,"
-                + "\"position\": 0,"
-                + "\"createdAt\": \"2025-06-12T00:44:33.064Z\","
-                + "\"updatedAt\": \"2025-06-21T16:51:05.289Z\","
-                + "\"bodyweight\": 161,"
-                + "\"bodyweightAt\": \"2025-06-12T00:48:59.703Z\","
-                + "\"unit\": \"lb\","
-                + "\"finishedAt\": \"2025-06-21T16:51:05.182Z\","
-                + "\"label\": null,"
-                + "\"notes\": [],"
-                + "\"exercises\": [],"
-                + "\"muscleGroups\": []"
-                + "}";
 
-        // Parse JSON into Day object
-        Day day = json.parse(jsonContent).getObject();
+        ClassPathResource resource = new ClassPathResource("example/day.json");
+        Day day = json.readObject(resource.getFile());
 
-        // Assert that the Day object has the expected properties
         assertThat(day.getId()).isEqualTo(19749541L);
         assertThat(day.getMesoId()).isEqualTo(790173L);
         assertThat(day.getWeek()).isEqualTo(1);
@@ -100,25 +76,24 @@ public class DayJsonTests {
         assertThat(day.getFinishedAt()).isEqualTo(Instant.parse("2025-06-21T16:51:05.182Z"));
         assertThat(day.getLabel()).isNull();
         assertThat(day.getNotes()).isEmpty();
-        assertThat(day.getExercises()).isEmpty();
-        assertThat(day.getMuscleGroups()).isEmpty();
+        assertThat(day.getExercises()).isNotEmpty();
+        assertThat(day.getExercises().size()).isEqualTo(6);
+        assertThat(day.getMuscleGroups()).isNotEmpty();
+        assertThat(day.getMuscleGroups().size()).isEqualTo(4);
     }
 
     @Test
     public void dayWithExercisesAndMuscleGroupsDeserializationTest() throws IOException {
-        // Load the complete example JSON file
         ClassPathResource resource = new ClassPathResource("example/day.json");
         Day day = json.readObject(resource.getFile());
 
-        // Basic day properties
         assertThat(day.getId()).isEqualTo(19749541L);
         assertThat(day.getMesoId()).isEqualTo(790173L);
         
-        // Exercises
         assertThat(day.getExercises()).isNotEmpty();
-        assertThat(day.getExercises().size()).isEqualTo(6); // Based on the example JSON
-        
-        // First exercise checks
+        assertThat(day.getExercises().size()).isEqualTo(6);
+
+        // DayExercise
         var firstExercise = day.getExercises().get(0);
         assertThat(firstExercise.getId()).isEqualTo(121219691L);
         assertThat(firstExercise.getDayId()).isEqualTo(19749541L);
@@ -127,24 +102,21 @@ public class DayJsonTests {
         assertThat(firstExercise.getJointPain()).isEqualTo(0);
         assertThat(firstExercise.getStatus()).isEqualTo("complete");
         
-        // Sets in first exercise
+        // ExerciseSets
         assertThat(firstExercise.getSets()).isNotEmpty();
         assertThat(firstExercise.getSets().size()).isEqualTo(3);
-        
-        // First set checks
         var firstSet = firstExercise.getSets().get(0);
         assertThat(firstSet.getId()).isEqualTo(157738019L);
         assertThat(firstSet.getDayExerciseId()).isEqualTo(121219691L);
         assertThat(firstSet.getPosition()).isEqualTo(0);
         assertThat(firstSet.getSetType()).isEqualTo("regular");
-        assertThat(firstSet.getWeight()).isEqualTo(35.0);
+        assertThat(firstSet.getWeight()).isEqualTo(35.0f);
         assertThat(firstSet.getReps()).isEqualTo(9);
         
         // Muscle Groups
         assertThat(day.getMuscleGroups()).isNotEmpty();
-        assertThat(day.getMuscleGroups().size()).isEqualTo(4); // Based on the example JSON
+        assertThat(day.getMuscleGroups().size()).isEqualTo(4);
         
-        // First muscle group checks
         var firstMuscleGroup = day.getMuscleGroups().get(0);
         assertThat(firstMuscleGroup.getId()).isEqualTo(89102468L);
         assertThat(firstMuscleGroup.getDayId()).isEqualTo(19749541L);
@@ -155,7 +127,5 @@ public class DayJsonTests {
         assertThat(firstMuscleGroup.getRecommendedSets()).isEqualTo(5);
         assertThat(firstMuscleGroup.getStatus()).isEqualTo("complete");
     }
-
-    // We don't need a setup method as we're creating objects in each test
 
 }
