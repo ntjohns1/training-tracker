@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JsonTest
@@ -41,45 +40,57 @@ public class MesocycleJsonTests {
                 .lastSetCompletedAt(Instant.parse("2025-07-05T16:00:02.611Z"))
                 .lastWorkoutCompletedAt(Instant.parse("2025-07-05T16:02:18.077Z"))
                 .lastWorkoutFinishedAt(Instant.parse("2025-07-05T16:02:18.077Z"))
+                .notes(new ArrayList<>())
                 .build();
+            
+            MesoNote note = MesoNote.builder()
+                    .id(13571L)
+                    .mesoId(790173L)
+                    .noteId(1634147L)
+                    .createdAt(Instant.parse("2025-07-05T19:06:19.128Z"))
+                    .updatedAt(Instant.parse("2025-07-05T19:06:19.128Z"))
+                    .text("For P7: \nBack to cable Lateral Raises")
+                    .build();
 
-        assertThat(json.write(mesocycle)).hasJsonPathNumberValue("$.id");
-        assertThat(json.write(mesocycle)).extractingJsonPathNumberValue("$.id").isEqualTo(790173);
-        assertThat(json.write(mesocycle)).hasJsonPathStringValue("$.key");
-        assertThat(json.write(mesocycle)).extractingJsonPathStringValue("$.key").isEqualTo("wzzidovd6137");
-        assertThat(json.write(mesocycle)).hasJsonPathNumberValue("$.userId");
-        assertThat(json.write(mesocycle)).extractingJsonPathNumberValue("$.userId").isEqualTo(1518614);
-        assertThat(json.write(mesocycle)).hasJsonPathStringValue("$.name");
-        assertThat(json.write(mesocycle)).extractingJsonPathStringValue("$.name").isEqualTo("2025 P6");
-        assertThat(json.write(mesocycle)).hasJsonPathNumberValue("$.days");
-        assertThat(json.write(mesocycle)).extractingJsonPathNumberValue("$.days").isEqualTo(5);
-        assertThat(json.write(mesocycle)).hasJsonPathNumberValue("$.sourceTemplateId");
-        assertThat(json.write(mesocycle)).extractingJsonPathNumberValue("$.sourceTemplateId").isEqualTo(16909);
-        assertThat(json.write(mesocycle)).hasJsonPathNumberValue("$.microRirs");
-        assertThat(json.write(mesocycle)).extractingJsonPathNumberValue("$.microRirs").isEqualTo(32108);
-        assertThat(json.write(mesocycle)).hasJsonPathStringValue("$.unit");
-        assertThat(json.write(mesocycle)).extractingJsonPathStringValue("$.unit").isEqualTo("lb");
-        assertThat(json.write(mesocycle)).hasJsonPathValue("$.createdAt");
-        assertThat(json.write(mesocycle)).extractingJsonPathValue("$.createdAt").isEqualTo("2025-06-12T00:44:33.064Z");
-        assertThat(json.write(mesocycle)).hasJsonPathValue("$.updatedAt");
-        assertThat(json.write(mesocycle)).extractingJsonPathValue("$.updatedAt").isEqualTo("2025-07-05T16:02:18.167Z");
-        assertThat(json.write(mesocycle)).hasJsonPath("$.finishedAt");
-        assertThat(json.write(mesocycle)).hasJsonPath("$.deletedAt");
-        assertThat(json.write(mesocycle)).hasJsonPathStringValue("$.firstMicroCompletedAt");
-        assertThat(json.write(mesocycle)).hasJsonPathStringValue("$.firstWorkoutCompletedAt");
-        assertThat(json.write(mesocycle)).hasJsonPathStringValue("$.firstExerciseCompletedAt");
-        assertThat(json.write(mesocycle)).hasJsonPathStringValue("$.firstSetCompletedAt");
-        assertThat(json.write(mesocycle)).hasJsonPathStringValue("$.lastMicroFinishedAt");
-        assertThat(json.write(mesocycle)).hasJsonPathStringValue("$.lastSetCompletedAt");
-        assertThat(json.write(mesocycle)).hasJsonPath("$.lastSetSkippedAt");
-        assertThat(json.write(mesocycle)).hasJsonPathStringValue("$.lastWorkoutCompletedAt");
-        assertThat(json.write(mesocycle)).hasJsonPathStringValue("$.lastWorkoutFinishedAt");
-        assertThat(json.write(mesocycle)).hasJsonPath("$.lastWorkoutSkippedAt");
-        assertThat(json.write(mesocycle)).hasJsonPath("$.lastWorkoutPartialedAt");
-        assertThat(json.write(mesocycle)).hasJsonPath("$.weeks");
-        assertThat(json.write(mesocycle)).extractingJsonPathValue("$.weeks").isEqualTo(5);
-        assertThat(json.write(mesocycle)).hasJsonPath("$.notes");
-        ;
+            mesocycle.getNotes().add(note);
+
+            ClassPathResource resource = new ClassPathResource("example/mesocycle.json");
+            assertThat(json.write(mesocycle)).isEqualToJson(resource);
+
+            assertThat(json.write(mesocycle)).extractingJsonPathNumberValue("$.id").isEqualTo(790173);
+            assertThat(json.write(mesocycle)).extractingJsonPathStringValue("$.key").isEqualTo("wzzidovd6137");
+            assertThat(json.write(mesocycle)).extractingJsonPathNumberValue("$.userId").isEqualTo(1518614);
+            assertThat(json.write(mesocycle)).extractingJsonPathStringValue("$.name").isEqualTo("2025 P6");
+            assertThat(json.write(mesocycle)).extractingJsonPathNumberValue("$.days").isEqualTo(5);
+            assertThat(json.write(mesocycle)).extractingJsonPathNumberValue("$.sourceTemplateId").isEqualTo(16909);
+            assertThat(json.write(mesocycle)).extractingJsonPathNumberValue("$.microRirs").isEqualTo(32108);
+            assertThat(json.write(mesocycle)).extractingJsonPathStringValue("$.unit").isEqualTo("lb");
+            assertThat(json.write(mesocycle)).extractingJsonPathValue("$.createdAt").isEqualTo("2025-06-12T00:44:33.064Z");
+            assertThat(json.write(mesocycle)).extractingJsonPathValue("$.updatedAt").isEqualTo("2025-07-05T16:02:18.167Z");
+            assertThat(json.write(mesocycle)).extractingJsonPathValue("$.weeks").isEqualTo(5);
+            assertThat(json.write(mesocycle)).extractingJsonPathNumberValue("$.days").isEqualTo(5);
+            assertThat(json.write(mesocycle)).extractingJsonPathNumberValue("$.sourceTemplateId").isEqualTo(16909);
+            assertThat(json.write(mesocycle)).extractingJsonPathNumberValue("$.microRirs").isEqualTo(32108);
+            assertThat(json.write(mesocycle)).extractingJsonPathStringValue("$.unit").isEqualTo("lb");
+            assertThat(json.write(mesocycle)).extractingJsonPathValue("$.createdAt").isEqualTo("2025-06-12T00:44:33.064Z");
+            assertThat(json.write(mesocycle)).extractingJsonPathValue("$.updatedAt").isEqualTo("2025-07-05T16:02:18.167Z");
+            assertThat(json.write(mesocycle)).extractingJsonPathValue("$.weeks").isEqualTo(5);
+            assertThat(json.write(mesocycle)).hasJsonPath("$.finishedAt");
+            assertThat(json.write(mesocycle)).hasJsonPath("$.deletedAt");
+            assertThat(json.write(mesocycle)).extractingJsonPathStringValue("$.firstMicroCompletedAt");
+            assertThat(json.write(mesocycle)).extractingJsonPathStringValue("$.firstWorkoutCompletedAt");
+            assertThat(json.write(mesocycle)).extractingJsonPathStringValue("$.firstExerciseCompletedAt");
+            assertThat(json.write(mesocycle)).extractingJsonPathStringValue("$.firstSetCompletedAt");
+            assertThat(json.write(mesocycle)).extractingJsonPathStringValue("$.lastMicroFinishedAt");
+            assertThat(json.write(mesocycle)).hasJsonPathStringValue("$.lastSetCompletedAt");
+            assertThat(json.write(mesocycle)).hasJsonPath("$.lastSetSkippedAt");
+            assertThat(json.write(mesocycle)).hasJsonPathStringValue("$.lastWorkoutCompletedAt");
+            assertThat(json.write(mesocycle)).hasJsonPathStringValue("$.lastWorkoutFinishedAt");
+            assertThat(json.write(mesocycle)).hasJsonPath("$.lastWorkoutSkippedAt");
+            assertThat(json.write(mesocycle)).hasJsonPath("$.lastWorkoutPartialedAt");
+            assertThat(json.write(mesocycle)).hasJsonPath("$.weeks");
+            assertThat(json.write(mesocycle)).extractingJsonPathValue("$.weeks").isEqualTo(5);
+            assertThat(json.write(mesocycle)).hasJsonPath("$.notes");
     }
 
     @Test
