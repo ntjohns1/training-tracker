@@ -1,11 +1,13 @@
 package com.noslen.training_tracker.model.muscle_group;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.Objects;
 
 @Getter
+@AllArgsConstructor
 @Entity
 @Table(name = "progressions")
 public class Progression {
