@@ -44,7 +44,6 @@ public class Exercise {
     @JsonProperty("exerciseType")
     private String exerciseType;
     
-    // #TODO: Foreign Key relationship to User
     @Column(name = "user_id")
     @JsonProperty("userId")
     private Long userId;
@@ -65,7 +64,8 @@ public class Exercise {
     @JsonProperty("mgSubType")
     private String mgSubType;
     
-    @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "exercise_id")
     @JsonProperty("notes")
     private List<ExerciseNote> notes;
 
