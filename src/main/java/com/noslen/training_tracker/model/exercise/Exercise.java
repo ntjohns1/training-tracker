@@ -64,7 +64,8 @@ public class Exercise {
     @JsonProperty("mgSubType")
     private String mgSubType;
     
-    @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "exercise_id")
     @JsonProperty("notes")
     private List<ExerciseNote> notes;
 

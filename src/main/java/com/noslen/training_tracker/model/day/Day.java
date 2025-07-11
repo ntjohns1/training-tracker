@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -57,6 +58,7 @@ public class Day {
     
     private String label;
     
+    @ElementCollection
     @Builder.Default
     private List<String> notes = new ArrayList<>();
     

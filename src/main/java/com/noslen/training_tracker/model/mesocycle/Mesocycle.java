@@ -4,8 +4,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
-import com.noslen.training_tracker.model.mesocycle.MesoNote;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
