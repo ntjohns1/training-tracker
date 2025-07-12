@@ -1,13 +1,16 @@
 package com.noslen.training_tracker.model.muscle_group;
 
+import com.noslen.training_tracker.service.muscle_group.MgProgressionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "progressions")
 public class Progression {
@@ -15,7 +18,12 @@ public class Progression {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long muscleGroupId;
-    private String mgProgressionType;
+    private MgProgressionType mgProgressionType;
+
+    public Progression setMgProgressionType(MgProgressionType mgProgressionType) {
+        this.mgProgressionType = mgProgressionType;
+        return this;
+    }
 
     @Override
     public boolean equals(Object o) {
