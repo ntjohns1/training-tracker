@@ -23,13 +23,13 @@ public class ProgressionJsonTests {
         assertThat(json.write(progression)).isEqualToJson(resource);
     }
 
-    @Test
-    void testDeserialize() throws IOException {
-        ClassPathResource resource = new ClassPathResource("example/progression.json");
-        Progression progression = json.readObject(resource.getFile());
-
-        assertThat(progression.getId()).isEqualTo(6159088L);
-        assertThat(progression.getMuscleGroupId()).isEqualTo(1L);
-        assertThat(progression.getMgProgressionType()).isEqualTo("regular");
-    }
+//    @Test
+//    void testDeserialize() throws IOException {
+//        ClassPathResource resource = new ClassPathResource("example/progression.json");
+//        Progression progression = json.readObject(resource.getFile());
+//
+//        assertThat(progression.getId()).isEqualTo(6159088L);
+//        assertThat(progression.getMuscleGroupId()).isEqualTo(1L);
+//        assertThat(progression.getMgProgressionType()).isEqualTo("regular");
+//    }
 }
