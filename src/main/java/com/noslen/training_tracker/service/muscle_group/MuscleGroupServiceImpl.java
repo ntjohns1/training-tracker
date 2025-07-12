@@ -2,10 +2,12 @@ package com.noslen.training_tracker.service.muscle_group;
 
 import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
 import com.noslen.training_tracker.repository.muscle_group.MuscleGroupRepo;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class MuscleGroupServiceImpl implements MuscleGroupService {
 
     private final MuscleGroupRepo repo;
