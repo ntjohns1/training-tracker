@@ -22,8 +22,10 @@ public class ExerciseSet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(name = "day_exercise_id")
-    private Long dayExerciseId;
+    @ManyToOne
+    @JsonBackReference(value = "exerciseset-dayexercise")
+    @JoinColumn(name = "day_exercise_id")
+    private DayExercise dayExercise;
     
     private Integer position;
     
@@ -42,15 +44,18 @@ public class ExerciseSet {
     @Column(name = "created_at")
     private Instant createdAt;
 
-    @Column(name = "updated_at")
-     private Instant finishedAt;
+    @Column(name = "finished_at")
+    private Instant finishedAt;
 
     private String status;
 
-    @ManyToOne
-    @JoinColumn(name = "day_exercise_id", insertable = false, updatable = false)
-    @JsonBackReference
-    private DayExercise dayExercise;
+    /**
+     * Convenience method to get the dayExercise ID from the DayExercise object
+     * @return the ID of the associated dayExercise
+     */
+    public Long getDayExerciseId() {
+        return dayExercise != null ? dayExercise.getId() : null;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -61,8 +66,8 @@ public class ExerciseSet {
 
         if (!Objects.equals(id,
                             that.id)) return false;
-        if (!Objects.equals(dayExerciseId,
-                            that.dayExerciseId))
+        if (!Objects.equals(dayExercise,
+                            that.dayExercise))
             return false;
         if (!Objects.equals(position,
                             that.position)) return false;
@@ -99,7 +104,7 @@ public class ExerciseSet {
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (dayExerciseId != null ? dayExerciseId.hashCode() : 0);
+        result = 31 * result + (dayExercise != null ? dayExercise.hashCode() : 0);
         result = 31 * result + (position != null ? position.hashCode() : 0);
         result = 31 * result + (setType != null ? setType.hashCode() : 0);
         result = 31 * result + (weight != null ? weight.hashCode() : 0);

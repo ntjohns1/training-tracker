@@ -4,10 +4,17 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,8 +36,26 @@ public class Mesocycle {
     private String name;
     private Integer days;
     private String unit;
-    private Long sourceTemplateId;
-    private Long sourceMesoId;
+
+    @ManyToOne
+    @JoinColumn(name = "source_template_id")
+    private MesoTemplate sourceTemplate;
+
+    @ManyToOne
+    @JsonBackReference(value = "mesocycle-source-meso")
+    @JoinColumn(name = "source_meso_id")
+    private Mesocycle sourceMeso;
+    
+    @JsonProperty("sourceTemplateId")
+    public Long getSourceTemplateId() {
+        return sourceTemplate != null ? sourceTemplate.getId() : null;
+    }
+    
+    @JsonProperty("sourceMesoId")
+    public Long getSourceMesoId() {
+        return sourceMeso != null ? sourceMeso.getId() : null;
+    }
+
     private Long microRirs;
     private Instant createdAt;
     private Instant updatedAt;
@@ -48,6 +73,11 @@ public class Mesocycle {
     private Instant lastWorkoutSkippedAt;
     private Instant lastWorkoutPartialedAt;
     private Integer weeks;
+
+    @OneToMany
+    @JsonManagedReference(value = "mesocycle-notes")
+    @JoinColumn(name = "mesocycle_id")
+    @JsonProperty("notes")
     private List<MesoNote> notes;
 
     @Override
@@ -69,11 +99,11 @@ public class Mesocycle {
                             mesocycle.days)) return false;
         if (!Objects.equals(unit,
                             mesocycle.unit)) return false;
-        if (!Objects.equals(sourceTemplateId,
-                            mesocycle.sourceTemplateId))
+        if (!Objects.equals(sourceTemplate,
+                            mesocycle.sourceTemplate))
             return false;
-        if (!Objects.equals(sourceMesoId,
-                            mesocycle.sourceMesoId))
+        if (!Objects.equals(sourceMeso,
+                            mesocycle.sourceMeso))
             return false;
         if (!Objects.equals(microRirs,
                             mesocycle.microRirs)) return false;
@@ -132,8 +162,8 @@ public class Mesocycle {
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (days != null ? days.hashCode() : 0);
         result = 31 * result + (unit != null ? unit.hashCode() : 0);
-        result = 31 * result + (sourceTemplateId != null ? sourceTemplateId.hashCode() : 0);
-        result = 31 * result + (sourceMesoId != null ? sourceMesoId.hashCode() : 0);
+        result = 31 * result + (sourceTemplate != null ? sourceTemplate.hashCode() : 0);
+        result = 31 * result + (sourceMeso != null ? sourceMeso.hashCode() : 0);
         result = 31 * result + (microRirs != null ? microRirs.hashCode() : 0);
         result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
         result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);

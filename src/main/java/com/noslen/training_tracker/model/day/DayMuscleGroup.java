@@ -3,6 +3,8 @@ package com.noslen.training_tracker.model.day;
 import java.time.Instant;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,12 +32,16 @@ public class DayMuscleGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @Column(name = "day_id")
-    private Long dayId;
-    
-    @Column(name = "muscle_group_id")
-    private Long muscleGroupId;
+
+    @ManyToOne
+    @JoinColumn(name = "day_id")
+    @JsonBackReference(value = "musclegroup-day")
+    private Day day;
+
+    @ManyToOne
+    @JoinColumn(name = "muscle_group_id")
+    @JsonBackReference(value = "musclegroup-musclegroup")
+    private MuscleGroup muscleGroup;
     
     private Integer pump;
     private Integer soreness;
@@ -51,11 +57,23 @@ public class DayMuscleGroup {
     
     @Column(name = "updated_at")
     private Instant updatedAt;
-    
-    @ManyToOne
-    @JoinColumn(name = "day_id", insertable = false, updatable = false)
-    @JsonBackReference
-    private Day day;
+
+    /**
+     * Convenience method to get the day ID from the Day object
+     * @return the ID of the associated day
+     */
+    @JsonProperty("dayId")
+    public Long getDayId() {
+        return day != null ? day.getId() : null;
+    }/**
+
+     * Convenience method to get the muscle group ID from the Day object
+     * @return the ID of the associated muscle group
+     */
+    @JsonProperty("muscleGroupId")
+    public Long getMuscleGroupId() {
+        return muscleGroup != null ? muscleGroup.getId() : null;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -66,10 +84,10 @@ public class DayMuscleGroup {
 
         if (!Objects.equals(id,
                             that.id)) return false;
-        if (!Objects.equals(dayId,
-                            that.dayId)) return false;
-        if (!Objects.equals(muscleGroupId,
-                            that.muscleGroupId))
+        if (!Objects.equals(day,
+                            that.day)) return false;
+        if (!Objects.equals(muscleGroup,
+                            that.muscleGroup))
             return false;
         if (!Objects.equals(pump,
                             that.pump)) return false;
@@ -93,8 +111,8 @@ public class DayMuscleGroup {
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (dayId != null ? dayId.hashCode() : 0);
-        result = 31 * result + (muscleGroupId != null ? muscleGroupId.hashCode() : 0);
+        result = 31 * result + (day != null ? day.hashCode() : 0);
+        result = 31 * result + (muscleGroup != null ? muscleGroup.hashCode() : 0);
         result = 31 * result + (pump != null ? pump.hashCode() : 0);
         result = 31 * result + (soreness != null ? soreness.hashCode() : 0);
         result = 31 * result + (workload != null ? workload.hashCode() : 0);
