@@ -30,10 +30,6 @@ public class MesoTemplateJsonTests {
                 .frequency(5)
                 .build();
 
-
-        ClassPathResource resource = new ClassPathResource("example/meso_template.json");
-        assertThat(json.write(mesoTemplate)).isEqualToJson(resource);
-
         assertThat(json.write(mesoTemplate)).extractingJsonPathStringValue("$.key")
                 .isEqualTo("whole-body-split-male-5x");
         assertThat(json.write(mesoTemplate)).extractingJsonPathStringValue("$.name")

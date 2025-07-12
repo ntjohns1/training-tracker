@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -65,6 +66,7 @@ public class Exercise {
     private String mgSubType;
     
     @OneToMany(cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "exercisenote-exercise")
     @JoinColumn(name = "exercise_id")
     @JsonProperty("notes")
     private List<ExerciseNote> notes;

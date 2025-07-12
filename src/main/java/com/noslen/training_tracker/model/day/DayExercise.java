@@ -44,6 +44,7 @@ public class DayExercise {
     private Day day;
     
     @ManyToOne
+    @JsonBackReference(value = "dayexercise-exercise")
     @JoinColumn(name = "exercise_id")
     private Exercise exercise;
     

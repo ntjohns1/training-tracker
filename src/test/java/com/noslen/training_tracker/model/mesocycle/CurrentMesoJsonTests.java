@@ -19,6 +19,7 @@ public class CurrentMesoJsonTests {
 
     @Test
     void testSerialize() throws IOException {
+        MesoTemplate template = MesoTemplate.builder().id(16909L).build();
         CurrentMeso currentMeso = CurrentMeso.builder()
                 .id(790173L)
                 .key("wzzidovd6137")
@@ -26,7 +27,7 @@ public class CurrentMesoJsonTests {
                 .name("2025 P6")
                 .days(5)
                 .unit("lb")
-                .sourceTemplateId(16909L)
+                .sourceTemplate(template)
                 .microRirs(32108L)
                 .createdAt(Instant.parse("2025-06-12T00:44:33.064Z"))
                 .updatedAt(Instant.parse("2025-07-05T16:02:18.167Z"))

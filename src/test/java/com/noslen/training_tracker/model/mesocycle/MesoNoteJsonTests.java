@@ -21,9 +21,11 @@ public class MesoNoteJsonTests {
     @Test
     void testSerialize() throws IOException {
 
+        Mesocycle mesocycle = Mesocycle.builder().id(790173L).build();
+        
         MesoNote mesoNote = MesoNote.builder()
                 .id(13571L)
-                .mesoId(790173L)
+                .mesocycle(mesocycle)
                 .noteId(1634147L)
                 .createdAt(Instant.parse("2025-07-05T19:06:19.128Z"))
                 .updatedAt(Instant.parse("2025-07-05T19:06:19.128Z"))

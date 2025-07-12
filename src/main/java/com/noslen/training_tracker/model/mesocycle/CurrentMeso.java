@@ -4,12 +4,16 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.noslen.training_tracker.model.day.Day;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,8 +35,12 @@ public class CurrentMeso {
     private String name;
     private Integer days;
     private String unit;
-    private Long sourceTemplateId;
-    private Long sourceMesoId;
+    @ManyToOne
+    @JoinColumn(name = "source_template_id")
+    private MesoTemplate sourceTemplate;
+    @ManyToOne
+    @JoinColumn(name = "source_meso_id")
+    private Mesocycle sourceMeso;
     private Long microRirs;
     private Instant createdAt;
     private Instant updatedAt;
@@ -49,77 +57,103 @@ public class CurrentMeso {
     private Instant lastWorkoutFinishedAt;
     private Instant lastWorkoutSkippedAt;
     private Instant lastWorkoutPartialedAt;
+    @OneToMany
+    @JoinColumn(name = "current_meso_id")
     private List<Day> weeks;
+
+    @JsonProperty("sourceTemplateId")
+    public Long getSourceTemplateId() {
+        return sourceTemplate != null ? sourceTemplate.getId() : null;
+    }
+
+    @JsonProperty("sourceMesoId")
+    public Long getSourceMesoId() {
+        return sourceMeso != null ? sourceMeso.getId() : null;
+    }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         CurrentMeso that = (CurrentMeso) o;
 
         if (!Objects.equals(id,
-                            that.id)) return false;
-        if (!Objects.equals(key,
-                            that.key)) return false;
-        if (!Objects.equals(userId,
-                            that.userId)) return false;
-        if (!Objects.equals(name,
-                            that.name)) return false;
-        if (!Objects.equals(days,
-                            that.days)) return false;
-        if (!Objects.equals(unit,
-                            that.unit)) return false;
-        if (!Objects.equals(sourceTemplateId,
-                            that.sourceTemplateId))
+                that.id))
             return false;
-        if (!Objects.equals(sourceMesoId,
-                            that.sourceMesoId)) return false;
+        if (!Objects.equals(key,
+                that.key))
+            return false;
+        if (!Objects.equals(userId,
+                that.userId))
+            return false;
+        if (!Objects.equals(name,
+                that.name))
+            return false;
+        if (!Objects.equals(days,
+                that.days))
+            return false;
+        if (!Objects.equals(unit,
+                that.unit))
+            return false;
+        if (!Objects.equals(sourceTemplate,
+                that.sourceTemplate))
+            return false;
+        if (!Objects.equals(sourceMeso,
+                that.sourceMeso))
+            return false;
         if (!Objects.equals(microRirs,
-                            that.microRirs)) return false;
+                that.microRirs))
+            return false;
         if (!Objects.equals(createdAt,
-                            that.createdAt)) return false;
+                that.createdAt))
+            return false;
         if (!Objects.equals(updatedAt,
-                            that.updatedAt)) return false;
+                that.updatedAt))
+            return false;
         if (!Objects.equals(finishedAt,
-                            that.finishedAt)) return false;
+                that.finishedAt))
+            return false;
         if (!Objects.equals(deletedAt,
-                            that.deletedAt)) return false;
+                that.deletedAt))
+            return false;
         if (!Objects.equals(firstMicroCompletedAt,
-                            that.firstMicroCompletedAt))
+                that.firstMicroCompletedAt))
             return false;
         if (!Objects.equals(firstWorkoutCompletedAt,
-                            that.firstWorkoutCompletedAt))
+                that.firstWorkoutCompletedAt))
             return false;
         if (!Objects.equals(firstExerciseCompletedAt,
-                            that.firstExerciseCompletedAt))
+                that.firstExerciseCompletedAt))
             return false;
         if (!Objects.equals(firstSetCompletedAt,
-                            that.firstSetCompletedAt))
+                that.firstSetCompletedAt))
             return false;
         if (!Objects.equals(lastMicroFinishedAt,
-                            that.lastMicroFinishedAt))
+                that.lastMicroFinishedAt))
             return false;
         if (!Objects.equals(lastSetCompletedAt,
-                            that.lastSetCompletedAt))
+                that.lastSetCompletedAt))
             return false;
         if (!Objects.equals(lastSetSkippedAt,
-                            that.lastSetSkippedAt))
+                that.lastSetSkippedAt))
             return false;
         if (!Objects.equals(lastWorkoutCompletedAt,
-                            that.lastWorkoutCompletedAt))
+                that.lastWorkoutCompletedAt))
             return false;
         if (!Objects.equals(lastWorkoutFinishedAt,
-                            that.lastWorkoutFinishedAt))
+                that.lastWorkoutFinishedAt))
             return false;
         if (!Objects.equals(lastWorkoutSkippedAt,
-                            that.lastWorkoutSkippedAt))
+                that.lastWorkoutSkippedAt))
             return false;
         if (!Objects.equals(lastWorkoutPartialedAt,
-                            that.lastWorkoutPartialedAt))
+                that.lastWorkoutPartialedAt))
             return false;
         return Objects.equals(weeks,
-                              that.weeks);
+                that.weeks);
     }
 
     @Override
@@ -130,8 +164,8 @@ public class CurrentMeso {
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (days != null ? days.hashCode() : 0);
         result = 31 * result + (unit != null ? unit.hashCode() : 0);
-        result = 31 * result + (sourceTemplateId != null ? sourceTemplateId.hashCode() : 0);
-        result = 31 * result + (sourceMesoId != null ? sourceMesoId.hashCode() : 0);
+        result = 31 * result + (sourceTemplate != null ? sourceTemplate.hashCode() : 0);
+        result = 31 * result + (sourceMeso != null ? sourceMeso.hashCode() : 0);
         result = 31 * result + (microRirs != null ? microRirs.hashCode() : 0);
         result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
         result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
