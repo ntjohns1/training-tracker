@@ -1,4 +1,6 @@
 package com.noslen.training_tracker.dto.muscle_group;
 
-public record ProgressionPayload(long id, long exerciseId, String progressionType) {
+import com.noslen.training_tracker.util.MgProgressionType;
+
+public record ProgressionPayload(long id, long muscleGroupId, MgProgressionType mgProgressionType) {
 }

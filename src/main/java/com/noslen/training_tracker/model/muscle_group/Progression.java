@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.model.muscle_group;
 
-import com.noslen.training_tracker.service.muscle_group.MgProgressionType;
+import com.noslen.training_tracker.util.MgProgressionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
