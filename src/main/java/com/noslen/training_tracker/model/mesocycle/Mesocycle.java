@@ -1,6 +1,5 @@
 package com.noslen.training_tracker.model.mesocycle;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.noslen.training_tracker.model.day.Day;
