@@ -15,14 +15,14 @@
 //@JsonTest
 //public class MesocycleJsonTests {
 //    @Autowired
-//    private JacksonTester<MesocycleData> json;
+//    private JacksonTester<MesocyclePayload> json;
 //
 //    @Test
 //    void testSerialize() throws IOException {
 //
-//        MesocycleData mesocycle = new MesocycleData();
+//        MesocyclePayload mesocycle = new MesocyclePayload();
 //
-//            MesoNoteData note = MesoNoteData.builder()
+//            MesoNotePayload note = MesoNotePayload.builder()
 //                    .id(13571L)
 //                    .mesocycle(mesocycle)
 //                    .noteId(1634147L)
@@ -76,7 +76,7 @@
 ////    void testDeserialize() throws IOException {
 ////
 ////        ClassPathResource resource = new ClassPathResource("example/mesocycle.json");
-////        MesocycleData mesocycle = json.readObject(resource.getFile());
+////        MesocyclePayload mesocycle = json.readObject(resource.getFile());
 ////
 ////        assertThat(mesocycle.getId()).isEqualTo(790173L);
 ////        assertThat(mesocycle.getKey()).isEqualTo("wzzidovd6137");

@@ -51,7 +51,7 @@ public class MesoNoteJsonTests {
 //    void testDeserialize() throws IOException {
 //
 //        ClassPathResource resource = new ClassPathResource("example/meso_note.json");
-//        MesoNoteData mesoNote = json.readObject(resource.getFile());
+//        MesoNotePayload mesoNote = json.readObject(resource.getFile());
 //
 //        assertThat(mesoNote.getId()).isEqualTo(13571L);
 //        assertThat(mesoNote.getMesoId()).isEqualTo(790173L);

@@ -30,10 +30,12 @@ public class Mesocycle {
     private Integer days;
     private String unit;
 
+//    TODO: fix this relation
     @ManyToOne
     @JoinColumn(name = "source_template_id")
     private MesoTemplate sourceTemplate;
 
+//    TODO: fix this relation
     @ManyToOne
     @JoinColumn(name = "source_meso_id")
     private Mesocycle sourceMeso;

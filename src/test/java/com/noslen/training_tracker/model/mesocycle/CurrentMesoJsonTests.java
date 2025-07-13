@@ -15,12 +15,12 @@
 //@JsonTest
 //public class CurrentMesoJsonTests {
 //    @Autowired
-//    private JacksonTester<CurrentMesoData> json;
+//    private JacksonTester<CurrentMesoPayload> json;
 //
 //    @Test
 //    void testSerialize() throws IOException {
-//        MesoTemplateData template = MesoTemplateData.builder().id(16909L).build();
-//        CurrentMesoData currentMeso = CurrentMesoData.builder()
+//        MesoTemplatePayload template = MesoTemplatePayload.builder().id(16909L).build();
+//        CurrentMesoPayload currentMeso = CurrentMesoPayload.builder()
 //                .id(790173L)
 //                .key("wzzidovd6137")
 //                .userId(1518614L)
@@ -67,7 +67,7 @@
 ////    void testDeserialize() throws IOException {
 ////
 ////        ClassPathResource resource = new ClassPathResource("example/current_meso.json");
-////        CurrentMesoData currentMeso = json.readObject(resource.getFile());
+////        CurrentMesoPayload currentMeso = json.readObject(resource.getFile());
 ////
 ////        assertThat(currentMeso.getId()).isEqualTo(790173);
 ////        assertThat(currentMeso.getKey()).isEqualTo("wzzidovd6137");

@@ -98,7 +98,7 @@ public class DayJsonTests {
 //        assertThat(day.getExercises()).isNotEmpty();
 //        assertThat(day.getExercises().size()).isEqualTo(6);
 //
-//        // DayExerciseData
+//        // DayExercisePayload
 //        var firstExercise = day.getExercises().get(0);
 //        assertThat(firstExercise.getId()).isEqualTo(121219691L);
 //        assertThat(firstExercise.getDay().getId()).isEqualTo(19749541L);
