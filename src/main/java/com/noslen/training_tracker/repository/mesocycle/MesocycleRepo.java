@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 
-public interface MesoCycleRepo extends JpaRepository<Mesocycle, Long> {
+public interface MesocycleRepo extends JpaRepository<Mesocycle, Long> {
 
 }

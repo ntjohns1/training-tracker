@@ -68,7 +68,7 @@ public class DayExerciseJsonTests {
 //    @Test
 //    public void dayExerciseDeserializationTest() throws IOException {
 //        ClassPathResource resource = new ClassPathResource("example/day_exercise.json");
-//        DayExercise dayExercise = json.readObject(resource.getFile());
+//        DayExerciseData dayExercise = json.readObject(resource.getFile());
 //
 //        assertThat(dayExercise.getId()).isEqualTo(121219682L);
 //        assertThat(dayExercise.getDayId()).isEqualTo(19749539L);

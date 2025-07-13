@@ -18,7 +18,7 @@ public class MesoTemplateJsonTests {
 
     @Test
     void testSerialize() throws IOException {
-        // Create a MesoTemplate instance with minimal fields for serialization test
+        // Create a MesoTemplateData instance with minimal fields for serialization test
         MesoTemplate mesoTemplate = MesoTemplate.builder()
                 .id(51L)
                 .key("whole-body-split-male-5x")
@@ -43,7 +43,7 @@ public class MesoTemplateJsonTests {
 //    void testDeserialize() throws IOException {
 //
 //        ClassPathResource resource = new ClassPathResource("example/meso_template.json");
-//        MesoTemplate mesoTemplate = json.readObject(resource.getFile());
+//        MesoTemplateData mesoTemplate = json.readObject(resource.getFile());
 //
 //        assertThat(mesoTemplate.getId()).isEqualTo(51L);
 //        assertThat(mesoTemplate.getKey()).isEqualTo("whole-body-split-male-5x");

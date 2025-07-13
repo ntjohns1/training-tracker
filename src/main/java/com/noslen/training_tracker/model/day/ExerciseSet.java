@@ -50,7 +50,7 @@ public class ExerciseSet {
     private String status;
 
     /**
-     * Convenience method to get the dayExercise ID from the DayExercise object
+     * Convenience method to get the dayExercise ID from the DayExerciseData object
      * @return the ID of the associated dayExercise
      */
     public Long getDayExerciseId() {
