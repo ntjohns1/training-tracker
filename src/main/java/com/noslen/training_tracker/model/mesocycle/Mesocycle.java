@@ -3,6 +3,7 @@ package com.noslen.training_tracker.model.mesocycle;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.noslen.training_tracker.model.day.Day;
+import com.noslen.training_tracker.model.muscle_group.Progression;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Getter
@@ -76,6 +78,14 @@ public class Mesocycle {
     @JoinColumn(name = "mesocycle_id")
     @JsonProperty("notes")
     private List<MesoNote> notes;
+
+    String status;
+    String generatedFrom;
+
+    @OneToMany(mappedBy = "mesocycle", cascade = CascadeType.ALL, orphanRemoval = true)
+    @MapKey(name = "muscleGroupId")
+    @JsonProperty("progressions")
+    private Map<Long, Progression> progressions;
 
     @Override
     public boolean equals(Object o) {
