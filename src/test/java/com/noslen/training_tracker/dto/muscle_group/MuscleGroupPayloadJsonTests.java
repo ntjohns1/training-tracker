@@ -17,7 +17,8 @@ public class MuscleGroupPayloadJsonTests {
 
     @Test
     void testSerialize() throws IOException {
-        MuscleGroupPayload muscleGroupPayload = new MuscleGroupPayload(12L, "Quads", Instant.parse("2022-11-21T23:28:14.769Z"), Instant.parse("2022-11-21T23:28:15.342Z"));
+        MuscleGroupPayload muscleGroupPayload = new MuscleGroupPayload(12L, "Quads",
+                Instant.parse("2022-11-21T23:28:14.769Z"), Instant.parse("2022-11-21T23:28:15.342Z"));
         ClassPathResource resource = new ClassPathResource("example/muscle_group.json");
         assertThat(json.write(muscleGroupPayload)).isEqualToJson(resource);
     }
