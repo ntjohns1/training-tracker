@@ -1,6 +1,7 @@
 package com.noslen.training_tracker.model.muscle_group;
 
-import com.noslen.training_tracker.service.muscle_group.MgProgressionType;
+import com.noslen.training_tracker.model.mesocycle.Mesocycle;
+import com.noslen.training_tracker.util.MgProgressionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,6 +20,10 @@ public class Progression {
     private Long id;
     private Long muscleGroupId;
     private MgProgressionType mgProgressionType;
+
+    @ManyToOne
+    @JoinColumn(name = "mesocycle_id")
+    private Mesocycle mesocycle;
 
     public Progression setMgProgressionType(MgProgressionType mgProgressionType) {
         this.mgProgressionType = mgProgressionType;
