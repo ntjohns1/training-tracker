@@ -71,6 +71,46 @@ public class Exercise {
     @JsonProperty("notes")
     private List<ExerciseNote> notes;
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setMuscleGroupId(Long muscleGroupId) {
+        this.muscleGroupId = muscleGroupId;
+    }
+
+    public void setExerciseType(String exerciseType) {
+        this.exerciseType = exerciseType;
+    }
+
+    public void setYoutubeId(String youtubeId) {
+        this.youtubeId = youtubeId;
+    }
+
+    public void setMgSubType(String mgSubType) {
+        this.mgSubType = mgSubType;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public void setNotes(List<ExerciseNote> notes) {
+        this.notes = notes;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setDeletedAt(Instant deletedAt) {
+        this.deletedAt = deletedAt;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
