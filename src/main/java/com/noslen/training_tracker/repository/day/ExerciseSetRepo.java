@@ -8,6 +8,4 @@ import com.noslen.training_tracker.model.day.ExerciseSet;
 
 public interface ExerciseSetRepo extends JpaRepository<ExerciseSet, Long> {
     List<ExerciseSet> findByDayExerciseId(Long dayExerciseId);
-    void calculateWeightTarget(Long dayExerciseId);
-    void calculateRepsTarget(Long dayExerciseId);
 }
