@@ -29,6 +29,7 @@ public class ExerciseSet {
     
     private Integer position;
     
+    // TODO: enum - Regular, Myo-Rep, Myo-Rep Match
     @Column(name = "set_type")
     private String setType;
     private Float weight;
@@ -38,6 +39,8 @@ public class ExerciseSet {
     private Integer reps;
     private Integer repsTarget;
     private Float bodyweight;
+
+    // TODO: enum - kg, lbs
     private String unit;
 
 
@@ -47,6 +50,7 @@ public class ExerciseSet {
     @Column(name = "finished_at")
     private Instant finishedAt;
 
+    // TODO: enum - ready, finished, skipped
     private String status;
 
     /**
@@ -55,6 +59,18 @@ public class ExerciseSet {
      */
     public Long getDayExerciseId() {
         return dayExercise != null ? dayExercise.getId() : null;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setFinishedAt(Instant finishedAt) {
+        this.finishedAt = finishedAt;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @Override
