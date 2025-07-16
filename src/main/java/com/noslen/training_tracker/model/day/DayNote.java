@@ -52,6 +52,18 @@ public class DayNote {
         return day != null ? day.getId() : null;
     }
 
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
