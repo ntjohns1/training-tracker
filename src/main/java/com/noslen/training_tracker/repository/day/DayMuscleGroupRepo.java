@@ -4,6 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.noslen.training_tracker.model.day.DayMuscleGroup;
 
-public interface DayMuscleGroupRepo extends JpaRepository<DayMuscleGroup, Long> {
+import java.util.List;
 
+public interface DayMuscleGroupRepo extends JpaRepository<DayMuscleGroup, Long> {
+    List<DayMuscleGroup> findByDayId(Long dayId);
 }
