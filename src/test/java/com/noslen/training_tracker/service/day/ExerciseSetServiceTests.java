@@ -8,11 +8,12 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 import com.noslen.training_tracker.model.day.ExerciseSet;
 import com.noslen.training_tracker.repository.day.ExerciseSetRepo;
@@ -27,7 +28,7 @@ public class ExerciseSetServiceTests {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
+        openMocks(this);
     }
 
     @Test

@@ -21,10 +21,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.noslen.training_tracker.model.exercise.Exercise;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @Entity
@@ -52,10 +49,12 @@ public class DayExercise {
     
     @Column(name = "joint_pain")
     private Integer jointPain;
-    
+
+    @Setter
     @Column(name = "created_at")
     private Instant createdAt;
     
+    @Setter
     @Column(name = "updated_at")
     private Instant updatedAt;
     
@@ -73,6 +72,19 @@ public class DayExercise {
     @JsonManagedReference(value = "exerciseset-dayexercise")
     @Builder.Default
     private List<ExerciseSet> sets = new ArrayList<>();
+
+    // Setter methods for MapStruct mapping
+    public void setDay(Day day) {
+        this.day = day;
+    }
+
+    public void setExercise(Exercise exercise) {
+        this.exercise = exercise;
+    }
+
+    public void setMuscleGroup(DayMuscleGroup muscleGroup) {
+        this.muscleGroup = muscleGroup;
+    }
 
     /**
      * Convenience method to get the exercise ID from the Exercise object
@@ -99,7 +111,9 @@ public class DayExercise {
     public Long getMuscleGroupId() {
         return muscleGroup != null ? muscleGroup.getId() : null;
     }
-    
+
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

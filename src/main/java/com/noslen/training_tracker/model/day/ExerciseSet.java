@@ -2,10 +2,7 @@ package com.noslen.training_tracker.model.day;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -21,7 +18,9 @@ public class ExerciseSet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
+    // Setter methods for MapStruct mapping
+    @Setter
     @ManyToOne
     @JsonBackReference(value = "exerciseset-dayexercise")
     @JoinColumn(name = "day_exercise_id")
@@ -44,13 +43,16 @@ public class ExerciseSet {
     private String unit;
 
 
+    @Setter
     @Column(name = "created_at")
     private Instant createdAt;
 
+    @Setter
     @Column(name = "finished_at")
     private Instant finishedAt;
 
     // TODO: enum - ready, finished, skipped
+    @Setter
     private String status;
 
     /**
@@ -59,18 +61,6 @@ public class ExerciseSet {
      */
     public Long getDayExerciseId() {
         return dayExercise != null ? dayExercise.getId() : null;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public void setFinishedAt(Instant finishedAt) {
-        this.finishedAt = finishedAt;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 
     @Override
