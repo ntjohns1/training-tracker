@@ -6,6 +6,7 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,7 +30,8 @@ public class MesoTemplate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String key;
+    @Column(name = "template_key")
+    private String templateKey;
     private String name;
     private String emphasis;
     private String sex;
@@ -68,8 +70,8 @@ public class MesoTemplate {
         if (!Objects.equals(id,
                 that.id))
             return false;
-        if (!Objects.equals(key,
-                that.key))
+        if (!Objects.equals(templateKey,
+                that.templateKey))
             return false;
         if (!Objects.equals(name,
                 that.name))
@@ -108,7 +110,7 @@ public class MesoTemplate {
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (key != null ? key.hashCode() : 0);
+        result = 31 * result + (templateKey != null ? templateKey.hashCode() : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (emphasis != null ? emphasis.hashCode() : 0);
         result = 31 * result + (sex != null ? sex.hashCode() : 0);
