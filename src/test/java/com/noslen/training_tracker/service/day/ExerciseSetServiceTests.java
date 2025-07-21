@@ -138,7 +138,7 @@ public class ExerciseSetServiceTests {
         expectedPayloads.add(new ExerciseSetPayload(2L, dayExerciseId, 2, "working", 102.5f, 95.0f, 90.0f, 105.0f, 
                 9, 8, 70.0f, "kg", Instant.now(), Instant.now(), "completed"));
         
-        when(repo.findByDayExerciseId(dayExerciseId)).thenReturn(entities);
+        when(repo.findByDayExercise_Id(dayExerciseId)).thenReturn(entities);
         when(mapper.toPayloadList(entities)).thenReturn(expectedPayloads);
 
         // Act
@@ -146,7 +146,7 @@ public class ExerciseSetServiceTests {
         
         // Assert
         assertEquals(expectedPayloads, result);
-        verify(repo, times(1)).findByDayExerciseId(dayExerciseId);
+        verify(repo, times(1)).findByDayExercise_Id(dayExerciseId);
         verify(mapper, times(1)).toPayloadList(entities);
     }
     

@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DayExerciseRepo extends JpaRepository<DayExercise, Long> {
-    List<DayExercise> findByDayId(Long dayId);
-    Optional<DayExercise> findByDayIdAndExerciseId(Long dayId, Long exerciseId);
+    List<DayExercise> findByDay_Id(Long dayId);
+    Optional<DayExercise> findByDay_IdAndExercise_Id(Long dayId, Long exerciseId);
 }

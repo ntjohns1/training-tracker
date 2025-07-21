@@ -101,7 +101,7 @@ public class ExerciseSetServiceImpl implements ExerciseSetService {
             throw new IllegalArgumentException("DayExercise ID cannot be null");
         }
 
-        List<ExerciseSet> exerciseSets = repo.findByDayExerciseId(dayExerciseId);
+        List<ExerciseSet> exerciseSets = repo.findByDayExercise_Id(dayExerciseId);
         return mapper.toPayloadList(exerciseSets);
     }
 }

@@ -117,7 +117,7 @@ public class DayNoteServiceTests {
         expectedPayloads.add(new DayNotePayload(1L, dayId, null, false, Instant.now(), Instant.now(), "Day Note 1"));
         expectedPayloads.add(new DayNotePayload(2L, dayId, null, false, Instant.now(), Instant.now(), "Day Note 2"));
         
-        when(repo.findByDayId(dayId)).thenReturn(entities);
+        when(repo.findByDay_Id(dayId)).thenReturn(entities);
         when(mapper.toPayloadList(entities)).thenReturn(expectedPayloads);
 
         // Act
@@ -125,7 +125,7 @@ public class DayNoteServiceTests {
         
         // Assert
         assertEquals(expectedPayloads, result);
-        verify(repo, times(1)).findByDayId(dayId);
+        verify(repo, times(1)).findByDay_Id(dayId);
         verify(mapper, times(1)).toPayloadList(entities);
     }
     

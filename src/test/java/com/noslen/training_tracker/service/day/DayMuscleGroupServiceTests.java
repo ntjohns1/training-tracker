@@ -156,7 +156,7 @@ public class DayMuscleGroupServiceTests {
         expectedPayloads.add(new DayMuscleGroupPayload(2L, dayId, 3L, 8, 3, 7, 
                 Instant.now(), Instant.now(), 12, "completed"));
         
-        when(repo.findByDayId(dayId)).thenReturn(entities);
+        when(repo.findByDay_Id(dayId)).thenReturn(entities);
         when(mapper.toPayloadList(entities)).thenReturn(expectedPayloads);
 
         // Act
@@ -164,7 +164,7 @@ public class DayMuscleGroupServiceTests {
         
         // Assert
         assertEquals(expectedPayloads, result);
-        verify(repo, times(1)).findByDayId(dayId);
+        verify(repo, times(1)).findByDay_Id(dayId);
         verify(mapper, times(1)).toPayloadList(entities);
     }
     

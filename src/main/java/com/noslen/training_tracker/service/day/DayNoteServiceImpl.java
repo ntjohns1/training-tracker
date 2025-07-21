@@ -90,7 +90,7 @@ public class DayNoteServiceImpl implements DayNoteService {
             throw new IllegalArgumentException("Day ID cannot be null");
         }
 
-        List<DayNote> dayNotes = repo.findByDayId(dayId);
+        List<DayNote> dayNotes = repo.findByDay_Id(dayId);
         return mapper.toPayloadList(dayNotes);
     }
 }

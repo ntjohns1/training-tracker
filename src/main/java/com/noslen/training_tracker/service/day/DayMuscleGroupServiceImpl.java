@@ -137,7 +137,7 @@ public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
             throw new IllegalArgumentException("Day ID cannot be null");
         }
 
-        List<DayMuscleGroup> dayMuscleGroups = repo.findByDayId(dayId);
-        return mapper.toPayloadList(dayMuscleGroups);
+        List<DayMuscleGroup> entities = repo.findByDay_Id(dayId);
+        return mapper.toPayloadList(entities);
     }
 }

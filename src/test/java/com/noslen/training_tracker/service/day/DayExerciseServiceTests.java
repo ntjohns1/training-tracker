@@ -180,16 +180,13 @@ public class DayExerciseServiceTests {
     }
 
     @Test
-    void getDayExercise_NotFound_ReturnsNull() {
+    void getDayExercise_NotFound_ThrowsException() {
         // Arrange
         Long id = 1L;
         when(repo.findById(id)).thenReturn(Optional.empty());
 
-        // Act
-        DayExercisePayload result = service.getDayExercise(id);
-
-        // Assert
-        assertNull(result);
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> service.getDayExercise(id));
         verify(repo).findById(id);
         verify(mapper, never()).toPayload(any());
     }
@@ -204,7 +201,7 @@ public class DayExerciseServiceTests {
                 1L, 1L, 2L, 1, 0, Instant.now(), Instant.now(), null, 3L, null, "active"
         );
 
-        when(repo.findByDayIdAndExerciseId(dayId, exerciseId)).thenReturn(Optional.of(entity));
+        when(repo.findByDay_IdAndExercise_Id(dayId, exerciseId)).thenReturn(Optional.of(entity));
         when(mapper.toPayload(entity)).thenReturn(expectedPayload);
 
         // Act
@@ -213,7 +210,7 @@ public class DayExerciseServiceTests {
         // Assert
         assertNotNull(result);
         assertEquals(1L, result.id());
-        verify(repo).findByDayIdAndExerciseId(dayId, exerciseId);
+        verify(repo, times(1)).findByDay_IdAndExercise_Id(dayId, exerciseId);
         verify(mapper).toPayload(entity);
     }
 
@@ -230,7 +227,7 @@ public class DayExerciseServiceTests {
                 new DayExercisePayload(2L, 1L, 3L, 2, 0, Instant.now(), Instant.now(), null, 3L, null, "active")
         );
 
-        when(repo.findByDayId(dayId)).thenReturn(entities);
+        when(repo.findByDay_Id(dayId)).thenReturn(entities);
         when(mapper.toPayloadList(entities)).thenReturn(expectedPayloads);
 
         // Act
@@ -239,7 +236,7 @@ public class DayExerciseServiceTests {
         // Assert
         assertNotNull(result);
         assertEquals(2, result.size());
-        verify(repo).findByDayId(dayId);
+        verify(repo, times(1)).findByDay_Id(dayId);
         verify(mapper).toPayloadList(entities);
     }
 
