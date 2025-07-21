@@ -11,10 +11,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,8 +37,10 @@ public class Day {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(name = "meso_id")
-    private Long mesoId;
+    @ManyToOne
+    @JsonBackReference(value = "day-mesocycle")
+    @JoinColumn(name = "meso_id")
+    private Mesocycle mesocycle;
     
     private Integer week;
     private Integer position;
@@ -57,18 +63,32 @@ public class Day {
     
     private String label;
     
+    @OneToMany(mappedBy = "day", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference(value = "daynote-day")
     @Builder.Default
-    private List<String> notes = new ArrayList<>();
+    private List<DayNote> notes = new ArrayList<>();
     
     @OneToMany(mappedBy = "day", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference(value = "dayexercise-day")
     @Builder.Default
     private List<DayExercise> exercises = new ArrayList<>();
     
     @OneToMany(mappedBy = "day", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference(value = "musclegroup-day")
     @Builder.Default
     private List<DayMuscleGroup> muscleGroups = new ArrayList<>();
+
+    public Long getMesoId() {
+        return mesocycle != null ? mesocycle.getId() : null;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -79,8 +99,8 @@ public class Day {
 
         if (!Objects.equals(id,
                             day.id)) return false;
-        if (!Objects.equals(mesoId,
-                            day.mesoId)) return false;
+        if (!Objects.equals(mesocycle,
+                            day.mesocycle)) return false;
         if (!Objects.equals(week,
                             day.week)) return false;
         if (!Objects.equals(position,
@@ -110,7 +130,7 @@ public class Day {
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (mesoId != null ? mesoId.hashCode() : 0);
+        result = 31 * result + (mesocycle != null ? mesocycle.hashCode() : 0);
         result = 31 * result + (week != null ? week.hashCode() : 0);
         result = 31 * result + (position != null ? position.hashCode() : 0);
         result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);

@@ -2,10 +2,7 @@ package com.noslen.training_tracker.model.day;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -21,12 +18,17 @@ public class ExerciseSet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @Column(name = "day_exercise_id")
-    private Long dayExerciseId;
+
+    // Setter methods for MapStruct mapping
+    @Setter
+    @ManyToOne
+    @JsonBackReference(value = "exerciseset-dayexercise")
+    @JoinColumn(name = "day_exercise_id")
+    private DayExercise dayExercise;
     
     private Integer position;
     
+    // TODO: enum - Regular, Myo-Rep, Myo-Rep Match
     @Column(name = "set_type")
     private String setType;
     private Float weight;
@@ -36,21 +38,30 @@ public class ExerciseSet {
     private Integer reps;
     private Integer repsTarget;
     private Float bodyweight;
+
+    // TODO: enum - kg, lbs
     private String unit;
 
 
+    @Setter
     @Column(name = "created_at")
     private Instant createdAt;
 
-    @Column(name = "updated_at")
-     private Instant finishedAt;
+    @Setter
+    @Column(name = "finished_at")
+    private Instant finishedAt;
 
+    // TODO: enum - ready, finished, skipped
+    @Setter
     private String status;
 
-    @ManyToOne
-    @JoinColumn(name = "day_exercise_id", insertable = false, updatable = false)
-    @JsonBackReference
-    private DayExercise dayExercise;
+    /**
+     * Convenience method to get the dayExercise ID from the DayExercisePayload object
+     * @return the ID of the associated dayExercise
+     */
+    public Long getDayExerciseId() {
+        return dayExercise != null ? dayExercise.getId() : null;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -61,8 +72,8 @@ public class ExerciseSet {
 
         if (!Objects.equals(id,
                             that.id)) return false;
-        if (!Objects.equals(dayExerciseId,
-                            that.dayExerciseId))
+        if (!Objects.equals(dayExercise,
+                            that.dayExercise))
             return false;
         if (!Objects.equals(position,
                             that.position)) return false;
@@ -99,7 +110,7 @@ public class ExerciseSet {
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (dayExerciseId != null ? dayExerciseId.hashCode() : 0);
+        result = 31 * result + (dayExercise != null ? dayExercise.hashCode() : 0);
         result = 31 * result + (position != null ? position.hashCode() : 0);
         result = 31 * result + (setType != null ? setType.hashCode() : 0);
         result = 31 * result + (weight != null ? weight.hashCode() : 0);

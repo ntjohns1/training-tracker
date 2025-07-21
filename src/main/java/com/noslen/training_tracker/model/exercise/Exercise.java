@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -44,7 +45,6 @@ public class Exercise {
     @JsonProperty("exerciseType")
     private String exerciseType;
     
-    // #TODO: Foreign Key relationship to User
     @Column(name = "user_id")
     @JsonProperty("userId")
     private Long userId;
@@ -65,9 +65,51 @@ public class Exercise {
     @JsonProperty("mgSubType")
     private String mgSubType;
     
-    @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "exercisenote-exercise")
+    @JoinColumn(name = "exercise_id")
     @JsonProperty("notes")
     private List<ExerciseNote> notes;
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setMuscleGroupId(Long muscleGroupId) {
+        this.muscleGroupId = muscleGroupId;
+    }
+
+    public void setExerciseType(String exerciseType) {
+        this.exerciseType = exerciseType;
+    }
+
+    public void setYoutubeId(String youtubeId) {
+        this.youtubeId = youtubeId;
+    }
+
+    public void setMgSubType(String mgSubType) {
+        this.mgSubType = mgSubType;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public void setNotes(List<ExerciseNote> notes) {
+        this.notes = notes;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setDeletedAt(Instant deletedAt) {
+        this.deletedAt = deletedAt;
+    }
 
     @Override
     public boolean equals(Object o) {
