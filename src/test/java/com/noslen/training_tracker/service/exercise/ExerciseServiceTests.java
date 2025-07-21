@@ -1,10 +1,14 @@
 package com.noslen.training_tracker.service.exercise;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +19,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.noslen.training_tracker.dto.exercise.ExercisePayload;
+import com.noslen.training_tracker.dto.exercise.ExerciseNotePayload;
+import com.noslen.training_tracker.mapper.exercise.ExerciseMapper;
+import com.noslen.training_tracker.mapper.exercise.ExerciseNoteMapper;
 import com.noslen.training_tracker.model.exercise.Exercise;
 import com.noslen.training_tracker.model.exercise.ExerciseNote;
 import com.noslen.training_tracker.repository.exercise.ExerciseRepo;
@@ -24,87 +32,197 @@ public class ExerciseServiceTests {
     @Mock
     private ExerciseRepo repo;
 
+    @Mock
+    private ExerciseMapper exerciseMapper;
+
+    @Mock
+    private ExerciseNoteMapper exerciseNoteMapper;
+
     @InjectMocks
     private ExerciseServiceImpl service;
+
+    private Exercise testEntity;
+    private ExercisePayload testPayload;
+    private ExerciseNote testNoteEntity;
+    private ExerciseNotePayload testNotePayload;
+    private Instant testTime;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        testTime = Instant.now();
+        
+        testNoteEntity = ExerciseNote.builder()
+                .id(1L)
+                .userId(2L)
+                .noteId(3L)
+                .createdAt(testTime)
+                .updatedAt(testTime)
+                .text("Test note")
+                .build();
+                
+        testNotePayload = new ExerciseNotePayload(
+                1L, 4L, 2L, 3L, 5L, testTime, testTime, "Test note"
+        );
+        
+        testEntity = Exercise.builder()
+                .id(1L)
+                .name("Test Exercise")
+                .muscleGroupId(2L)
+                .youtubeId("youtube123")
+                .exerciseType("strength")
+                .userId(3L)
+                .createdAt(testTime)
+                .updatedAt(testTime)
+                .mgSubType("primary")
+                .notes(new ArrayList<>(Arrays.asList(testNoteEntity)))
+                .build();
+                
+        testPayload = new ExercisePayload(
+                1L, "Test Exercise", 2L, "youtube123", "strength", 3L,
+                testTime, testTime, null, "primary", Arrays.asList(testNotePayload)
+        );
     }
 
     @Test
     void testCreateExercise() {
-        Exercise exercise = new Exercise();
-        when(repo.save(exercise)).thenReturn(exercise);
+        // Given
+        when(exerciseMapper.toEntity(testPayload)).thenReturn(testEntity);
+        when(repo.save(any(Exercise.class))).thenReturn(testEntity);
+        when(exerciseMapper.toPayload(testEntity)).thenReturn(testPayload);
 
-        Exercise result = service.createExercise(exercise);
-        assertEquals(exercise, result);
-        verify(repo, times(1)).save(exercise);
+        // When
+        ExercisePayload result = service.createExercise(testPayload);
+        
+        // Then
+        assertEquals(testPayload, result);
+        verify(exerciseMapper, times(1)).toEntity(testPayload);
+        verify(repo, times(1)).save(any(Exercise.class));
+        verify(exerciseMapper, times(1)).toPayload(testEntity);
     }
 
     @Test
     void testUpdateExercise() {
-        // Arrange
+        // Given
         Long id = 1L;
-        Exercise existingExercise = new Exercise();
-        Exercise newExercise = new Exercise();
-        newExercise.setName("Updated Exercise");
+        ExercisePayload updatePayload = new ExercisePayload(
+                0L, "Updated Exercise", 0L, null, null, 0L,
+                null, testTime.plusSeconds(60), null, null, null
+        );
+        
+        when(repo.findById(id)).thenReturn(Optional.of(testEntity));
+        when(repo.save(any(Exercise.class))).thenReturn(testEntity);
+        when(exerciseMapper.toPayload(testEntity)).thenReturn(testPayload);
 
-        // Mock the findById to return the existing exercise
-        when(repo.findById(id)).thenReturn(Optional.of(existingExercise));
-        when(repo.save(existingExercise)).thenReturn(existingExercise);
+        // When
+        ExercisePayload result = service.updateExercise(id, updatePayload);
 
-        // Act
-        Exercise result = service.updateExercise(id, newExercise);
-
-        // Assert
-        assertEquals(existingExercise, result);
-        assertEquals("Updated Exercise", existingExercise.getName());
+        // Then
+        assertEquals(testPayload, result);
         verify(repo, times(1)).findById(id);
-        verify(repo, times(1)).save(existingExercise);
+        verify(exerciseMapper, times(1)).updateEntity(testEntity, updatePayload);
+        verify(repo, times(1)).save(testEntity);
+        verify(exerciseMapper, times(1)).toPayload(testEntity);
     }
 
     @Test
     void testDeleteExercise() {
+        // Given
         Long id = 1L;
-        Exercise exercise = new Exercise();
-        when(repo.findById(id)).thenReturn(Optional.of(exercise));
+        when(repo.findById(id)).thenReturn(Optional.of(testEntity));
 
+        // When
         service.deleteExercise(id);
+        
+        // Then
+        verify(repo, times(1)).findById(id);
         verify(repo, times(1)).deleteById(id);
     }
 
     @Test
-    void testGetExercise() {
+    void testDeleteExercise_NotFound_ShouldThrowException() {
+        // Given
         Long id = 1L;
-        Exercise exercise = new Exercise();
-        when(repo.findById(id)).thenReturn(Optional.of(exercise));
+        when(repo.findById(id)).thenReturn(Optional.empty());
 
-        Exercise result = service.getExercise(id);
-        assertEquals(exercise, result);
+        // When/Then
+        assertThrows(RuntimeException.class, () -> service.deleteExercise(id));
         verify(repo, times(1)).findById(id);
+        verify(repo, times(0)).deleteById(id);
+    }
+
+    @Test
+    void testGetExercise() {
+        // Given
+        Long id = 1L;
+        when(repo.findById(id)).thenReturn(Optional.of(testEntity));
+        when(exerciseMapper.toPayload(testEntity)).thenReturn(testPayload);
+
+        // When
+        ExercisePayload result = service.getExercise(id);
+        
+        // Then
+        assertEquals(testPayload, result);
+        verify(repo, times(1)).findById(id);
+        verify(exerciseMapper, times(1)).toPayload(testEntity);
+    }
+
+    @Test
+    void testGetExercise_NotFound_ShouldThrowException() {
+        // Given
+        Long id = 1L;
+        when(repo.findById(id)).thenReturn(Optional.empty());
+
+        // When/Then
+        assertThrows(RuntimeException.class, () -> service.getExercise(id));
+        verify(repo, times(1)).findById(id);
+        verify(exerciseMapper, times(0)).toPayload(any());
     }
 
     @Test
     void testGetAllExercises() {
-        Exercise exercise1 = new Exercise();
-        Exercise exercise2 = new Exercise();
-        List<Exercise> expected = Arrays.asList(exercise1, exercise2);
-        when(repo.findAll()).thenReturn(expected);
+        // Given
+        List<Exercise> entities = Arrays.asList(testEntity, testEntity);
+        List<ExercisePayload> expectedPayloads = Arrays.asList(testPayload, testPayload);
+        when(repo.findAll()).thenReturn(entities);
+        when(exerciseMapper.toPayloadList(entities)).thenReturn(expectedPayloads);
 
-        List<Exercise> result = service.getAllExercises();
-        assertEquals(expected, result);
+        // When
+        List<ExercisePayload> result = service.getAllExercises();
+        
+        // Then
+        assertEquals(expectedPayloads, result);
         verify(repo, times(1)).findAll();
+        verify(exerciseMapper, times(1)).toPayloadList(entities);
     }
 
     @Test
     void testAddExerciseNote() {
+        // Given
         Long exerciseId = 1L;
-        ExerciseNote exerciseNote = new ExerciseNote();
-        Optional<Exercise> exercise = Optional.of(new Exercise());
-        when(repo.findById(exerciseId)).thenReturn(exercise);
+        when(repo.findById(exerciseId)).thenReturn(Optional.of(testEntity));
+        when(exerciseNoteMapper.toEntity(testNotePayload)).thenReturn(testNoteEntity);
+        when(repo.save(any(Exercise.class))).thenReturn(testEntity);
 
-        service.addExerciseNote(exerciseId, exerciseNote);
+        // When
+        service.addExerciseNote(exerciseId, testNotePayload);
+        
+        // Then
         verify(repo, times(1)).findById(exerciseId);
+        verify(exerciseNoteMapper, times(1)).toEntity(testNotePayload);
+        verify(repo, times(1)).save(testEntity);
+    }
+
+    @Test
+    void testAddExerciseNote_ExerciseNotFound_ShouldThrowException() {
+        // Given
+        Long exerciseId = 1L;
+        when(repo.findById(exerciseId)).thenReturn(Optional.empty());
+
+        // When/Then
+        assertThrows(RuntimeException.class, () -> service.addExerciseNote(exerciseId, testNotePayload));
+        verify(repo, times(1)).findById(exerciseId);
+        verify(exerciseNoteMapper, times(0)).toEntity(any());
+        verify(repo, times(0)).save(any());
     }
 }

@@ -25,7 +25,9 @@ public class Mesocycle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String key;
+    
+    @Column(name = "meso_key")
+    private String mesocycleKey;
     private Long userId;
     private String name;
     private Integer days;
@@ -96,8 +98,8 @@ public class Mesocycle {
         Mesocycle mesocycle = (Mesocycle) o;
         return Objects.equals(id,
                               mesocycle.id)
-                && Objects.equals(key,
-                                  mesocycle.key)
+                && Objects.equals(mesocycleKey,
+                                  mesocycle.mesocycleKey)
                 && Objects.equals(userId,
                                   mesocycle.userId)
                 && Objects.equals(name,
@@ -151,7 +153,7 @@ public class Mesocycle {
     @Override
     public int hashCode() {
         int result = Objects.hashCode(id);
-        result = 31 * result + Objects.hashCode(key);
+        result = 31 * result + Objects.hashCode(mesocycleKey);
         result = 31 * result + Objects.hashCode(userId);
         result = 31 * result + Objects.hashCode(name);
         result = 31 * result + Objects.hashCode(days);

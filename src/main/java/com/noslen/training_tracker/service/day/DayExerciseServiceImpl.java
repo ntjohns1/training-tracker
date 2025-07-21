@@ -63,7 +63,7 @@ public class DayExerciseServiceImpl implements DayExerciseService {
 
         DayExercise existing = existingOptional.get();
         
-        // Update entity with payload data using MapStruct
+        // Update entity with payload data using POJO mapper
         mapper.updateEntity(existing, dayExercisePayload);
         
         // Ensure updated timestamp is set
@@ -97,7 +97,11 @@ public class DayExerciseServiceImpl implements DayExerciseService {
         }
 
         Optional<DayExercise> dayExercise = repo.findById(id);
-        return dayExercise.map(mapper::toPayload).orElse(null);
+        if (dayExercise.isEmpty()) {
+            throw new RuntimeException("DayExercise not found with id: " + id);
+        }
+        
+        return mapper.toPayload(dayExercise.get());
     }
 
     @Override
@@ -110,8 +114,12 @@ public class DayExerciseServiceImpl implements DayExerciseService {
             throw new IllegalArgumentException("Exercise ID cannot be null");
         }
 
-        Optional<DayExercise> dayExercise = repo.findByDayIdAndExerciseId(dayId, exerciseId);
-        return dayExercise.map(mapper::toPayload).orElse(null);
+        Optional<DayExercise> dayExercise = repo.findByDay_IdAndExercise_Id(dayId, exerciseId);
+        if (dayExercise.isEmpty()) {
+            throw new RuntimeException("DayExercise not found with dayId: " + dayId + " and exerciseId: " + exerciseId);
+        }
+        
+        return mapper.toPayload(dayExercise.get());
     }
 
     @Override
@@ -121,7 +129,7 @@ public class DayExerciseServiceImpl implements DayExerciseService {
             throw new IllegalArgumentException("Day ID cannot be null");
         }
 
-        List<DayExercise> dayExercises = repo.findByDayId(dayId);
+        List<DayExercise> dayExercises = repo.findByDay_Id(dayId);
         return mapper.toPayloadList(dayExercises);
     }
 }
