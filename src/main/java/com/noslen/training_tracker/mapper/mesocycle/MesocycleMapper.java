@@ -19,7 +19,6 @@ public class MesocycleMapper {
 
     private final MesoNoteMapper mesoNoteMapper;
 
-    @Autowired
     public MesocycleMapper(MesoNoteMapper mesoNoteMapper) {
         this.mesoNoteMapper = mesoNoteMapper;
     }
