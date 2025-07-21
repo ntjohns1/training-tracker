@@ -1,10 +1,10 @@
 package com.noslen.training_tracker.service.muscle_group;
 
-import com.noslen.training_tracker.model.muscle_group.Progression;
+import com.noslen.training_tracker.dto.muscle_group.ProgressionPayload;
 
 public interface ProgressionService {
-    Progression createProgression(Progression progression);
-    Progression updateProgression(Long progressionId, Progression progression);
+    ProgressionPayload createProgression(ProgressionPayload progressionPayload);
+    ProgressionPayload updateProgression(Long progressionId, ProgressionPayload progressionPayload);
     void deleteProgression(Long progressionId);
-    Progression getProgression(Long progressionId);
+    ProgressionPayload getProgression(Long progressionId);
 }
