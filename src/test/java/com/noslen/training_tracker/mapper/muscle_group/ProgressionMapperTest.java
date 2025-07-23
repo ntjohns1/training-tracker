@@ -2,7 +2,7 @@ package com.noslen.training_tracker.mapper.muscle_group;
 
 import com.noslen.training_tracker.dto.muscle_group.ProgressionPayload;
 import com.noslen.training_tracker.model.muscle_group.Progression;
-import com.noslen.training_tracker.util.MgProgressionType;
+import com.noslen.training_tracker.model.muscle_group.types.MgProgressionType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,11 +27,11 @@ class ProgressionMapperTest {
     @BeforeEach
     void setUp() {
         testPayload = new ProgressionPayload(
-                1L, 2L, MgProgressionType.regular
+                1L, 2L, MgProgressionType.REGULAR
         );
 
         testEntity = new Progression(
-                1L, 2L, MgProgressionType.regular, null
+                1L, 2L, MgProgressionType.REGULAR, null
         );
     }
 
@@ -44,7 +44,7 @@ class ProgressionMapperTest {
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getMuscleGroupId()).isEqualTo(2L);
-        assertThat(result.getMgProgressionType()).isEqualTo(MgProgressionType.regular);
+        assertThat(result.getMgProgressionType()).isEqualTo(MgProgressionType.REGULAR);
         assertThat(result.getMesocycle()).isNull();
     }
 
@@ -66,7 +66,7 @@ class ProgressionMapperTest {
         assertThat(result).isNotNull();
         assertThat(result.id()).isEqualTo(1L);
         assertThat(result.muscleGroupId()).isEqualTo(2L);
-        assertThat(result.mgProgressionType()).isEqualTo(MgProgressionType.regular);
+        assertThat(result.mgProgressionType()).isEqualTo(MgProgressionType.REGULAR);
     }
 
     @Test
@@ -82,18 +82,19 @@ class ProgressionMapperTest {
     void updateEntity_WithValidData_ShouldUpdateMutableField() {
         // Given
         Progression existing = new Progression(
-                1L, 2L, MgProgressionType.regular, null
+                1L, 2L, MgProgressionType.REGULAR, null
         );
 
         ProgressionPayload updatePayload = new ProgressionPayload(
-                0L, 0L, MgProgressionType.secondary // Only this should be updated
+                0L, 0L, MgProgressionType.SECONDARY
+                // Only this should be updated
         );
 
         // When
         progressionMapper.updateEntity(existing, updatePayload);
 
         // Then
-        assertThat(existing.getMgProgressionType()).isEqualTo(MgProgressionType.secondary);
+        assertThat(existing.getMgProgressionType()).isEqualTo(MgProgressionType.SECONDARY);
         // Other fields should remain unchanged since they don't have setters
         assertThat(existing.getId()).isEqualTo(1L);
         assertThat(existing.getMuscleGroupId()).isEqualTo(2L);

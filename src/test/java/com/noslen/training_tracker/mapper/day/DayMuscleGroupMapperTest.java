@@ -4,6 +4,7 @@ import com.noslen.training_tracker.dto.day.DayMuscleGroupPayload;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.day.DayMuscleGroup;
 import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
+import com.noslen.training_tracker.model.muscle_group.types.MgName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,6 +25,7 @@ class DayMuscleGroupMapperTest {
         now = Instant.now();
         Day day = Day.builder().id(10L).build();
         MuscleGroup muscleGroup = new MuscleGroup();
+        muscleGroup.setName(MgName.CHEST);
         muscleGroup.setId(20L);
 
         samplePayload = new DayMuscleGroupPayload(
@@ -124,7 +126,7 @@ class DayMuscleGroupMapperTest {
     void toPayload_WithEntityHavingRelationships_ShouldExtractIds() {
         // Given
         Day day = Day.builder().id(100L).build();
-        MuscleGroup muscleGroup = new MuscleGroup(200L, null, null, null);
+        MuscleGroup muscleGroup = new MuscleGroup(200L, MgName.CHEST, null, null);
 
         
         DayMuscleGroup entityWithRelationships = DayMuscleGroup.builder()
@@ -173,7 +175,7 @@ class DayMuscleGroupMapperTest {
     @Test
     void updateEntity_WithValidData_ShouldUpdateMutableFields() {
         Day day = Day.builder().id(100L).build();
-        MuscleGroup muscleGroup = new MuscleGroup(200L, null, null, null);
+        MuscleGroup muscleGroup = new MuscleGroup(200L, MgName.CHEST, null, null);
         // Given
         DayMuscleGroup existingEntity = DayMuscleGroup.builder()
                 .id(1L)
@@ -219,7 +221,7 @@ class DayMuscleGroupMapperTest {
     @Test
     void updateEntity_WithNullRelationshipIds_ShouldHandleGracefully() {
         Day day = Day.builder().id(100L).build();
-        MuscleGroup muscleGroup = new MuscleGroup(200L, null, null, null);
+        MuscleGroup muscleGroup = new MuscleGroup(200L, MgName.CHEST, null, null);
         // Given
         DayMuscleGroup existingEntity = DayMuscleGroup.builder()
                 .id(1L)
@@ -247,7 +249,7 @@ class DayMuscleGroupMapperTest {
     @Test
     void mergeEntity_WithValidData_ShouldCreateNewEntityWithUpdatedFields() {
         Day day = Day.builder().id(100L).build();
-        MuscleGroup muscleGroup = new MuscleGroup(200L, null, null, null);
+        MuscleGroup muscleGroup = new MuscleGroup(200L, MgName.CHEST, null, null);
         // Given
         DayMuscleGroup existingEntity = DayMuscleGroup.builder()
                 .id(1L)
@@ -306,7 +308,7 @@ class DayMuscleGroupMapperTest {
     @Test
     void mergeEntity_WithNullRelationshipIds_ShouldHandleGracefully() {
         Day day = Day.builder().id(100L).build();
-        MuscleGroup muscleGroup = new MuscleGroup(200L, null, null, null);
+        MuscleGroup muscleGroup = new MuscleGroup(200L, MgName.CHEST, null, null);
         // Given
         DayMuscleGroup existingEntity = DayMuscleGroup.builder()
                 .id(1L)

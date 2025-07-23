@@ -5,6 +5,7 @@ import com.noslen.training_tracker.mapper.day.DayMuscleGroupMapper;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.day.DayMuscleGroup;
 import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
+import com.noslen.training_tracker.model.muscle_group.types.MgName;
 import com.noslen.training_tracker.repository.day.DayMuscleGroupRepo;
 import com.noslen.training_tracker.repository.day.DayRepo;
 import com.noslen.training_tracker.repository.muscle_group.MuscleGroupRepo;
@@ -62,7 +63,7 @@ public class DayMuscleGroupServiceTests {
         Long dayId = 1L;
         Long muscleGroupId = 2L;
         Day day = Day.builder().id(dayId).build();
-        MuscleGroup muscleGroup = new MuscleGroup(muscleGroupId, null, null, null);
+        MuscleGroup muscleGroup = new MuscleGroup(muscleGroupId, MgName.CHEST, null, null);
         DayMuscleGroup savedEntity = DayMuscleGroup.builder().id(1L).day(day).muscleGroup(muscleGroup).build();
         DayMuscleGroupPayload expectedPayload = new DayMuscleGroupPayload(1L, dayId, muscleGroupId, null, null, null, 
                 Instant.now(), Instant.now(), null, null);

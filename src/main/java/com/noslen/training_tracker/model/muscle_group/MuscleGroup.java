@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.util.Objects;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -12,6 +14,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import com.noslen.training_tracker.model.muscle_group.types.MgName;
 
 @Getter
 @Setter
@@ -23,7 +27,10 @@ public class MuscleGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
+    
+    @Enumerated(EnumType.STRING)
+    private MgName name;
+    
     private Instant createdAt;
     private Instant updatedAt;
 

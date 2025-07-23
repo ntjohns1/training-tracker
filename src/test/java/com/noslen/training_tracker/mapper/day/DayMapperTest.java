@@ -4,14 +4,18 @@ import com.noslen.training_tracker.dto.day.DayExercisePayload;
 import com.noslen.training_tracker.dto.day.DayMuscleGroupPayload;
 import com.noslen.training_tracker.dto.day.DayNotePayload;
 import com.noslen.training_tracker.dto.day.DayPayload;
+import com.noslen.training_tracker.mapper.day.DayExerciseMapper;
+import com.noslen.training_tracker.mapper.day.DayMuscleGroupMapper;
+import com.noslen.training_tracker.mapper.day.DayNoteMapper;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.model.day.DayMuscleGroup;
 import com.noslen.training_tracker.model.day.DayNote;
+import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
+import com.noslen.training_tracker.model.muscle_group.types.MgName;
 import com.noslen.training_tracker.model.exercise.Exercise;
 import com.noslen.training_tracker.model.exercise.ExerciseNote;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
-import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -113,9 +117,8 @@ class DayMapperTest {
         DayMuscleGroup muscleGroupEntity = DayMuscleGroup.builder()
                 .id(1L)
                 .day(Day.builder().id(1L).build())
-                .muscleGroup(new MuscleGroup(1L, "Test Muscle Group", now, now))
+                .muscleGroup(new MuscleGroup(1L, MgName.CHEST, now, now))
                 .createdAt(now)
-                .updatedAt(now)
                 .build();
 
         sampleEntity = Day.builder()

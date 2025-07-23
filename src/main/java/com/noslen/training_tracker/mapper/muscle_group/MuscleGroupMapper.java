@@ -2,6 +2,7 @@ package com.noslen.training_tracker.mapper.muscle_group;
 
 import com.noslen.training_tracker.dto.muscle_group.MuscleGroupPayload;
 import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
+import com.noslen.training_tracker.model.muscle_group.types.MgName;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -21,7 +22,7 @@ public class MuscleGroupMapper {
 
         MuscleGroup entity = new MuscleGroup();
         entity.setId(payload.id());
-        entity.setName(payload.name());
+        entity.setName(stringToMgName(payload.name()));
         entity.setCreatedAt(payload.createdAt() != null ? payload.createdAt() : Instant.now());
         entity.setUpdatedAt(payload.updatedAt() != null ? payload.updatedAt() : Instant.now());
 
@@ -38,7 +39,7 @@ public class MuscleGroupMapper {
 
         return new MuscleGroupPayload(
                 entity.getId(),
-                entity.getName(),
+                mgNameToString(entity.getName()),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()
         );
@@ -54,7 +55,7 @@ public class MuscleGroupMapper {
 
         // Update mutable fields
         if (payload.name() != null) {
-            existing.setName(payload.name());
+            existing.setName(stringToMgName(payload.name()));
         }
         if (payload.createdAt() != null) {
             existing.setCreatedAt(payload.createdAt());
@@ -78,7 +79,7 @@ public class MuscleGroupMapper {
 
         MuscleGroup merged = new MuscleGroup();
         merged.setId(existing.getId()); // Keep existing ID
-        merged.setName(payload.name() != null ? payload.name() : existing.getName());
+        merged.setName(payload.name() != null ? stringToMgName(payload.name()) : existing.getName());
         merged.setCreatedAt(existing.getCreatedAt()); // Keep original creation time
         merged.setUpdatedAt(Instant.now()); // Update timestamp
 
@@ -95,5 +96,36 @@ public class MuscleGroupMapper {
         return entities.stream()
                 .map(this::toPayload)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Converts String name to MgName enum
+     * Handles capitalized format (e.g., "Chest", "Quads") from enum.getValue()
+     */
+    private MgName stringToMgName(String name) {
+        if (name == null) {
+            return null;
+        }
+        
+        // Try direct enum lookup first (for uppercase values like "CHEST")
+        try {
+            return MgName.valueOf(name.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            // If that fails, try to find by the enum's getValue() method (capitalized)
+            for (MgName mgName : MgName.values()) {
+                if (mgName.getValue().equals(name)) {
+                    return mgName;
+                }
+            }
+            // If no match found, throw exception
+            throw new IllegalArgumentException("Invalid muscle group name: " + name);
+        }
+    }
+
+    /**
+     * Converts MgName enum to String using the enum's getValue() method
+     */
+    private String mgNameToString(MgName mgName) {
+        return mgName != null ? mgName.getValue() : null;
     }
 }

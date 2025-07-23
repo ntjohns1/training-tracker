@@ -18,7 +18,7 @@ import com.noslen.training_tracker.dto.muscle_group.ProgressionPayload;
 import com.noslen.training_tracker.mapper.muscle_group.ProgressionMapper;
 import com.noslen.training_tracker.model.muscle_group.Progression;
 import com.noslen.training_tracker.repository.muscle_group.ProgressionRepo;
-import com.noslen.training_tracker.util.MgProgressionType;
+import com.noslen.training_tracker.model.muscle_group.types.MgProgressionType;
 
 public class ProgressionServiceTests {
 
@@ -38,10 +38,10 @@ public class ProgressionServiceTests {
 
     @Test
     void testCreateProgression() {
-        ProgressionPayload inputPayload = new ProgressionPayload(0L, 1L, MgProgressionType.regular);
-        Progression entity = new Progression(null, 1L, MgProgressionType.regular, null);
-        Progression savedEntity = new Progression(1L, 1L, MgProgressionType.regular, null);
-        ProgressionPayload expectedPayload = new ProgressionPayload(1L, 1L, MgProgressionType.regular);
+        ProgressionPayload inputPayload = new ProgressionPayload(0L, 1L, MgProgressionType.REGULAR);
+        Progression entity = new Progression(null, 1L, MgProgressionType.REGULAR, null);
+        Progression savedEntity = new Progression(1L, 1L, MgProgressionType.REGULAR, null);
+        ProgressionPayload expectedPayload = new ProgressionPayload(1L, 1L, MgProgressionType.REGULAR);
         
         when(mapper.toEntity(inputPayload)).thenReturn(entity);
         when(repo.save(entity)).thenReturn(savedEntity);
@@ -58,10 +58,10 @@ public class ProgressionServiceTests {
     void testUpdateProgression() {
         // Arrange
         Long id = 1L;
-        Progression existingProgression = new Progression(1L, 1L, MgProgressionType.regular, null);
-        ProgressionPayload updatePayload = new ProgressionPayload(0L, 0L, MgProgressionType.secondary);
-        Progression savedProgression = new Progression(1L, 1L, MgProgressionType.secondary, null);
-        ProgressionPayload expectedPayload = new ProgressionPayload(1L, 1L, MgProgressionType.secondary);
+        Progression existingProgression = new Progression(1L, 1L, MgProgressionType.REGULAR, null);
+        ProgressionPayload updatePayload = new ProgressionPayload(0L, 0L, MgProgressionType.SECONDARY);
+        Progression savedProgression = new Progression(1L, 1L, MgProgressionType.SECONDARY, null);
+        ProgressionPayload expectedPayload = new ProgressionPayload(1L, 1L, MgProgressionType.SECONDARY);
 
         // Mock the findById to return the existing progression
         when(repo.findById(id)).thenReturn(Optional.of(existingProgression));
@@ -92,8 +92,8 @@ public class ProgressionServiceTests {
     @Test
     void testGetProgression() {
         Long id = 1L;
-        Progression progression = new Progression(1L, 1L, MgProgressionType.regular, null);
-        ProgressionPayload expectedPayload = new ProgressionPayload(1L, 1L, MgProgressionType.regular);
+        Progression progression = new Progression(1L, 1L, MgProgressionType.REGULAR, null);
+        ProgressionPayload expectedPayload = new ProgressionPayload(1L, 1L, MgProgressionType.REGULAR);
         
         when(repo.findById(id)).thenReturn(Optional.of(progression));
         when(mapper.toPayload(progression)).thenReturn(expectedPayload);

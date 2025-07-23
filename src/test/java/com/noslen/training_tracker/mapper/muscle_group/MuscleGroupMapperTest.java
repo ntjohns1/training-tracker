@@ -2,6 +2,7 @@ package com.noslen.training_tracker.mapper.muscle_group;
 
 import com.noslen.training_tracker.dto.muscle_group.MuscleGroupPayload;
 import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
+import com.noslen.training_tracker.model.muscle_group.types.MgName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,7 +36,7 @@ class MuscleGroupMapperTest {
 
         testEntity = new MuscleGroup();
         testEntity.setId(1L);
-        testEntity.setName("Chest");
+        testEntity.setName(MgName.CHEST);
         testEntity.setCreatedAt(testTime);
         testEntity.setUpdatedAt(testTime);
     }
@@ -48,7 +49,7 @@ class MuscleGroupMapperTest {
         // Then
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(1L);
-        assertThat(result.getName()).isEqualTo("Chest");
+        assertThat(result.getName()).isEqualTo(MgName.CHEST);
         assertThat(result.getCreatedAt()).isEqualTo(testTime);
         assertThat(result.getUpdatedAt()).isEqualTo(testTime);
     }
@@ -121,19 +122,19 @@ class MuscleGroupMapperTest {
         // Given
         MuscleGroup existing = new MuscleGroup();
         existing.setId(1L);
-        existing.setName("OldName");
+        existing.setName(MgName.CHEST);
         existing.setCreatedAt(testTime);
         existing.setUpdatedAt(testTime);
 
         MuscleGroupPayload updatePayload = new MuscleGroupPayload(
-                null, "NewName", null, null
+                null, "Back", null, null
         );
 
         // When
         muscleGroupMapper.updateEntity(existing, updatePayload);
 
         // Then
-        assertThat(existing.getName()).isEqualTo("NewName");
+        assertThat(existing.getName()).isEqualTo(MgName.BACK);
         assertThat(existing.getUpdatedAt()).isAfter(testTime);
         assertThat(existing.getId()).isEqualTo(1L); // Should remain unchanged
         assertThat(existing.getCreatedAt()).isEqualTo(testTime); // Should remain unchanged
@@ -152,7 +153,7 @@ class MuscleGroupMapperTest {
         // Given
         MuscleGroup existing = new MuscleGroup();
         existing.setId(1L);
-        existing.setName("OldName");
+        existing.setName(MgName.CHEST);
         existing.setCreatedAt(testTime);
         existing.setUpdatedAt(testTime);
 
@@ -164,7 +165,7 @@ class MuscleGroupMapperTest {
         muscleGroupMapper.updateEntity(existing, partialPayload);
 
         // Then
-        assertThat(existing.getName()).isEqualTo("OldName"); // unchanged (null in payload)
+        assertThat(existing.getName()).isEqualTo(MgName.CHEST); // unchanged (null in payload)
         assertThat(existing.getCreatedAt()).isEqualTo(testTime.plusSeconds(3600)); // updated
         assertThat(existing.getUpdatedAt()).isAfter(testTime); // always updated
     }
@@ -174,12 +175,12 @@ class MuscleGroupMapperTest {
         // Given
         MuscleGroup existing = new MuscleGroup();
         existing.setId(1L);
-        existing.setName("OldName");
+        existing.setName(MgName.CHEST);
         existing.setCreatedAt(testTime);
         existing.setUpdatedAt(testTime);
 
         MuscleGroupPayload updatePayload = new MuscleGroupPayload(
-                null, "NewName", null, null
+                null, "Back", null, null
         );
 
         // When
@@ -190,7 +191,7 @@ class MuscleGroupMapperTest {
         assertThat(result.getId()).isEqualTo(1L); // preserved
         assertThat(result.getCreatedAt()).isEqualTo(testTime); // preserved
         assertThat(result.getUpdatedAt()).isAfter(testTime); // updated
-        assertThat(result.getName()).isEqualTo("NewName"); // updated
+        assertThat(result.getName()).isEqualTo(MgName.BACK); // updated
     }
 
     @Test
@@ -201,7 +202,7 @@ class MuscleGroupMapperTest {
         // Then
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(testPayload.id());
-        assertThat(result.getName()).isEqualTo(testPayload.name());
+        assertThat(result.getName()).isEqualTo(MgName.CHEST);
     }
 
     @Test
