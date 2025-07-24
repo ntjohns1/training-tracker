@@ -7,6 +7,9 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.noslen.training_tracker.model.exercise.types.ExerciseType;
+import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,6 +36,7 @@ public class Exercise {
     @JsonProperty("name")
     private String name;
 
+    // TODO: change to MuscleGroup
     @Column(name = "muscle_group_id")
     @JsonProperty("muscleGroupId")
     private Long muscleGroupId;
@@ -43,7 +47,7 @@ public class Exercise {
     
     @Column(name = "exercise_type")
     @JsonProperty("exerciseType")
-    private String exerciseType;
+    private ExerciseType exerciseType;
     
     @Column(name = "user_id")
     @JsonProperty("userId")
@@ -79,7 +83,7 @@ public class Exercise {
         this.muscleGroupId = muscleGroupId;
     }
 
-    public void setExerciseType(String exerciseType) {
+    public void setExerciseType(ExerciseType exerciseType) {
         this.exerciseType = exerciseType;
     }
 
