@@ -43,7 +43,7 @@ class DayExerciseMapperTest {
         testTime = Instant.now();
         
         testSetPayload = new ExerciseSetPayload(
-                1L, 1L, 1, "Regular", 100.0f, 105.0f, 95.0f, 110.0f,
+                1L, 1L, 1, "regular", 100.0f, 105.0f, 95.0f, 110.0f,
                 10, 12, 80.0f, "kg", testTime, testTime, "complete"
         );
         
