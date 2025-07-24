@@ -18,7 +18,7 @@ import com.noslen.training_tracker.dto.muscle_group.ProgressionPayload;
 import com.noslen.training_tracker.mapper.muscle_group.ProgressionMapper;
 import com.noslen.training_tracker.model.muscle_group.Progression;
 import com.noslen.training_tracker.repository.muscle_group.ProgressionRepo;
-import com.noslen.training_tracker.model.muscle_group.types.MgProgressionType;
+import com.noslen.training_tracker.enums.MgProgressionType;
 
 public class ProgressionServiceTests {
 

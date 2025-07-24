@@ -11,7 +11,7 @@ import com.noslen.training_tracker.dto.day.DayNotePayload;
 import com.noslen.training_tracker.dto.day.DayPayload;
 import com.noslen.training_tracker.dto.day.ExerciseSetPayload;
 import com.noslen.training_tracker.dto.muscle_group.ProgressionPayload;
-import com.noslen.training_tracker.model.muscle_group.types.MgProgressionType;
+import com.noslen.training_tracker.enums.MgProgressionType;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -4,13 +4,14 @@ import com.noslen.training_tracker.dto.day.DayExercisePayload;
 import com.noslen.training_tracker.dto.day.DayMuscleGroupPayload;
 import com.noslen.training_tracker.dto.day.DayNotePayload;
 import com.noslen.training_tracker.dto.day.DayPayload;
+import com.noslen.training_tracker.enums.ExerciseType;
 import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.model.day.DayMuscleGroup;
 import com.noslen.training_tracker.model.day.DayNote;
 import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
-import com.noslen.training_tracker.model.muscle_group.types.MgName;
+import com.noslen.training_tracker.enums.MgName;
 import com.noslen.training_tracker.model.exercise.Exercise;
 import com.noslen.training_tracker.model.exercise.ExerciseNote;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
@@ -96,7 +97,7 @@ class DayMapperTest {
                         .name("Test Exercise")
                         .muscleGroupId(1L)
                         .youtubeId("Test YouTube ID")
-                        .exerciseType("Barbell")
+                        .exerciseType(ExerciseType.BARBELL)
                         .userId(1L)
                         .createdAt(now)
                         .updatedAt(now)

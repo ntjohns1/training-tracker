@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 
-import com.noslen.training_tracker.model.muscle_group.types.MgProgressionType;
+import com.noslen.training_tracker.enums.MgProgressionType;
 
 @JsonTest
 public class ProgressionPayloadJsonTests {

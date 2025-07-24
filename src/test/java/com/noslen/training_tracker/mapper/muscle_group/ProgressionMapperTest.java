@@ -2,7 +2,7 @@ package com.noslen.training_tracker.mapper.muscle_group;
 
 import com.noslen.training_tracker.dto.muscle_group.ProgressionPayload;
 import com.noslen.training_tracker.model.muscle_group.Progression;
-import com.noslen.training_tracker.model.muscle_group.types.MgProgressionType;
+import com.noslen.training_tracker.enums.MgProgressionType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

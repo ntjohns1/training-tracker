@@ -4,7 +4,7 @@ import com.noslen.training_tracker.dto.day.ExerciseSetPayload;
 import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.model.day.ExerciseSet;
-import com.noslen.training_tracker.model.day.types.SetType;
+import com.noslen.training_tracker.enums.SetType;
 import com.noslen.training_tracker.util.EnumConverter;
 import org.springframework.stereotype.Component;
 

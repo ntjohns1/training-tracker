@@ -1,7 +1,9 @@
 package com.noslen.training_tracker.mapper.exercise;
 
 import com.noslen.training_tracker.dto.exercise.ExercisePayload;
+import com.noslen.training_tracker.enums.ExerciseType;
 import com.noslen.training_tracker.model.exercise.Exercise;
+import com.noslen.training_tracker.util.EnumConverter;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -29,17 +31,18 @@ public class ExerciseMapper {
                 .name(payload.name())
                 .muscleGroupId(payload.muscleGroupId())
                 .youtubeId(payload.youtubeId())
-                .exerciseType(payload.exerciseType())
+                .exerciseType(stringToExerciseType(payload.exerciseType()))
                 .userId(payload.userId())
                 .createdAt(payload.createdAt())
                 .updatedAt(payload.updatedAt())
                 .deletedAt(payload.deletedAt())
                 .mgSubType(payload.mgSubType())
                 // Convert nested ExerciseNotePayloads to ExerciseNote entities
-                .notes(payload.notes() != null ? 
-                    payload.notes().stream()
-                        .map(exerciseNoteMapper::toEntity)
-                        .collect(Collectors.toList()) : null)
+                .notes(payload.notes() != null ?
+                               payload.notes()
+                                       .stream()
+                                       .map(exerciseNoteMapper::toEntity)
+                                       .collect(Collectors.toList()) : null)
                 .build();
     }
 
@@ -56,7 +59,7 @@ public class ExerciseMapper {
                 entity.getName(),
                 entity.getMuscleGroupId(),
                 entity.getYoutubeId(),
-                entity.getExerciseType(),
+                exerciseTypeToString(entity.getExerciseType()),
                 entity.getUserId(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt(),
@@ -80,16 +83,18 @@ public class ExerciseMapper {
         if (payload.name() != null) {
             existing.setName(payload.name());
         }
-        if (payload.muscleGroupId() != null && !payload.muscleGroupId().equals(0L)) {
+        if (payload.muscleGroupId() != null && !payload.muscleGroupId()
+                .equals(0L)) {
             existing.setMuscleGroupId(payload.muscleGroupId());
         }
         if (payload.youtubeId() != null) {
             existing.setYoutubeId(payload.youtubeId());
         }
         if (payload.exerciseType() != null) {
-            existing.setExerciseType(payload.exerciseType());
+            existing.setExerciseType(stringToExerciseType(payload.exerciseType()));
         }
-        if (payload.userId() != null && !payload.userId().equals(0L)) {
+        if (payload.userId() != null && !payload.userId()
+                .equals(0L)) {
             existing.setUserId(payload.userId());
         }
         if (payload.mgSubType() != null) {
@@ -105,9 +110,10 @@ public class ExerciseMapper {
             existing.setDeletedAt(payload.deletedAt());
         }
         if (payload.notes() != null) {
-            existing.setNotes(payload.notes().stream()
-                    .map(exerciseNoteMapper::toEntity)
-                    .collect(Collectors.toList()));
+            existing.setNotes(payload.notes()
+                                      .stream()
+                                      .map(exerciseNoteMapper::toEntity)
+                                      .collect(Collectors.toList()));
         }
     }
 
@@ -126,20 +132,24 @@ public class ExerciseMapper {
         return Exercise.builder()
                 .id(existing.getId()) // Keep existing ID
                 .name(payload.name() != null ? payload.name() : existing.getName())
-                .muscleGroupId(payload.muscleGroupId() != null && !payload.muscleGroupId().equals(0L) ? 
-                    payload.muscleGroupId() : existing.getMuscleGroupId())
+                .muscleGroupId(payload.muscleGroupId() != null && !payload.muscleGroupId()
+                        .equals(0L) ?
+                                       payload.muscleGroupId() : existing.getMuscleGroupId())
                 .youtubeId(payload.youtubeId() != null ? payload.youtubeId() : existing.getYoutubeId())
-                .exerciseType(payload.exerciseType() != null ? payload.exerciseType() : existing.getExerciseType())
-                .userId(payload.userId() != null && !payload.userId().equals(0L) ? 
-                    payload.userId() : existing.getUserId())
+                .exerciseType(payload.exerciseType() != null ? stringToExerciseType(payload.exerciseType()) :
+                                      existing.getExerciseType())
+                .userId(payload.userId() != null && !payload.userId()
+                        .equals(0L) ?
+                                payload.userId() : existing.getUserId())
                 .createdAt(existing.getCreatedAt()) // Keep existing creation time
                 .updatedAt(payload.updatedAt() != null ? payload.updatedAt() : existing.getUpdatedAt())
                 .deletedAt(payload.deletedAt() != null ? payload.deletedAt() : existing.getDeletedAt())
                 .mgSubType(payload.mgSubType() != null ? payload.mgSubType() : existing.getMgSubType())
-                .notes(payload.notes() != null ? 
-                    payload.notes().stream()
-                        .map(exerciseNoteMapper::toEntity)
-                        .collect(Collectors.toList()) : existing.getNotes())
+                .notes(payload.notes() != null ?
+                               payload.notes()
+                                       .stream()
+                                       .map(exerciseNoteMapper::toEntity)
+                                       .collect(Collectors.toList()) : existing.getNotes())
                 .build();
     }
 
@@ -154,5 +164,31 @@ public class ExerciseMapper {
         return entities.stream()
                 .map(this::toPayload)
                 .collect(Collectors.toList());
+    }
+
+    private ExerciseType stringToExerciseType(String exerciseType) {
+        if (exerciseType == null) {
+            return null;
+        }
+        try {
+            return EnumConverter.stringToEnum(ExerciseType.class,
+                                              exerciseType);
+        } catch (IllegalArgumentException e) {
+            // If that fails, try to find by the enum's getValue() method
+            for (ExerciseType et : ExerciseType.values()) {
+                if (et.getValue()
+                        .equals(exerciseType)) {
+                    return et;
+                }
+            }
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    private String exerciseTypeToString(ExerciseType exerciseType) {
+        if (exerciseType == null) {
+            return null;
+        }
+        return EnumConverter.enumToSerializedValue(exerciseType);
     }
 }

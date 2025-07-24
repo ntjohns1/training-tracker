@@ -7,8 +7,7 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.noslen.training_tracker.model.exercise.types.ExerciseType;
-import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
+import com.noslen.training_tracker.enums.ExerciseType;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

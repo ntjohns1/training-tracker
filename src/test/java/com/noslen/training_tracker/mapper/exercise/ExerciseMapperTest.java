@@ -2,6 +2,7 @@ package com.noslen.training_tracker.mapper.exercise;
 
 import com.noslen.training_tracker.dto.exercise.ExercisePayload;
 import com.noslen.training_tracker.dto.exercise.ExerciseNotePayload;
+import com.noslen.training_tracker.enums.ExerciseType;
 import com.noslen.training_tracker.model.exercise.Exercise;
 import com.noslen.training_tracker.model.exercise.ExerciseNote;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,8 +55,9 @@ class ExerciseMapperTest {
                 .build();
 
         testPayload = new ExercisePayload(
-                1L, "Test Exercise", 2L, "youtube123", "strength", 3L,
-                testTime, testTime, null, "primary", Arrays.asList(testNotePayload)
+                1L, "Test Exercise", 2L, "youtube123", "barbell", 3L,
+                testTime, testTime, null, "primary",
+                Collections.singletonList(testNotePayload)
         );
 
         testEntity = Exercise.builder()
@@ -63,13 +65,13 @@ class ExerciseMapperTest {
                 .name("Test Exercise")
                 .muscleGroupId(2L)
                 .youtubeId("youtube123")
-                .exerciseType("strength")
+                .exerciseType(ExerciseType.BARBELL)
                 .userId(3L)
                 .createdAt(testTime)
                 .updatedAt(testTime)
                 .deletedAt(null)
                 .mgSubType("primary")
-                .notes(Arrays.asList(testNoteEntity))
+                .notes(Collections.singletonList(testNoteEntity))
                 .build();
     }
 
@@ -87,7 +89,7 @@ class ExerciseMapperTest {
         assertThat(result.getName()).isEqualTo("Test Exercise");
         assertThat(result.getMuscleGroupId()).isEqualTo(2L);
         assertThat(result.getYoutubeId()).isEqualTo("youtube123");
-        assertThat(result.getExerciseType()).isEqualTo("strength");
+        assertThat(result.getExerciseType()).isEqualTo(ExerciseType.BARBELL);
         assertThat(result.getUserId()).isEqualTo(3L);
         assertThat(result.getCreatedAt()).isEqualTo(testTime);
         assertThat(result.getUpdatedAt()).isEqualTo(testTime);
@@ -109,7 +111,7 @@ class ExerciseMapperTest {
     void toEntity_WithNullNotes_ShouldHandleGracefully() {
         // Given
         ExercisePayload payloadWithoutNotes = new ExercisePayload(
-                1L, "Test Exercise", 2L, "youtube123", "strength", 3L,
+                1L, "Test Exercise", 2L, "youtube123", "barbell", 3L,
                 testTime, testTime, null, "primary", null
         );
 
@@ -124,7 +126,7 @@ class ExerciseMapperTest {
     @Test
     void toPayload_WithValidEntity_ShouldMapCorrectly() {
         // Given
-        when(exerciseNoteMapper.toPayloadList(anyList())).thenReturn(Arrays.asList(testNotePayload));
+        when(exerciseNoteMapper.toPayloadList(anyList())).thenReturn(Collections.singletonList(testNotePayload));
 
         // When
         ExercisePayload result = exerciseMapper.toPayload(testEntity);
@@ -135,7 +137,7 @@ class ExerciseMapperTest {
         assertThat(result.name()).isEqualTo("Test Exercise");
         assertThat(result.muscleGroupId()).isEqualTo(2L);
         assertThat(result.youtubeId()).isEqualTo("youtube123");
-        assertThat(result.exerciseType()).isEqualTo("strength");
+        assertThat(result.exerciseType()).isEqualTo("barbell");
         assertThat(result.userId()).isEqualTo(3L);
         assertThat(result.createdAt()).isEqualTo(testTime);
         assertThat(result.updatedAt()).isEqualTo(testTime);
@@ -161,7 +163,7 @@ class ExerciseMapperTest {
                 .name("Original Exercise")
                 .muscleGroupId(2L)
                 .youtubeId("original123")
-                .exerciseType("cardio")
+                .exerciseType(ExerciseType.BARBELL)
                 .userId(3L)
                 .createdAt(testTime)
                 .updatedAt(testTime)
@@ -169,7 +171,7 @@ class ExerciseMapperTest {
                 .build();
 
         ExercisePayload updatePayload = new ExercisePayload(
-                0L, "Updated Exercise", 4L, "updated456", "strength", 5L,
+                0L, "Updated Exercise", 4L, "updated456", "barbell", 5L,
                 null, testTime.plusSeconds(60), testTime.plusSeconds(120), "primary", null
         );
 
@@ -180,7 +182,7 @@ class ExerciseMapperTest {
         assertThat(existing.getName()).isEqualTo("Updated Exercise");
         assertThat(existing.getMuscleGroupId()).isEqualTo(4L);
         assertThat(existing.getYoutubeId()).isEqualTo("updated456");
-        assertThat(existing.getExerciseType()).isEqualTo("strength");
+        assertThat(existing.getExerciseType()).isEqualTo(ExerciseType.BARBELL);
         assertThat(existing.getUserId()).isEqualTo(5L);
         assertThat(existing.getUpdatedAt()).isEqualTo(testTime.plusSeconds(60));
         assertThat(existing.getDeletedAt()).isEqualTo(testTime.plusSeconds(120));
@@ -232,7 +234,7 @@ class ExerciseMapperTest {
                 .name("Original Exercise")
                 .muscleGroupId(2L)
                 .youtubeId("original123")
-                .exerciseType("cardio")
+                .exerciseType(ExerciseType.BARBELL)
                 .userId(3L)
                 .createdAt(testTime)
                 .updatedAt(testTime)
@@ -240,7 +242,7 @@ class ExerciseMapperTest {
                 .build();
 
         ExercisePayload updatePayload = new ExercisePayload(
-                0L, "Updated Exercise", 4L, "updated456", "strength", 5L,
+                0L, "Updated Exercise", 4L, "updated456", "dumbbell", 5L,
                 null, testTime.plusSeconds(60), null, "primary", null
         );
 
@@ -253,7 +255,7 @@ class ExerciseMapperTest {
         assertThat(result.getName()).isEqualTo("Updated Exercise"); // updated from payload
         assertThat(result.getMuscleGroupId()).isEqualTo(4L); // updated from payload
         assertThat(result.getYoutubeId()).isEqualTo("updated456"); // updated from payload
-        assertThat(result.getExerciseType()).isEqualTo("strength"); // updated from payload
+        assertThat(result.getExerciseType()).isEqualTo(ExerciseType.DUMBBELL); // updated from payload
         assertThat(result.getUserId()).isEqualTo(5L); // updated from payload
         assertThat(result.getCreatedAt()).isEqualTo(testTime); // preserved from existing
         assertThat(result.getUpdatedAt()).isEqualTo(testTime.plusSeconds(60)); // updated from payload
@@ -318,7 +320,7 @@ class ExerciseMapperTest {
     void toPayloadList_WithValidList_ShouldMapAll() {
         // Given
         List<Exercise> entities = Arrays.asList(testEntity, testEntity);
-        when(exerciseNoteMapper.toPayloadList(anyList())).thenReturn(Arrays.asList(testNotePayload));
+        when(exerciseNoteMapper.toPayloadList(anyList())).thenReturn(Collections.singletonList(testNotePayload));
 
         // When
         List<ExercisePayload> result = exerciseMapper.toPayloadList(entities);
@@ -351,7 +353,7 @@ class ExerciseMapperTest {
     void toPayloadList_WithMixedNullEntities_ShouldHandleGracefully() {
         // Given
         List<Exercise> entitiesWithNull = Arrays.asList(testEntity, null, testEntity);
-        when(exerciseNoteMapper.toPayloadList(anyList())).thenReturn(Arrays.asList(testNotePayload));
+        when(exerciseNoteMapper.toPayloadList(anyList())).thenReturn(Collections.singletonList(testNotePayload));
 
         // When
         List<ExercisePayload> result = exerciseMapper.toPayloadList(entitiesWithNull);

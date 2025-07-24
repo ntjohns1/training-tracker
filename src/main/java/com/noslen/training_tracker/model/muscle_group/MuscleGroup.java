@@ -15,7 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import com.noslen.training_tracker.model.muscle_group.types.MgName;
+import com.noslen.training_tracker.enums.MgName;
 
 @Getter
 @Setter

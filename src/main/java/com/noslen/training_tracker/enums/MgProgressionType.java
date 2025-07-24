@@ -1,4 +1,4 @@
-package com.noslen.training_tracker.model.muscle_group.types;
+package com.noslen.training_tracker.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.noslen.training_tracker.util.CustomSerializableEnum;

@@ -5,7 +5,7 @@ import com.noslen.training_tracker.mapper.day.DayMuscleGroupMapper;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.day.DayMuscleGroup;
 import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
-import com.noslen.training_tracker.model.muscle_group.types.MgName;
+import com.noslen.training_tracker.enums.MgName;
 import com.noslen.training_tracker.repository.day.DayMuscleGroupRepo;
 import com.noslen.training_tracker.repository.day.DayRepo;
 import com.noslen.training_tracker.repository.muscle_group.MuscleGroupRepo;

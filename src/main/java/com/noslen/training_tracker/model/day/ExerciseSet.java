@@ -2,7 +2,7 @@ package com.noslen.training_tracker.model.day;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.noslen.training_tracker.enums.Status;
-import com.noslen.training_tracker.model.day.types.SetType;
+import com.noslen.training_tracker.enums.SetType;
 import jakarta.persistence.*;
 import lombok.*;
 

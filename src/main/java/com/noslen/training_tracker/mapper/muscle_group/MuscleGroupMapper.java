@@ -2,7 +2,7 @@ package com.noslen.training_tracker.mapper.muscle_group;
 
 import com.noslen.training_tracker.dto.muscle_group.MuscleGroupPayload;
 import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
-import com.noslen.training_tracker.model.muscle_group.types.MgName;
+import com.noslen.training_tracker.enums.MgName;
 import com.noslen.training_tracker.util.EnumConverter;
 import org.springframework.stereotype.Component;
 
