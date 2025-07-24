@@ -2,6 +2,7 @@ package com.noslen.training_tracker.model.day;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.noslen.training_tracker.enums.Status;
+import com.noslen.training_tracker.model.day.types.SetType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,7 +32,7 @@ public class ExerciseSet {
     
     // TODO: enum - Regular, Myo-Rep, Myo-Rep Match
     @Column(name = "set_type")
-    private String setType;
+    private SetType setType;
     private Float weight;
     private Float weightTarget;
     private Float weightTargetMin;

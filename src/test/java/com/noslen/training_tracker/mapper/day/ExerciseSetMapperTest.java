@@ -4,6 +4,7 @@ import com.noslen.training_tracker.dto.day.ExerciseSetPayload;
 import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.model.day.ExerciseSet;
+import com.noslen.training_tracker.model.day.types.SetType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +39,7 @@ class ExerciseSetMapperTest {
                 .build();
 
         testPayload = new ExerciseSetPayload(
-                1L, 2L, 1, "Regular", 100.0f, 105.0f, 95.0f, 110.0f,
+                1L, 2L, 1, "regular", 100.0f, 105.0f, 95.0f, 110.0f,
                 10, 12, 80.0f, "kg", testTime, testTime, "complete"
         );
 
@@ -46,7 +47,7 @@ class ExerciseSetMapperTest {
                 .id(1L)
                 .dayExercise(testDayExercise)
                 .position(1)
-                .setType("Regular")
+                .setType(SetType.REGULAR)
                 .weight(100.0f)
                 .weightTarget(105.0f)
                 .weightTargetMin(95.0f)
@@ -70,7 +71,7 @@ class ExerciseSetMapperTest {
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getPosition()).isEqualTo(1);
-        assertThat(result.getSetType()).isEqualTo("Regular");
+        assertThat(result.getSetType()).isEqualTo(SetType.REGULAR);
         assertThat(result.getWeight()).isEqualTo(100.0f);
         assertThat(result.getWeightTarget()).isEqualTo(105.0f);
         assertThat(result.getWeightTargetMin()).isEqualTo(95.0f);
@@ -104,7 +105,7 @@ class ExerciseSetMapperTest {
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getDayExercise()).isEqualTo(testDayExercise);
         assertThat(result.getPosition()).isEqualTo(1);
-        assertThat(result.getSetType()).isEqualTo("Regular");
+        assertThat(result.getSetType()).isEqualTo(SetType.REGULAR);
     }
 
     @Test
@@ -136,7 +137,7 @@ class ExerciseSetMapperTest {
         assertThat(result.id()).isEqualTo(1L);
         assertThat(result.dayExerciseId()).isEqualTo(1L);
         assertThat(result.position()).isEqualTo(1);
-        assertThat(result.setType()).isEqualTo("Regular");
+        assertThat(result.setType()).isEqualTo("regular");
         assertThat(result.weight()).isEqualTo(100.0f);
         assertThat(result.weightTarget()).isEqualTo(105.0f);
         assertThat(result.weightTargetMin()).isEqualTo(95.0f);
@@ -165,7 +166,7 @@ class ExerciseSetMapperTest {
         ExerciseSet entityWithNullDayExercise = ExerciseSet.builder()
                 .id(1L)
                 .position(1)
-                .setType("Regular")
+                .setType(SetType.REGULAR)
                 .weight(100.0f)
                 .reps(10)
                 .unit("kg")
@@ -189,7 +190,7 @@ class ExerciseSetMapperTest {
         ExerciseSet existing = ExerciseSet.builder()
                 .id(1L)
                 .position(1)
-                .setType("Regular")
+                .setType(SetType.REGULAR)
                 .weight(100.0f)
                 .reps(10)
                 .unit("kg")
@@ -200,7 +201,7 @@ class ExerciseSetMapperTest {
 
         Instant newFinishedTime = testTime.plusSeconds(3600);
         ExerciseSetPayload updatePayload = new ExerciseSetPayload(
-                null, null, 2, "Myo-Rep", 110.0f, 115.0f, 105.0f, 120.0f,
+                null, null, 2, "myo_rep", 110.0f, 115.0f, 105.0f, 120.0f,
                 12, 15, 85.0f, "lbs", testTime.plusSeconds(60), newFinishedTime, "complete"
         );
 
@@ -215,7 +216,7 @@ class ExerciseSetMapperTest {
         
         // Immutable fields should remain unchanged
         assertThat(existing.getPosition()).isEqualTo(1); // unchanged
-        assertThat(existing.getSetType()).isEqualTo("Regular"); // unchanged
+        assertThat(existing.getSetType()).isEqualTo(SetType.REGULAR); // unchanged
         assertThat(existing.getWeight()).isEqualTo(100.0f); // unchanged
         assertThat(existing.getReps()).isEqualTo(10); // unchanged
         assertThat(existing.getUnit()).isEqualTo("kg"); // unchanged
@@ -260,7 +261,7 @@ class ExerciseSetMapperTest {
                 .id(1L)
                 .dayExercise(testDayExercise)
                 .position(1)
-                .setType("Regular")
+                .setType(SetType.REGULAR)
                 .weight(100.0f)
                 .reps(10)
                 .unit("kg")
@@ -270,7 +271,7 @@ class ExerciseSetMapperTest {
                 .build();
 
         ExerciseSetPayload updatePayload = new ExerciseSetPayload(
-                null, null, 2, "Myo-Rep", 110.0f, 115.0f, 105.0f, 120.0f,
+                null, null, 2, "myorep", 110.0f, 115.0f, 105.0f, 120.0f,
                 12, 15, 85.0f, "lbs", null, testTime.plusSeconds(3600), "complete"
         );
 
@@ -285,7 +286,7 @@ class ExerciseSetMapperTest {
         
         // Updated fields
         assertThat(result.getPosition()).isEqualTo(2);
-        assertThat(result.getSetType()).isEqualTo("Myo-Rep");
+        assertThat(result.getSetType()).isEqualTo(SetType.MYOREP);
         assertThat(result.getWeight()).isEqualTo(110.0f);
         assertThat(result.getWeightTarget()).isEqualTo(115.0f);
         assertThat(result.getWeightTargetMin()).isEqualTo(105.0f);

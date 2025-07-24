@@ -4,6 +4,7 @@ import com.noslen.training_tracker.dto.day.ExerciseSetPayload;
 import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.model.day.ExerciseSet;
+import com.noslen.training_tracker.model.day.types.SetType;
 import com.noslen.training_tracker.util.EnumConverter;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +25,7 @@ public class ExerciseSetMapper {
         return ExerciseSet.builder()
                 .id(payload.id())
                 .position(payload.position())
-                .setType(payload.setType())
+                .setType(EnumConverter.stringToEnum(SetType.class, payload.setType()))
                 .weight(payload.weight())
                 .weightTarget(payload.weightTarget())
                 .weightTargetMin(payload.weightTargetMin())
@@ -62,7 +63,7 @@ public class ExerciseSetMapper {
                 entity.getId(),
                 entity.getDayExerciseId(),
                 entity.getPosition(),
-                entity.getSetType(),
+                EnumConverter.enumToString(entity.getSetType()),
                 entity.getWeight(),
                 entity.getWeightTarget(),
                 entity.getWeightTargetMin(),
@@ -117,7 +118,7 @@ public class ExerciseSetMapper {
                 .id(existing.getId()) // Keep existing ID
                 .dayExercise(existing.getDayExercise()) // Keep existing relationship
                 .position(payload.position() != null ? payload.position() : existing.getPosition())
-                .setType(payload.setType() != null ? payload.setType() : existing.getSetType())
+                .setType(payload.setType() != null ? EnumConverter.stringToEnum(SetType.class, payload.setType()) : existing.getSetType())
                 .weight(payload.weight() != null ? payload.weight() : existing.getWeight())
                 .weightTarget(payload.weightTarget() != null ? payload.weightTarget() : existing.getWeightTarget())
                 .weightTargetMin(payload.weightTargetMin() != null ? payload.weightTargetMin() : existing.getWeightTargetMin())

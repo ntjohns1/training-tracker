@@ -5,6 +5,8 @@ import com.noslen.training_tracker.dto.day.ExerciseSetPayload;
 import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.model.day.ExerciseSet;
+import com.noslen.training_tracker.model.day.types.SetType;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,7 +50,7 @@ class DayExerciseMapperTest {
         testSetEntity = ExerciseSet.builder()
                 .id(1L)
                 .position(1)
-                .setType("Regular")
+                .setType(SetType.REGULAR)
                 .weight(100.0f)
                 .weightTarget(105.0f)
                 .weightTargetMin(95.0f)
