@@ -2,6 +2,7 @@ package com.noslen.training_tracker.mapper.day;
 
 import com.noslen.training_tracker.dto.day.DayExercisePayload;
 import com.noslen.training_tracker.dto.day.ExerciseSetPayload;
+import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.model.day.ExerciseSet;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +42,7 @@ class DayExerciseMapperTest {
         
         testSetPayload = new ExerciseSetPayload(
                 1L, 1L, 1, "Regular", 100.0f, 105.0f, 95.0f, 110.0f,
-                10, 12, 80.0f, "kg", testTime, testTime, "finished"
+                10, 12, 80.0f, "kg", testTime, testTime, "complete"
         );
         
         testSetEntity = ExerciseSet.builder()
@@ -58,12 +59,12 @@ class DayExerciseMapperTest {
                 .unit("kg")
                 .createdAt(testTime)
                 .finishedAt(testTime)
-                .status("finished")
+                .status(Status.COMPLETE)
                 .build();
 
         testPayload = new DayExercisePayload(
                 1L, 2L, 3L, 1, 2, testTime, testTime, 4L, 5L,
-                List.of(testSetPayload), "active"
+                List.of(testSetPayload), "ready"
         );
 
         testEntity = DayExercise.builder()
@@ -76,7 +77,7 @@ class DayExerciseMapperTest {
                 .updatedAt(testTime)
                 .sourceDayExerciseId(4L)
                 .muscleGroup(com.noslen.training_tracker.model.day.DayMuscleGroup.builder().id(5L).build())
-                .status("active")
+                .status(Status.READY)
                 .sets(List.of(testSetEntity))
                 .build();
     }
@@ -97,7 +98,7 @@ class DayExerciseMapperTest {
         assertThat(result.getCreatedAt()).isEqualTo(testTime);
         assertThat(result.getUpdatedAt()).isEqualTo(testTime);
         assertThat(result.getSourceDayExerciseId()).isEqualTo(4L);
-        assertThat(result.getStatus()).isEqualTo("active");
+        assertThat(result.getStatus()).isEqualTo(Status.READY);
         assertThat(result.getDayId()).isEqualTo(2L);
         assertThat(result.getExerciseId()).isEqualTo(3L);
         assertThat(result.getMuscleGroupId()).isEqualTo(5L);
@@ -118,7 +119,7 @@ class DayExerciseMapperTest {
         // Given
         DayExercisePayload payloadWithNullCreatedAt = new DayExercisePayload(
                 1L, 2L, 3L, 1, 2, null, testTime, 4L, 5L,
-                Collections.emptyList(), "active"
+                Collections.emptyList(), "ready"
         );
 
         // When
@@ -149,7 +150,7 @@ class DayExerciseMapperTest {
         assertThat(result.updatedAt()).isEqualTo(testTime);
         assertThat(result.sourceDayExerciseId()).isEqualTo(4L);
         assertThat(result.muscleGroupId()).isEqualTo(5L);
-        assertThat(result.status()).isEqualTo("active");
+        assertThat(result.status()).isEqualTo("ready");
         assertThat(result.sets()).hasSize(1);
     }
 
@@ -171,7 +172,7 @@ class DayExerciseMapperTest {
                 .jointPain(2)
                 .createdAt(testTime)
                 .updatedAt(testTime)
-                .status("active")
+                .status(Status.READY)
                 .sets(null)
                 .build();
 
@@ -192,12 +193,12 @@ class DayExerciseMapperTest {
                 .jointPain(2)
                 .createdAt(testTime)
                 .updatedAt(testTime)
-                .status("active")
+                .status(Status.READY)
                 .build();
 
         DayExercisePayload updatePayload = new DayExercisePayload(
                 null, 10L, 11L, 5, 3, null, null, null, 12L,
-                null, "updated"
+                null, "ready"
         );
 
         // When
@@ -211,7 +212,7 @@ class DayExerciseMapperTest {
         // Note: position, jointPain, status cannot be updated due to immutable design
         assertThat(existing.getPosition()).isEqualTo(1); // unchanged
         assertThat(existing.getJointPain()).isEqualTo(2); // unchanged
-        assertThat(existing.getStatus()).isEqualTo("active"); // unchanged
+        assertThat(existing.getStatus()).isEqualTo(Status.READY); // unchanged
     }
 
     @Test
@@ -231,12 +232,12 @@ class DayExerciseMapperTest {
                 .jointPain(2)
                 .createdAt(testTime)
                 .updatedAt(testTime)
-                .status("active")
+                .status(Status.READY)
                 .build();
 
         DayExercisePayload updatePayload = new DayExercisePayload(
                 null, 10L, 11L, 5, 3, null, null, null, 12L,
-                null, "updated"
+                null, "ready"
         );
 
         // When
@@ -252,7 +253,7 @@ class DayExerciseMapperTest {
         assertThat(result.getMuscleGroupId()).isEqualTo(12L); // updated
         assertThat(result.getPosition()).isEqualTo(5); // updated
         assertThat(result.getJointPain()).isEqualTo(3); // updated
-        assertThat(result.getStatus()).isEqualTo("updated"); // updated
+        assertThat(result.getStatus()).isEqualTo(Status.READY); // updated
     }
 
     @Test

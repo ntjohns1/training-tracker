@@ -2,6 +2,7 @@ package com.noslen.training_tracker.model.mesocycle;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.muscle_group.Progression;
 import jakarta.persistence.*;
@@ -81,8 +82,8 @@ public class Mesocycle {
     @JsonProperty("notes")
     private List<MesoNote> notes;
 
-    String status;
-    String generatedFrom;
+    private Status status;
+    private String generatedFrom;
 
     @OneToMany(mappedBy = "mesocycle", cascade = CascadeType.ALL, orphanRemoval = true)
     @MapKey(name = "muscleGroupId")

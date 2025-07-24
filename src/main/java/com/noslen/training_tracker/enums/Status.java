@@ -1,9 +1,10 @@
 package com.noslen.training_tracker.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.noslen.training_tracker.util.CustomSerializableEnum;
 
-public enum Status {
-    COMPLETED,
+public enum Status implements CustomSerializableEnum {
+    COMPLETE,
     EMPTY,
     PARTIAL,
     PENDING,
@@ -21,5 +22,10 @@ public enum Status {
             case PENDING_WEIGHT -> "pendingWeight";
             default -> name().toLowerCase();
         };
+    }
+
+    @Override
+    public String getSerializedValue() {
+        return toValue();
     }
 }

@@ -184,7 +184,7 @@ public class DayMapper {
         }
         
         if (entity.getFinishedAt() != null) {
-            return "completed";
+            return "complete";
         } else if (entity.getExercises() != null && !entity.getExercises().isEmpty()) {
             return "in_progress";
         } else {

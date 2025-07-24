@@ -1,6 +1,7 @@
 package com.noslen.training_tracker.model.day;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.noslen.training_tracker.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -53,7 +54,7 @@ public class ExerciseSet {
 
     // TODO: enum - ready, finished, skipped
     @Setter
-    private String status;
+    private Status status;
 
     /**
      * Convenience method to get the dayExercise ID from the DayExercisePayload object

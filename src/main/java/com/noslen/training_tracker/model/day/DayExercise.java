@@ -20,6 +20,7 @@ import jakarta.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.noslen.training_tracker.model.exercise.Exercise;
+import com.noslen.training_tracker.enums.Status;
 
 import lombok.*;
 
@@ -66,7 +67,7 @@ public class DayExercise {
     @JoinColumn(name = "muscle_group_id")
     private DayMuscleGroup muscleGroup;
     
-    private String status;
+    private Status status;
     
     @OneToMany(mappedBy = "dayExercise", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference(value = "exerciseset-dayexercise")

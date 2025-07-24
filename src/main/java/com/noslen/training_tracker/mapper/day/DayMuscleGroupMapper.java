@@ -1,7 +1,10 @@
 package com.noslen.training_tracker.mapper.day;
 
 import com.noslen.training_tracker.dto.day.DayMuscleGroupPayload;
+import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.model.day.DayMuscleGroup;
+import com.noslen.training_tracker.util.EnumConverter;
+
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -32,7 +35,7 @@ public class DayMuscleGroupMapper {
                 .soreness(payload.soreness())
                 .workload(payload.workload())
                 .recommendedSets(payload.recommendedSets())
-                .status(payload.status())
+                .status(EnumConverter.stringToEnum(Status.class, payload.status()))
                 .createdAt(payload.createdAt())
                 .updatedAt(payload.updatedAt())
                 .build();
@@ -59,7 +62,7 @@ public class DayMuscleGroupMapper {
                 entity.getCreatedAt(),
                 entity.getUpdatedAt(),
                 entity.getRecommendedSets(),
-                entity.getStatus()
+                EnumConverter.enumToString(entity.getStatus())
         );
     }
 
@@ -105,7 +108,7 @@ public class DayMuscleGroupMapper {
                 .soreness(payload.soreness() != null ? payload.soreness() : existing.getSoreness())
                 .workload(payload.workload() != null ? payload.workload() : existing.getWorkload())
                 .recommendedSets(payload.recommendedSets() != null ? payload.recommendedSets() : existing.getRecommendedSets())
-                .status(payload.status() != null ? payload.status() : existing.getStatus())
+                .status(payload.status() != null ? EnumConverter.stringToEnum(Status.class, payload.status()) : existing.getStatus())
                 .createdAt(existing.getCreatedAt()) // Preserve creation timestamp
                 .updatedAt(payload.updatedAt() != null ? payload.updatedAt() : existing.getUpdatedAt())
                 .build();

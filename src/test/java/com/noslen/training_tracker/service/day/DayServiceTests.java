@@ -76,12 +76,12 @@ public class DayServiceTests {
         // Arrange
         Long id = 1L;
         DayPayload payload = new DayPayload(id, 1L, 1L, 1L, Instant.now(), Instant.now(), 
-                77, Instant.now(), "kg", Instant.now(), "Updated Day 1", new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), "completed");
+                77, Instant.now(), "kg", Instant.now(), "Updated Day 1", new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), "complete");
         Day existingEntity = Day.builder().id(id).week(1).position(1).label("Day 1").build();
         Day mergedEntity = Day.builder().id(id).week(1).position(1).label("Updated Day 1").bodyweight(77.0).build();
         Day savedEntity = Day.builder().id(id).week(1).position(1).label("Updated Day 1").bodyweight(77.0).build();
         DayPayload expectedPayload = new DayPayload(id, 1L, 1L, 1L, Instant.now(), Instant.now(), 
-                77, Instant.now(), "kg", Instant.now(), "Updated Day 1", new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), "completed");
+                77, Instant.now(), "kg", Instant.now(), "Updated Day 1", new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), "complete");
 
         when(repo.findById(id)).thenReturn(Optional.of(existingEntity));
         when(mapper.mergeEntity(existingEntity, payload)).thenReturn(mergedEntity);
@@ -175,7 +175,7 @@ public class DayServiceTests {
         // Arrange
         Long id = 1L;
         DayPayload payload = new DayPayload(id, 1L, 1L, 1L, Instant.now(), Instant.now(), 
-                77, Instant.now(), "kg", Instant.now(), "Updated Day 1", new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), "completed");
+                77, Instant.now(), "kg", Instant.now(), "Updated Day 1", new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), "complete");
         when(repo.findById(id)).thenReturn(Optional.empty());
 
         // Act & Assert

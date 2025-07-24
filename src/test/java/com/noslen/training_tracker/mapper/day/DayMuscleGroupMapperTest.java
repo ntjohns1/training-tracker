@@ -1,6 +1,7 @@
 package com.noslen.training_tracker.mapper.day;
 
 import com.noslen.training_tracker.dto.day.DayMuscleGroupPayload;
+import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.day.DayMuscleGroup;
 import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
@@ -50,7 +51,7 @@ class DayMuscleGroupMapperTest {
                 .build();
     }
 
-    @Test
+    @Test 
     void toEntity_WithValidPayload_ShouldReturnEntity() {
         // When
         DayMuscleGroup result = mapper.toEntity(samplePayload);
@@ -66,7 +67,7 @@ class DayMuscleGroupMapperTest {
         assertEquals(samplePayload.soreness(), result.getSoreness());
         assertEquals(samplePayload.workload(), result.getWorkload());
         assertEquals(samplePayload.recommendedSets(), result.getRecommendedSets());
-        assertEquals(samplePayload.status(), result.getStatus());
+        assertEquals(Status.COMPLETE, result.getStatus()); // Entity should have enum, not DTO string
 
         // Note: Day and MuscleGroup relationships are not set by toEntity and should be handled by service layer
     }

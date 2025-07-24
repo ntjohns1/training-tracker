@@ -2,6 +2,7 @@ package com.noslen.training_tracker.service.mesocycle;
 
 import com.noslen.training_tracker.dto.mesocycle.MesoNotePayload;
 import com.noslen.training_tracker.dto.mesocycle.MesocyclePayload;
+import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.mapper.mesocycle.MesocycleMapper;
 import com.noslen.training_tracker.model.mesocycle.MesoTemplate;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
@@ -69,7 +70,7 @@ class MesocycleServiceTest {
                 .deletedAt(null)
                 .weeks(Collections.emptyList())
                 .notes(Collections.emptyList())
-                .status("active")
+                .status(Status.READY)
                 .generatedFrom("template")
                 .progressions(Collections.emptyMap())
                 .build();

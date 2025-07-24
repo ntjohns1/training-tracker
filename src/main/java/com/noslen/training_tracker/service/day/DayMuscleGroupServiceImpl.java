@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.noslen.training_tracker.dto.day.DayMuscleGroupPayload;
 import com.noslen.training_tracker.mapper.day.DayMuscleGroupMapper;
 import com.noslen.training_tracker.model.day.Day;
+import com.noslen.training_tracker.util.StatusConverter;
 import com.noslen.training_tracker.model.day.DayMuscleGroup;
 import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
 import com.noslen.training_tracker.repository.day.DayMuscleGroupRepo;
@@ -91,7 +92,7 @@ public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
                 .soreness(dayMuscleGroupPayload.soreness() != null ? dayMuscleGroupPayload.soreness() : existingDayMuscleGroup.getSoreness())
                 .workload(dayMuscleGroupPayload.workload() != null ? dayMuscleGroupPayload.workload() : existingDayMuscleGroup.getWorkload())
                 .recommendedSets(dayMuscleGroupPayload.recommendedSets() != null ? dayMuscleGroupPayload.recommendedSets() : existingDayMuscleGroup.getRecommendedSets())
-                .status(dayMuscleGroupPayload.status() != null ? dayMuscleGroupPayload.status() : existingDayMuscleGroup.getStatus())
+                .status(dayMuscleGroupPayload.status() != null ? StatusConverter.stringToStatus(dayMuscleGroupPayload.status()) : existingDayMuscleGroup.getStatus())
                 .createdAt(existingDayMuscleGroup.getCreatedAt())
                 .updatedAt(Instant.now())
                 .build();

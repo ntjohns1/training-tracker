@@ -1,6 +1,7 @@
 package com.noslen.training_tracker.mapper.day;
 
 import com.noslen.training_tracker.dto.day.ExerciseSetPayload;
+import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.model.day.ExerciseSet;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +39,7 @@ class ExerciseSetMapperTest {
 
         testPayload = new ExerciseSetPayload(
                 1L, 2L, 1, "Regular", 100.0f, 105.0f, 95.0f, 110.0f,
-                10, 12, 80.0f, "kg", testTime, testTime, "finished"
+                10, 12, 80.0f, "kg", testTime, testTime, "complete"
         );
 
         testEntity = ExerciseSet.builder()
@@ -56,7 +57,7 @@ class ExerciseSetMapperTest {
                 .unit("kg")
                 .createdAt(testTime)
                 .finishedAt(testTime)
-                .status("finished")
+                .status(Status.COMPLETE)
                 .build();
     }
 
@@ -80,7 +81,7 @@ class ExerciseSetMapperTest {
         assertThat(result.getUnit()).isEqualTo("kg");
         assertThat(result.getCreatedAt()).isEqualTo(testTime);
         assertThat(result.getFinishedAt()).isEqualTo(testTime);
-        assertThat(result.getStatus()).isEqualTo("finished");
+        assertThat(result.getStatus()).isEqualTo(Status.COMPLETE);
         assertThat(result.getDayExercise()).isNull(); // Not set in basic toEntity
     }
 
@@ -146,7 +147,7 @@ class ExerciseSetMapperTest {
         assertThat(result.unit()).isEqualTo("kg");
         assertThat(result.createdAt()).isEqualTo(testTime);
         assertThat(result.finishedAt()).isEqualTo(testTime);
-        assertThat(result.status()).isEqualTo("finished");
+        assertThat(result.status()).isEqualTo("complete");
     }
 
     @Test
@@ -169,7 +170,7 @@ class ExerciseSetMapperTest {
                 .reps(10)
                 .unit("kg")
                 .createdAt(testTime)
-                .status("finished")
+                .status(Status.COMPLETE)
                 .dayExercise(null)
                 .build();
 
@@ -194,13 +195,13 @@ class ExerciseSetMapperTest {
                 .unit("kg")
                 .createdAt(testTime)
                 .finishedAt(null)
-                .status("ready")
+                .status(Status.READY)
                 .build();
 
         Instant newFinishedTime = testTime.plusSeconds(3600);
         ExerciseSetPayload updatePayload = new ExerciseSetPayload(
                 null, null, 2, "Myo-Rep", 110.0f, 115.0f, 105.0f, 120.0f,
-                12, 15, 85.0f, "lbs", testTime.plusSeconds(60), newFinishedTime, "finished"
+                12, 15, 85.0f, "lbs", testTime.plusSeconds(60), newFinishedTime, "complete"
         );
 
         // When
@@ -210,7 +211,7 @@ class ExerciseSetMapperTest {
         // Only mutable fields should be updated
         assertThat(existing.getCreatedAt()).isEqualTo(testTime.plusSeconds(60));
         assertThat(existing.getFinishedAt()).isEqualTo(newFinishedTime);
-        assertThat(existing.getStatus()).isEqualTo("finished");
+        assertThat(existing.getStatus()).isEqualTo(Status.COMPLETE);
         
         // Immutable fields should remain unchanged
         assertThat(existing.getPosition()).isEqualTo(1); // unchanged
@@ -235,12 +236,12 @@ class ExerciseSetMapperTest {
                 .id(1L)
                 .createdAt(testTime)
                 .finishedAt(null)
-                .status("ready")
+                .status(Status.READY)
                 .build();
 
         ExerciseSetPayload partialPayload = new ExerciseSetPayload(
                 null, null, null, null, null, null, null, null,
-                null, null, null, null, null, testTime.plusSeconds(3600), "finished"
+                null, null, null, null, null, testTime.plusSeconds(3600), "complete"
         );
 
         // When
@@ -249,7 +250,7 @@ class ExerciseSetMapperTest {
         // Then
         assertThat(existing.getCreatedAt()).isEqualTo(testTime); // unchanged (null in payload)
         assertThat(existing.getFinishedAt()).isEqualTo(testTime.plusSeconds(3600)); // updated
-        assertThat(existing.getStatus()).isEqualTo("finished"); // updated
+        assertThat(existing.getStatus()).isEqualTo(Status.COMPLETE); // updated
     }
 
     @Test
@@ -265,12 +266,12 @@ class ExerciseSetMapperTest {
                 .unit("kg")
                 .createdAt(testTime)
                 .finishedAt(null)
-                .status("ready")
+                .status(Status.READY)
                 .build();
 
         ExerciseSetPayload updatePayload = new ExerciseSetPayload(
                 null, null, 2, "Myo-Rep", 110.0f, 115.0f, 105.0f, 120.0f,
-                12, 15, 85.0f, "lbs", null, testTime.plusSeconds(3600), "finished"
+                12, 15, 85.0f, "lbs", null, testTime.plusSeconds(3600), "complete"
         );
 
         // When
@@ -294,7 +295,7 @@ class ExerciseSetMapperTest {
         assertThat(result.getBodyweight()).isEqualTo(85.0f);
         assertThat(result.getUnit()).isEqualTo("lbs");
         assertThat(result.getFinishedAt()).isEqualTo(testTime.plusSeconds(3600));
-        assertThat(result.getStatus()).isEqualTo("finished");
+        assertThat(result.getStatus()).isEqualTo(Status.COMPLETE);
     }
 
     @Test

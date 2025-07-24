@@ -4,6 +4,7 @@ import com.noslen.training_tracker.dto.day.DayExercisePayload;
 import com.noslen.training_tracker.dto.day.DayMuscleGroupPayload;
 import com.noslen.training_tracker.dto.day.DayNotePayload;
 import com.noslen.training_tracker.dto.day.DayPayload;
+import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.model.day.DayMuscleGroup;
@@ -108,7 +109,7 @@ class DayMapperTest {
                 .createdAt(now)
                 .updatedAt(now)
                 .muscleGroup(DayMuscleGroup.builder().id(1L).build())
-                .status("active")
+                .status(Status.READY)
                 .build();
 
         DayMuscleGroup muscleGroupEntity = DayMuscleGroup.builder()

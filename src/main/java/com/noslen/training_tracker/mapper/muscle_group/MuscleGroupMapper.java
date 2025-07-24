@@ -3,6 +3,7 @@ package com.noslen.training_tracker.mapper.muscle_group;
 import com.noslen.training_tracker.dto.muscle_group.MuscleGroupPayload;
 import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
 import com.noslen.training_tracker.model.muscle_group.types.MgName;
+import com.noslen.training_tracker.util.EnumConverter;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -109,7 +110,7 @@ public class MuscleGroupMapper {
         
         // Try direct enum lookup first (for uppercase values like "CHEST")
         try {
-            return MgName.valueOf(name.toUpperCase());
+            return EnumConverter.stringToEnum(MgName.class, name);
         } catch (IllegalArgumentException e) {
             // If that fails, try to find by the enum's getValue() method (capitalized)
             for (MgName mgName : MgName.values()) {
@@ -117,15 +118,18 @@ public class MuscleGroupMapper {
                     return mgName;
                 }
             }
-            // If no match found, throw exception
-            throw new IllegalArgumentException("Invalid muscle group name: " + name);
+            throw new IllegalArgumentException("No MgName found for value: " + name);
         }
     }
-
+    
     /**
-     * Converts MgName enum to String using the enum's getValue() method
+     * Converts MgName enum to String using getValue() method
+     * Returns capitalized format (e.g., "Chest", "Quads")
      */
     private String mgNameToString(MgName mgName) {
-        return mgName != null ? mgName.getValue() : null;
+        if (mgName == null) {
+            return null;
+        }
+        return EnumConverter.enumToSerializedValue(mgName);
     }
 }

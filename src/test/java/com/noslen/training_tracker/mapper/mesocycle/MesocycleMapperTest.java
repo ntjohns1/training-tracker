@@ -2,6 +2,7 @@ package com.noslen.training_tracker.mapper.mesocycle;
 
 import com.noslen.training_tracker.dto.mesocycle.MesoNotePayload;
 import com.noslen.training_tracker.dto.mesocycle.MesocyclePayload;
+import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.model.mesocycle.MesoNote;
 import com.noslen.training_tracker.model.mesocycle.MesoTemplate;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
@@ -98,7 +99,7 @@ class MesocycleMapperTest {
                 .lastWorkoutPartialedAt(now.minusSeconds(5))
                 .weeks(Collections.emptyList())
                 .notes(Arrays.asList(MesoNote.builder().id(1L).build()))
-                .status("active")
+                .status(Status.READY)
                 .generatedFrom("template")
                 .progressions(Collections.emptyMap())
                 .build();
@@ -342,7 +343,7 @@ class MesocycleMapperTest {
                 .deletedAt(null)
                 .weeks(Collections.emptyList())
                 .notes(Collections.emptyList())
-                .status("draft")
+                .status(Status.READY)
                 .generatedFrom("manual")
                 .progressions(Collections.emptyMap())
                 .build();
@@ -384,7 +385,7 @@ class MesocycleMapperTest {
         assertEquals(3L, result.getSourceMeso().getId());
 
         // Verify preserved fields
-        assertEquals("draft", result.getStatus());
+        assertEquals(Status.READY, result.getStatus());
         assertEquals("manual", result.getGeneratedFrom());
         assertSame(existingEntity.getWeeks(), result.getWeeks());
         assertSame(existingEntity.getProgressions(), result.getProgressions());
@@ -437,7 +438,7 @@ class MesocycleMapperTest {
                 .microRirs(3L)
                 .createdAt(now.minusSeconds(3600))
                 .notes(existingNotes)
-                .status("draft")
+                .status(Status.READY)
                 .generatedFrom("manual")
                 .build();
 

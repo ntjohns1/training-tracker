@@ -1,8 +1,10 @@
 package com.noslen.training_tracker.mapper.day;
 
 import com.noslen.training_tracker.dto.day.ExerciseSetPayload;
+import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.model.day.ExerciseSet;
+import com.noslen.training_tracker.util.EnumConverter;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -33,7 +35,7 @@ public class ExerciseSetMapper {
                 .unit(payload.unit())
                 .createdAt(payload.createdAt())
                 .finishedAt(payload.finishedAt())
-                .status(payload.status())
+                .status(EnumConverter.stringToEnum(Status.class, payload.status()))
                 .build();
     }
 
@@ -71,7 +73,7 @@ public class ExerciseSetMapper {
                 entity.getUnit(),
                 entity.getCreatedAt(),
                 entity.getFinishedAt(),
-                entity.getStatus()
+                EnumConverter.enumToString(entity.getStatus())
         );
     }
 
@@ -92,7 +94,7 @@ public class ExerciseSetMapper {
             existing.setFinishedAt(payload.finishedAt());
         }
         if (payload.status() != null) {
-            existing.setStatus(payload.status());
+            existing.setStatus(EnumConverter.stringToEnum(Status.class, payload.status()));
         }
 
         // Note: Other fields like position, setType, weight, etc. don't have setters
@@ -126,7 +128,7 @@ public class ExerciseSetMapper {
                 .unit(payload.unit() != null ? payload.unit() : existing.getUnit())
                 .createdAt(payload.createdAt() != null ? payload.createdAt() : existing.getCreatedAt())
                 .finishedAt(payload.finishedAt() != null ? payload.finishedAt() : existing.getFinishedAt())
-                .status(payload.status() != null ? payload.status() : existing.getStatus())
+                .status(EnumConverter.stringToEnum(Status.class, payload.status()))
                 .build();
     }
 
