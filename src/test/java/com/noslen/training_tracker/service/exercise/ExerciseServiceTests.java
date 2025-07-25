@@ -144,7 +144,7 @@ public class ExerciseServiceTests {
 
     @Test
     void testDeleteExercise_NotFound_ShouldThrowException() {
-        // Given
+        // Given    
         Long id = 1L;
         when(repo.findById(id)).thenReturn(Optional.empty());
 
