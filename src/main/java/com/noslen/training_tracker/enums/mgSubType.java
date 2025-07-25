@@ -3,7 +3,7 @@ package com.noslen.training_tracker.enums;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.noslen.training_tracker.util.CustomSerializableEnum;
 
-public enum mgSubType implements CustomSerializableEnum {
+public enum MgSubType implements CustomSerializableEnum {
     COMPOUND,
     CURL,
     HEAVY_AXIAL,
@@ -19,7 +19,14 @@ public enum mgSubType implements CustomSerializableEnum {
 
     @JsonValue
     public String getValue() {
-        return this.name().toLowerCase();
+
+        return switch(this) {
+            case HEAVY_AXIAL -> "heavy-axial";
+            case NON_HEAVY_AXIAL -> "non-heavy-axial";
+            case NON_INCLINE -> "non-incline";
+            case NON_OVERHEAD -> "non-overhead";
+            default -> this.name().toLowerCase();
+        };
     }
 
     @Override

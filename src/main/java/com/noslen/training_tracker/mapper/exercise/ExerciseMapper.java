@@ -2,6 +2,7 @@ package com.noslen.training_tracker.mapper.exercise;
 
 import com.noslen.training_tracker.dto.exercise.ExercisePayload;
 import com.noslen.training_tracker.enums.ExerciseType;
+import com.noslen.training_tracker.enums.MgSubType;
 import com.noslen.training_tracker.model.exercise.Exercise;
 import com.noslen.training_tracker.util.EnumConverter;
 import org.springframework.stereotype.Component;
@@ -36,7 +37,7 @@ public class ExerciseMapper {
                 .createdAt(payload.createdAt())
                 .updatedAt(payload.updatedAt())
                 .deletedAt(payload.deletedAt())
-                .mgSubType(payload.mgSubType())
+                .mgSubType(stringToMgSubType(payload.mgSubType()))
                 // Convert nested ExerciseNotePayloads to ExerciseNote entities
                 .notes(payload.notes() != null ?
                                payload.notes()
@@ -64,7 +65,7 @@ public class ExerciseMapper {
                 entity.getCreatedAt(),
                 entity.getUpdatedAt(),
                 entity.getDeletedAt(),
-                entity.getMgSubType(),
+                mgSubTypeToString(entity.getMgSubType()),
                 // Convert nested ExerciseNote entities to ExerciseNotePayloads
                 exerciseNoteMapper.toPayloadList(entity.getNotes())
         );
@@ -98,7 +99,7 @@ public class ExerciseMapper {
             existing.setUserId(payload.userId());
         }
         if (payload.mgSubType() != null) {
-            existing.setMgSubType(payload.mgSubType());
+            existing.setMgSubType(stringToMgSubType(payload.mgSubType()));
         }
         if (payload.createdAt() != null) {
             existing.setCreatedAt(payload.createdAt());
@@ -144,7 +145,7 @@ public class ExerciseMapper {
                 .createdAt(existing.getCreatedAt()) // Keep existing creation time
                 .updatedAt(payload.updatedAt() != null ? payload.updatedAt() : existing.getUpdatedAt())
                 .deletedAt(payload.deletedAt() != null ? payload.deletedAt() : existing.getDeletedAt())
-                .mgSubType(payload.mgSubType() != null ? payload.mgSubType() : existing.getMgSubType())
+                .mgSubType(stringToMgSubType(payload.mgSubType()) != null ? stringToMgSubType(payload.mgSubType()) : existing.getMgSubType())
                 .notes(payload.notes() != null ?
                                payload.notes()
                                        .stream()
@@ -191,4 +192,30 @@ public class ExerciseMapper {
         }
         return EnumConverter.enumToSerializedValue(exerciseType);
     }
+
+    private MgSubType stringToMgSubType(String mgSubType) {
+        if (mgSubType == null) {
+            return null;
+        }
+        try {
+            return EnumConverter.stringToEnum(MgSubType.class,
+                                              mgSubType);
+        } catch (IllegalArgumentException e) {
+            // If that fails, try to find by the enum's getValue() method
+            for (MgSubType mt : MgSubType.values()) {
+                if (mt.getValue()
+                        .equals(mgSubType)) {
+                    return mt;
+                }
+            }
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    private String mgSubTypeToString(MgSubType mgSubType) {
+        if (mgSubType == null) {
+            return null;
+        }
+        return EnumConverter.enumToSerializedValue(mgSubType);
+    }   
 }

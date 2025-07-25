@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.noslen.training_tracker.enums.ExerciseType;
+import com.noslen.training_tracker.enums.MgSubType;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -66,7 +67,7 @@ public class Exercise {
     
     @Column(name = "mg_sub_type")
     @JsonProperty("mgSubType")
-    private String mgSubType;
+    private MgSubType mgSubType;
     
     @OneToMany(cascade = CascadeType.ALL)
     @JsonManagedReference(value = "exercisenote-exercise")
@@ -90,7 +91,7 @@ public class Exercise {
         this.youtubeId = youtubeId;
     }
 
-    public void setMgSubType(String mgSubType) {
+    public void setMgSubType(MgSubType mgSubType) {
         this.mgSubType = mgSubType;
     }
 

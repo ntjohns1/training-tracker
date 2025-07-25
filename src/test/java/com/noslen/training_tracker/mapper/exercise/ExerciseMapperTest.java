@@ -3,6 +3,7 @@ package com.noslen.training_tracker.mapper.exercise;
 import com.noslen.training_tracker.dto.exercise.ExercisePayload;
 import com.noslen.training_tracker.dto.exercise.ExerciseNotePayload;
 import com.noslen.training_tracker.enums.ExerciseType;
+import com.noslen.training_tracker.enums.MgSubType;
 import com.noslen.training_tracker.model.exercise.Exercise;
 import com.noslen.training_tracker.model.exercise.ExerciseNote;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,7 +57,7 @@ class ExerciseMapperTest {
 
         testPayload = new ExercisePayload(
                 1L, "Test Exercise", 2L, "youtube123", "barbell", 3L,
-                testTime, testTime, null, "primary",
+                testTime, testTime, null, "vertical",
                 Collections.singletonList(testNotePayload)
         );
 
@@ -70,7 +71,7 @@ class ExerciseMapperTest {
                 .createdAt(testTime)
                 .updatedAt(testTime)
                 .deletedAt(null)
-                .mgSubType("primary")
+                .mgSubType(MgSubType.VERTICAL)
                 .notes(Collections.singletonList(testNoteEntity))
                 .build();
     }
@@ -94,7 +95,7 @@ class ExerciseMapperTest {
         assertThat(result.getCreatedAt()).isEqualTo(testTime);
         assertThat(result.getUpdatedAt()).isEqualTo(testTime);
         assertThat(result.getDeletedAt()).isNull();
-        assertThat(result.getMgSubType()).isEqualTo("primary");
+        assertThat(result.getMgSubType()).isEqualTo(MgSubType.VERTICAL);
         assertThat(result.getNotes()).hasSize(1);
     }
 
@@ -112,7 +113,7 @@ class ExerciseMapperTest {
         // Given
         ExercisePayload payloadWithoutNotes = new ExercisePayload(
                 1L, "Test Exercise", 2L, "youtube123", "barbell", 3L,
-                testTime, testTime, null, "primary", null
+                testTime, testTime, null, "non-heavy-axial", null
         );
 
         // When
@@ -142,7 +143,7 @@ class ExerciseMapperTest {
         assertThat(result.createdAt()).isEqualTo(testTime);
         assertThat(result.updatedAt()).isEqualTo(testTime);
         assertThat(result.deletedAt()).isNull();
-        assertThat(result.mgSubType()).isEqualTo("primary");
+        assertThat(result.mgSubType()).isEqualTo("vertical");
         assertThat(result.notes()).hasSize(1);
     }
 
@@ -167,12 +168,12 @@ class ExerciseMapperTest {
                 .userId(3L)
                 .createdAt(testTime)
                 .updatedAt(testTime)
-                .mgSubType("secondary")
+                .mgSubType(MgSubType.HORIZONTAL)
                 .build();
 
         ExercisePayload updatePayload = new ExercisePayload(
                 0L, "Updated Exercise", 4L, "updated456", "barbell", 5L,
-                null, testTime.plusSeconds(60), testTime.plusSeconds(120), "primary", null
+                null, testTime.plusSeconds(60), testTime.plusSeconds(120), "horizontal", null
         );
 
         // When
@@ -186,7 +187,7 @@ class ExerciseMapperTest {
         assertThat(existing.getUserId()).isEqualTo(5L);
         assertThat(existing.getUpdatedAt()).isEqualTo(testTime.plusSeconds(60));
         assertThat(existing.getDeletedAt()).isEqualTo(testTime.plusSeconds(120));
-        assertThat(existing.getMgSubType()).isEqualTo("primary");
+        assertThat(existing.getMgSubType()).isEqualTo(MgSubType.HORIZONTAL);
         // ID and createdAt should remain unchanged
         assertThat(existing.getId()).isEqualTo(1L);
         assertThat(existing.getCreatedAt()).isEqualTo(testTime);
@@ -238,12 +239,12 @@ class ExerciseMapperTest {
                 .userId(3L)
                 .createdAt(testTime)
                 .updatedAt(testTime)
-                .mgSubType("secondary")
+                .mgSubType(MgSubType.HORIZONTAL)
                 .build();
 
         ExercisePayload updatePayload = new ExercisePayload(
                 0L, "Updated Exercise", 4L, "updated456", "dumbbell", 5L,
-                null, testTime.plusSeconds(60), null, "primary", null
+                null, testTime.plusSeconds(60), null, "non-heavy-axial", null
         );
 
         // When
@@ -259,7 +260,7 @@ class ExerciseMapperTest {
         assertThat(result.getUserId()).isEqualTo(5L); // updated from payload
         assertThat(result.getCreatedAt()).isEqualTo(testTime); // preserved from existing
         assertThat(result.getUpdatedAt()).isEqualTo(testTime.plusSeconds(60)); // updated from payload
-        assertThat(result.getMgSubType()).isEqualTo("primary"); // updated from payload
+        assertThat(result.getMgSubType()).isEqualTo(MgSubType.NON_HEAVY_AXIAL); // updated from payload
     }
 
     @Test

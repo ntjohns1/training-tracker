@@ -13,6 +13,7 @@ import com.noslen.training_tracker.model.day.DayMuscleGroup;
 import com.noslen.training_tracker.model.day.DayNote;
 import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
 import com.noslen.training_tracker.enums.MgName;
+import com.noslen.training_tracker.enums.MgSubType;
 import com.noslen.training_tracker.model.exercise.Exercise;
 import com.noslen.training_tracker.model.exercise.ExerciseNote;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
@@ -103,7 +104,7 @@ class DayMapperTest {
                         .createdAt(now)
                         .updatedAt(now)
                         .deletedAt(now)
-                        .mgSubType("active")
+                        .mgSubType(MgSubType.VERTICAL)
                         .notes(List.of(ExerciseNote.builder().build()))
                         .build())
                 .position(1)
