@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -50,7 +51,7 @@ public class DayMuscleGroup {
     @Column(name = "recommended_sets")
     private Integer recommendedSets;
     
-    private String status;
+    private Status status;
     
     @Column(name = "created_at")
     private Instant createdAt;

@@ -1,8 +1,12 @@
 package com.noslen.training_tracker.mapper.day;
 
 import com.noslen.training_tracker.dto.day.ExerciseSetPayload;
+import com.noslen.training_tracker.enums.Status;
+import com.noslen.training_tracker.enums.Unit;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.model.day.ExerciseSet;
+import com.noslen.training_tracker.enums.SetType;
+import com.noslen.training_tracker.util.EnumConverter;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -22,7 +26,7 @@ public class ExerciseSetMapper {
         return ExerciseSet.builder()
                 .id(payload.id())
                 .position(payload.position())
-                .setType(payload.setType())
+                .setType(EnumConverter.stringToEnum(SetType.class, payload.setType()))
                 .weight(payload.weight())
                 .weightTarget(payload.weightTarget())
                 .weightTargetMin(payload.weightTargetMin())
@@ -30,10 +34,10 @@ public class ExerciseSetMapper {
                 .reps(payload.reps())
                 .repsTarget(payload.repsTarget())
                 .bodyweight(payload.bodyweight())
-                .unit(payload.unit())
+                .unit(stringToUnit(payload.unit()))
                 .createdAt(payload.createdAt())
                 .finishedAt(payload.finishedAt())
-                .status(payload.status())
+                .status(EnumConverter.stringToEnum(Status.class, payload.status()))
                 .build();
     }
 
@@ -60,7 +64,7 @@ public class ExerciseSetMapper {
                 entity.getId(),
                 entity.getDayExerciseId(),
                 entity.getPosition(),
-                entity.getSetType(),
+                EnumConverter.enumToString(entity.getSetType()),
                 entity.getWeight(),
                 entity.getWeightTarget(),
                 entity.getWeightTargetMin(),
@@ -68,10 +72,10 @@ public class ExerciseSetMapper {
                 entity.getReps(),
                 entity.getRepsTarget(),
                 entity.getBodyweight(),
-                entity.getUnit(),
+                unitToString(entity.getUnit()),
                 entity.getCreatedAt(),
                 entity.getFinishedAt(),
-                entity.getStatus()
+                EnumConverter.enumToString(entity.getStatus())
         );
     }
 
@@ -92,7 +96,7 @@ public class ExerciseSetMapper {
             existing.setFinishedAt(payload.finishedAt());
         }
         if (payload.status() != null) {
-            existing.setStatus(payload.status());
+            existing.setStatus(EnumConverter.stringToEnum(Status.class, payload.status()));
         }
 
         // Note: Other fields like position, setType, weight, etc. don't have setters
@@ -115,7 +119,7 @@ public class ExerciseSetMapper {
                 .id(existing.getId()) // Keep existing ID
                 .dayExercise(existing.getDayExercise()) // Keep existing relationship
                 .position(payload.position() != null ? payload.position() : existing.getPosition())
-                .setType(payload.setType() != null ? payload.setType() : existing.getSetType())
+                .setType(payload.setType() != null ? EnumConverter.stringToEnum(SetType.class, payload.setType()) : existing.getSetType())
                 .weight(payload.weight() != null ? payload.weight() : existing.getWeight())
                 .weightTarget(payload.weightTarget() != null ? payload.weightTarget() : existing.getWeightTarget())
                 .weightTargetMin(payload.weightTargetMin() != null ? payload.weightTargetMin() : existing.getWeightTargetMin())
@@ -123,10 +127,10 @@ public class ExerciseSetMapper {
                 .reps(payload.reps() != null ? payload.reps() : existing.getReps())
                 .repsTarget(payload.repsTarget() != null ? payload.repsTarget() : existing.getRepsTarget())
                 .bodyweight(payload.bodyweight() != null ? payload.bodyweight() : existing.getBodyweight())
-                .unit(payload.unit() != null ? payload.unit() : existing.getUnit())
+                .unit(stringToUnit(payload.unit()) != null ? stringToUnit(payload.unit()) : existing.getUnit())
                 .createdAt(payload.createdAt() != null ? payload.createdAt() : existing.getCreatedAt())
                 .finishedAt(payload.finishedAt() != null ? payload.finishedAt() : existing.getFinishedAt())
-                .status(payload.status() != null ? payload.status() : existing.getStatus())
+                .status(EnumConverter.stringToEnum(Status.class, payload.status()))
                 .build();
     }
 
@@ -141,4 +145,22 @@ public class ExerciseSetMapper {
                 .map(this::toPayload)
                 .collect(Collectors.toList());
     }
+
+    public Unit stringToUnit(String unit) {
+        if (unit == null) {
+            return null;
+        }
+        try {
+            return EnumConverter.stringToEnum(Unit.class, unit);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid unit string: " + unit);
+        }
+    }
+
+    public String unitToString(Unit unit) {
+        if (unit == null) {
+            return null;
+        }
+        return EnumConverter.enumToSerializedValue(unit);
+    }   
 }

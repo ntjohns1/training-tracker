@@ -5,6 +5,7 @@ import com.noslen.training_tracker.mapper.day.DayMuscleGroupMapper;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.day.DayMuscleGroup;
 import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
+import com.noslen.training_tracker.enums.MgName;
 import com.noslen.training_tracker.repository.day.DayMuscleGroupRepo;
 import com.noslen.training_tracker.repository.day.DayRepo;
 import com.noslen.training_tracker.repository.muscle_group.MuscleGroupRepo;
@@ -62,7 +63,7 @@ public class DayMuscleGroupServiceTests {
         Long dayId = 1L;
         Long muscleGroupId = 2L;
         Day day = Day.builder().id(dayId).build();
-        MuscleGroup muscleGroup = new MuscleGroup(muscleGroupId, null, null, null);
+        MuscleGroup muscleGroup = new MuscleGroup(muscleGroupId, MgName.CHEST, null, null);
         DayMuscleGroup savedEntity = DayMuscleGroup.builder().id(1L).day(day).muscleGroup(muscleGroup).build();
         DayMuscleGroupPayload expectedPayload = new DayMuscleGroupPayload(1L, dayId, muscleGroupId, null, null, null, 
                 Instant.now(), Instant.now(), null, null);
@@ -88,11 +89,11 @@ public class DayMuscleGroupServiceTests {
         // Arrange
         Long id = 1L;
         DayMuscleGroupPayload payload = new DayMuscleGroupPayload(id, 1L, 2L, 8, 3, 7, 
-                Instant.now(), Instant.now(), 12, "completed");
+                Instant.now(), Instant.now(), 12, "complete");
         DayMuscleGroup existingEntity = DayMuscleGroup.builder().id(id).pump(6).soreness(2).workload(5).build();
         DayMuscleGroup savedEntity = DayMuscleGroup.builder().id(id).pump(8).soreness(3).workload(7).build();
         DayMuscleGroupPayload expectedPayload = new DayMuscleGroupPayload(id, 1L, 2L, 8, 3, 7, 
-                Instant.now(), Instant.now(), 12, "completed");
+                Instant.now(), Instant.now(), 12, "complete");
 
         when(repo.findById(id)).thenReturn(Optional.of(existingEntity));
         when(repo.save(any(DayMuscleGroup.class))).thenReturn(savedEntity);
@@ -154,7 +155,7 @@ public class DayMuscleGroupServiceTests {
         expectedPayloads.add(new DayMuscleGroupPayload(1L, dayId, 2L, 7, 4, 6, 
                 Instant.now(), Instant.now(), 10, "in_progress"));
         expectedPayloads.add(new DayMuscleGroupPayload(2L, dayId, 3L, 8, 3, 7, 
-                Instant.now(), Instant.now(), 12, "completed"));
+                Instant.now(), Instant.now(), 12, "complete"));
         
         when(repo.findByDay_Id(dayId)).thenReturn(entities);
         when(mapper.toPayloadList(entities)).thenReturn(expectedPayloads);
@@ -211,7 +212,7 @@ public class DayMuscleGroupServiceTests {
         // Arrange
         Long id = 1L;
         DayMuscleGroupPayload payload = new DayMuscleGroupPayload(id, 1L, 2L, 8, 3, 7, 
-                Instant.now(), Instant.now(), 12, "completed");
+                Instant.now(), Instant.now(), 12, "complete");
         when(repo.findById(id)).thenReturn(Optional.empty());
 
         // Act & Assert
