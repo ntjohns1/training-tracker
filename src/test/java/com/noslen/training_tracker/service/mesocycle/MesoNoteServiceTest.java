@@ -42,8 +42,7 @@ class MesoNoteServiceTest {
         now = Instant.now();
 
         samplePayload = new MesoNotePayload(
-                1L, 10L, 20L, now, now, "Test meso note"
-        );
+                1L, 10L, 20L, now, now, "Test meso note");
 
         sampleEntity = MesoNote.builder()
                 .id(1L)
@@ -106,9 +105,9 @@ class MesoNoteServiceTest {
         when(mesoNoteRepo.findById(1L)).thenReturn(Optional.empty());
 
         // When & Then
-        RuntimeException exception = assertThrows(RuntimeException.class, 
-            () -> mesoNoteService.getMesoNote(1L));
-        
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> mesoNoteService.getMesoNote(1L));
+
         assertEquals("MesoNote not found with id: 1", exception.getMessage());
         verify(mesoNoteRepo).findById(1L);
         verifyNoInteractions(mesoNoteMapper);
@@ -118,7 +117,6 @@ class MesoNoteServiceTest {
     void getMesoNotesByMesoId_Success() {
         // Given
         List<MesoNote> entities = Arrays.asList(sampleEntity);
-        List<MesoNotePayload> expectedPayloads = Arrays.asList(samplePayload);
 
         when(mesoNoteRepo.findByMesocycle_Id(10L)).thenReturn(entities);
         when(mesoNoteMapper.toPayload(sampleEntity)).thenReturn(samplePayload);
@@ -148,8 +146,7 @@ class MesoNoteServiceTest {
                 .build();
 
         MesoNotePayload updatedPayload = new MesoNotePayload(
-                1L, 10L, 20L, now, now, "Updated text"
-        );
+                1L, 10L, 20L, now, now, "Updated text");
 
         when(mesoNoteRepo.findById(1L)).thenReturn(Optional.of(sampleEntity));
         when(mesoNoteMapper.mergeEntity(sampleEntity, samplePayload)).thenReturn(updatedEntity);
@@ -176,9 +173,9 @@ class MesoNoteServiceTest {
         when(mesoNoteRepo.findById(1L)).thenReturn(Optional.empty());
 
         // When & Then
-        RuntimeException exception = assertThrows(RuntimeException.class, 
-            () -> mesoNoteService.updateMesoNote(1L, samplePayload));
-        
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> mesoNoteService.updateMesoNote(1L, samplePayload));
+
         assertEquals("MesoNote not found with id: 1", exception.getMessage());
         verify(mesoNoteRepo).findById(1L);
         verifyNoMoreInteractions(mesoNoteMapper, mesoNoteRepo);
@@ -203,9 +200,9 @@ class MesoNoteServiceTest {
         when(mesoNoteRepo.existsById(1L)).thenReturn(false);
 
         // When & Then
-        RuntimeException exception = assertThrows(RuntimeException.class, 
-            () -> mesoNoteService.deleteMesoNote(1L));
-        
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> mesoNoteService.deleteMesoNote(1L));
+
         assertEquals("MesoNote not found with id: 1", exception.getMessage());
         verify(mesoNoteRepo).existsById(1L);
         verify(mesoNoteRepo, never()).deleteById(anyLong());

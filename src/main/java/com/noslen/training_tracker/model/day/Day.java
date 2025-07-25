@@ -18,6 +18,7 @@ import jakarta.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.noslen.training_tracker.enums.Unit;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 
 import lombok.AllArgsConstructor;
@@ -56,7 +57,7 @@ public class Day {
     @Column(name = "bodyweight_at")
     private Instant bodyweightAt;
     
-    private String unit;
+    private Unit unit;
     
     @Column(name = "finished_at")
     private Instant finishedAt;

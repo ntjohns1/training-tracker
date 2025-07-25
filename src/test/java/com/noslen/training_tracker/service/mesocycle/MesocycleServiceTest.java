@@ -2,6 +2,8 @@ package com.noslen.training_tracker.service.mesocycle;
 
 import com.noslen.training_tracker.dto.mesocycle.MesoNotePayload;
 import com.noslen.training_tracker.dto.mesocycle.MesocyclePayload;
+import com.noslen.training_tracker.enums.Status;
+import com.noslen.training_tracker.enums.Unit;
 import com.noslen.training_tracker.mapper.mesocycle.MesocycleMapper;
 import com.noslen.training_tracker.model.mesocycle.MesoTemplate;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
@@ -47,7 +49,7 @@ class MesocycleServiceTest {
         );
 
         samplePayload = new MesocyclePayload(
-                1L, "test-key", 100L, "Test Mesocycle", 28, "days",
+                1L, "test-key", 100L, "Test Mesocycle", 28, "lbs",
                 2L, 3L, 5L, now, now, null, null,
                 null, null, null, null, null, null, null, null, null, null, null,
                 4, Arrays.asList(notePayload)
@@ -59,7 +61,7 @@ class MesocycleServiceTest {
                 .userId(100L)
                 .name("Test Mesocycle")
                 .days(28)
-                .unit("days")
+                .unit(Unit.LBS)
                 .sourceTemplate(MesoTemplate.builder().id(2L).build())
                 .sourceMeso(Mesocycle.builder().id(3L).build())
                 .microRirs(5L)
@@ -69,7 +71,7 @@ class MesocycleServiceTest {
                 .deletedAt(null)
                 .weeks(Collections.emptyList())
                 .notes(Collections.emptyList())
-                .status("active")
+                .status(Status.READY)
                 .generatedFrom("template")
                 .progressions(Collections.emptyMap())
                 .build();
@@ -83,7 +85,7 @@ class MesocycleServiceTest {
                 .name("Test Mesocycle")
                 .userId(100L)
                 .days(28)
-                .unit("days")
+                .unit(Unit.LBS)
                 .build();
 
         when(mesocycleMapper.toEntity(samplePayload)).thenReturn(entityToSave);
@@ -165,14 +167,14 @@ class MesocycleServiceTest {
                 .name("Updated Mesocycle")
                 .userId(100L)
                 .days(28)
-                .unit("days")
+                .unit(Unit.LBS)
                 .createdAt(now)
                 .updatedAt(now)
                 .deletedAt(null)
                 .build();
 
         MesocyclePayload updatedPayload = new MesocyclePayload(
-                1L, "updated-key", 100L, "Updated Mesocycle", 28, "days",
+                1L, "updated-key", 100L, "Updated Mesocycle", 28, "lbs",
                 null, null, null, now, now, null, null,
                 null, null, null, null, null, null, null, null, null, null, null,
                 4, Collections.emptyList()

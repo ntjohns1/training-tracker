@@ -13,6 +13,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import com.noslen.training_tracker.enums.ExerciseType;
+import com.noslen.training_tracker.enums.MgSubType;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -70,16 +73,16 @@ public class ExerciseServiceTests {
                 .name("Test Exercise")
                 .muscleGroupId(2L)
                 .youtubeId("youtube123")
-                .exerciseType("strength")
+                .exerciseType(ExerciseType.BARBELL)
                 .userId(3L)
                 .createdAt(testTime)
                 .updatedAt(testTime)
-                .mgSubType("primary")
+                .mgSubType(MgSubType.HORIZONTAL)
                 .notes(new ArrayList<>(Arrays.asList(testNoteEntity)))
                 .build();
                 
         testPayload = new ExercisePayload(
-                1L, "Test Exercise", 2L, "youtube123", "strength", 3L,
+                1L, "Test Exercise", 2L, "youtube123", "barbell", 3L,
                 testTime, testTime, null, "primary", Arrays.asList(testNotePayload)
         );
     }

@@ -43,11 +43,11 @@ public class ExerciseSetServiceTests {
     void createExerciseSet() {
         // Arrange
         ExerciseSetPayload payload = new ExerciseSetPayload(null, 1L, 1, "working", 100.0f, 95.0f, 90.0f, 105.0f, 
-                10, 8, 70.0f, "kg", Instant.now(), Instant.now(), "completed");
+                10, 8, 70.0f, "kg", Instant.now(), Instant.now(), "complete");
         ExerciseSet entity = ExerciseSet.builder().position(1).build();
         ExerciseSet savedEntity = ExerciseSet.builder().id(1L).position(1).build();
         ExerciseSetPayload expectedPayload = new ExerciseSetPayload(1L, 1L, 1, "working", 100.0f, 95.0f, 90.0f, 105.0f, 
-                10, 8, 70.0f, "kg", Instant.now(), Instant.now(), "completed");
+                10, 8, 70.0f, "kg", Instant.now(), Instant.now(), "complete");
         
         when(mapper.toEntity(payload)).thenReturn(entity);
         when(repo.save(any(ExerciseSet.class))).thenReturn(savedEntity);
@@ -68,11 +68,11 @@ public class ExerciseSetServiceTests {
         // Arrange
         Long id = 1L;
         ExerciseSetPayload payload = new ExerciseSetPayload(id, 1L, 1, "working", 105.0f, 95.0f, 90.0f, 105.0f, 
-                12, 8, 70.0f, "kg", Instant.now(), Instant.now(), "completed");
+                12, 8, 70.0f, "kg", Instant.now(), Instant.now(), "complete");
         ExerciseSet existingEntity = ExerciseSet.builder().id(id).position(1).build();
         ExerciseSet savedEntity = ExerciseSet.builder().id(id).position(1).weight(105.0f).reps(12).build();
         ExerciseSetPayload expectedPayload = new ExerciseSetPayload(id, 1L, 1, "working", 105.0f, 95.0f, 90.0f, 105.0f, 
-                12, 8, 70.0f, "kg", Instant.now(), Instant.now(), "completed");
+                12, 8, 70.0f, "kg", Instant.now(), Instant.now(), "complete");
 
         when(repo.findById(id)).thenReturn(Optional.of(existingEntity));
         // updateEntity is void, so we don't mock its return value
@@ -96,7 +96,7 @@ public class ExerciseSetServiceTests {
         Long id = 1L;
         ExerciseSet entity = ExerciseSet.builder().id(id).position(1).build();
         ExerciseSetPayload expectedPayload = new ExerciseSetPayload(id, 1L, 1, "working", 100.0f, 95.0f, 90.0f, 105.0f, 
-                10, 8, 70.0f, "kg", Instant.now(), Instant.now(), "completed");
+                10, 8, 70.0f, "kg", Instant.now(), Instant.now(), "complete");
         
         when(repo.findById(id)).thenReturn(Optional.of(entity));
         when(mapper.toPayload(entity)).thenReturn(expectedPayload);
@@ -134,9 +134,9 @@ public class ExerciseSetServiceTests {
         
         List<ExerciseSetPayload> expectedPayloads = new ArrayList<>();
         expectedPayloads.add(new ExerciseSetPayload(1L, dayExerciseId, 1, "working", 100.0f, 95.0f, 90.0f, 105.0f, 
-                10, 8, 70.0f, "kg", Instant.now(), Instant.now(), "completed"));
+                10, 8, 70.0f, "kg", Instant.now(), Instant.now(), "complete"));
         expectedPayloads.add(new ExerciseSetPayload(2L, dayExerciseId, 2, "working", 102.5f, 95.0f, 90.0f, 105.0f, 
-                9, 8, 70.0f, "kg", Instant.now(), Instant.now(), "completed"));
+                9, 8, 70.0f, "kg", Instant.now(), Instant.now(), "complete"));
         
         when(repo.findByDayExercise_Id(dayExerciseId)).thenReturn(entities);
         when(mapper.toPayloadList(entities)).thenReturn(expectedPayloads);
@@ -166,7 +166,7 @@ public class ExerciseSetServiceTests {
         // Arrange
         Long id = 1L;
         ExerciseSetPayload payload = new ExerciseSetPayload(id, 1L, 1, "working", 105.0f, 95.0f, 90.0f, 105.0f, 
-                12, 8, 70.0f, "kg", Instant.now(), Instant.now(), "completed");
+                12, 8, 70.0f, "kg", Instant.now(), Instant.now(), "complete");
         when(repo.findById(id)).thenReturn(Optional.empty());
 
         // Act & Assert

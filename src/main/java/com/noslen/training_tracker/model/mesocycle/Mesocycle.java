@@ -2,8 +2,10 @@ package com.noslen.training_tracker.model.mesocycle;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.muscle_group.Progression;
+import com.noslen.training_tracker.enums.Unit;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,7 +33,7 @@ public class Mesocycle {
     private Long userId;
     private String name;
     private Integer days;
-    private String unit;
+    private Unit unit;
 
 //    TODO: fix this relation
     @ManyToOne
@@ -81,8 +83,8 @@ public class Mesocycle {
     @JsonProperty("notes")
     private List<MesoNote> notes;
 
-    String status;
-    String generatedFrom;
+    private Status status;
+    private String generatedFrom;
 
     @OneToMany(mappedBy = "mesocycle", cascade = CascadeType.ALL, orphanRemoval = true)
     @MapKey(name = "muscleGroupId")

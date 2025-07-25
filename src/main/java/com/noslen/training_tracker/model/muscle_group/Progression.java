@@ -1,7 +1,7 @@
 package com.noslen.training_tracker.model.muscle_group;
 
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
-import com.noslen.training_tracker.util.MgProgressionType;
+import com.noslen.training_tracker.enums.MgProgressionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,6 +18,7 @@ public class Progression {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    // TODO: change to MuscleGroup
     private Long muscleGroupId;
     private MgProgressionType mgProgressionType;
 

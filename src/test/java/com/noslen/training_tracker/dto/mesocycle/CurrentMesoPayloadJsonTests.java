@@ -11,7 +11,7 @@ import com.noslen.training_tracker.dto.day.DayNotePayload;
 import com.noslen.training_tracker.dto.day.DayPayload;
 import com.noslen.training_tracker.dto.day.ExerciseSetPayload;
 import com.noslen.training_tracker.dto.muscle_group.ProgressionPayload;
-import com.noslen.training_tracker.util.MgProgressionType;
+import com.noslen.training_tracker.enums.MgProgressionType;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,7 +57,7 @@ public class CurrentMesoPayloadJsonTests {
                 ProgressionPayload progression1 = new ProgressionPayload(
                                 6159088L,
                                 1L,
-                                MgProgressionType.regular);
+                                MgProgressionType.REGULAR);
                 progressions.put(1L, progression1);
 
                 List<ExerciseSetPayload> sets = new ArrayList<>();

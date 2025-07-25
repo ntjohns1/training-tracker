@@ -2,8 +2,10 @@ package com.noslen.training_tracker.mapper.day;
 
 import com.noslen.training_tracker.dto.day.DayExercisePayload;
 import com.noslen.training_tracker.dto.day.ExerciseSetPayload;
+import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.model.day.ExerciseSet;
+import com.noslen.training_tracker.util.EnumConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,7 +34,7 @@ public class DayExerciseMapper {
                 .createdAt(payload.createdAt() != null ? payload.createdAt() : Instant.now())
                 .updatedAt(payload.updatedAt() != null ? payload.updatedAt() : Instant.now())
                 .sourceDayExerciseId(payload.sourceDayExerciseId())
-                .status(payload.status());
+                .status(EnumConverter.stringToEnum(Status.class, payload.status()));
 
         // Handle entity relationships by creating stub entities with IDs
         if (payload.dayId() != null) {
@@ -91,7 +93,7 @@ public class DayExerciseMapper {
                 entity.getSourceDayExerciseId(),
                 entity.getMuscleGroupId(),
                 setPayloads,
-                entity.getStatus()
+                EnumConverter.enumToString(entity.getStatus())
         );
     }
 
@@ -149,7 +151,7 @@ public class DayExerciseMapper {
                 .position(payload.position() != null ? payload.position() : existing.getPosition())
                 .jointPain(payload.jointPain() != null ? payload.jointPain() : existing.getJointPain())
                 .sourceDayExerciseId(payload.sourceDayExerciseId() != null ? payload.sourceDayExerciseId() : existing.getSourceDayExerciseId())
-                .status(payload.status() != null ? payload.status() : existing.getStatus())
+                .status(payload.status() != null ? EnumConverter.stringToEnum(Status.class, payload.status()) : existing.getStatus())
                 .createdAt(existing.getCreatedAt()) // Keep original creation time
                 .updatedAt(Instant.now()) // Update timestamp
                 .sets(existing.getSets()) // Keep existing sets

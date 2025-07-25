@@ -4,7 +4,6 @@ import com.noslen.training_tracker.dto.mesocycle.MesocyclePayload;
 import com.noslen.training_tracker.mapper.mesocycle.MesocycleMapper;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 import com.noslen.training_tracker.repository.mesocycle.MesocycleRepo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +21,6 @@ public class MesocycleServiceImpl implements MesocycleService {
     private final MesocycleRepo mesocycleRepo;
     private final MesocycleMapper mesocycleMapper;
 
-    @Autowired
     public MesocycleServiceImpl(MesocycleRepo mesocycleRepo, MesocycleMapper mesocycleMapper) {
         this.mesocycleRepo = mesocycleRepo;
         this.mesocycleMapper = mesocycleMapper;

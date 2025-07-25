@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 
-import com.noslen.training_tracker.util.MgProgressionType;
+import com.noslen.training_tracker.enums.MgProgressionType;
 
 @JsonTest
 public class ProgressionPayloadJsonTests {
@@ -19,7 +19,7 @@ public class ProgressionPayloadJsonTests {
 
     @Test
     void testSerialize() throws Exception {
-        ProgressionPayload progressionPayload = new ProgressionPayload(6159088L, 1L, MgProgressionType.regular);
+        ProgressionPayload progressionPayload = new ProgressionPayload(6159088L, 1L, MgProgressionType.REGULAR);
         ClassPathResource resource = new ClassPathResource("example/progression.json");
         assertThat(json.write(progressionPayload)).isEqualToJson(resource);
     }
@@ -31,7 +31,7 @@ public class ProgressionPayloadJsonTests {
 
         assertThat(progressionPayload.id()).isEqualTo(6159088L);
         assertThat(progressionPayload.muscleGroupId()).isEqualTo(1L);
-        assertThat(progressionPayload.mgProgressionType()).isEqualTo(MgProgressionType.regular);
+        assertThat(progressionPayload.mgProgressionType()).isEqualTo(MgProgressionType.REGULAR);
     }
 
 }

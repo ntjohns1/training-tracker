@@ -85,12 +85,12 @@ public class DayExerciseServiceTests {
         // Arrange
         Long id = 1L;
         DayExercisePayload updatePayload = new DayExercisePayload(
-                1L, 1L, 2L, 2, 1, null, null, null, 3L, null, "completed"
+                1L, 1L, 2L, 2, 1, null, null, null, 3L, null, "complete"
         );
         DayExercise existingEntity = DayExercise.builder().id(1L).build();
         DayExercise savedEntity = DayExercise.builder().id(1L).build();
         DayExercisePayload expectedPayload = new DayExercisePayload(
-                1L, 1L, 2L, 2, 1, Instant.now(), Instant.now(), null, 3L, null, "completed"
+                1L, 1L, 2L, 2, 1, Instant.now(), Instant.now(), null, 3L, null, "complete"
         );
 
         when(repo.findById(id)).thenReturn(Optional.of(existingEntity));
@@ -103,7 +103,7 @@ public class DayExerciseServiceTests {
 
         // Assert
         assertNotNull(result);
-        assertEquals("completed", result.status());
+        assertEquals("complete", result.status());
         verify(repo).findById(id);
         verify(mapper).updateEntity(existingEntity, updatePayload);
         verify(repo).save(existingEntity);
@@ -115,7 +115,7 @@ public class DayExerciseServiceTests {
         // Arrange
         Long id = 1L;
         DayExercisePayload updatePayload = new DayExercisePayload(
-                1L, 1L, 2L, 2, 1, null, null, null, 3L, null, "completed"
+                1L, 1L, 2L, 2, 1, null, null, null, 3L, null, "complete"
         );
 
         when(repo.findById(id)).thenReturn(Optional.empty());

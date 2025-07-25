@@ -1,14 +1,14 @@
 package com.noslen.training_tracker.mapper.mesocycle;
 
 import com.noslen.training_tracker.dto.mesocycle.MesocyclePayload;
+import com.noslen.training_tracker.enums.Unit;
 import com.noslen.training_tracker.model.mesocycle.MesoTemplate;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.noslen.training_tracker.util.EnumConverter;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.Collections;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -19,7 +19,6 @@ public class MesocycleMapper {
 
     private final MesoNoteMapper mesoNoteMapper;
 
-    @Autowired
     public MesocycleMapper(MesoNoteMapper mesoNoteMapper) {
         this.mesoNoteMapper = mesoNoteMapper;
     }
@@ -38,7 +37,7 @@ public class MesocycleMapper {
                 .userId(payload.userId())
                 .name(payload.name())
                 .days(payload.days())
-                .unit(payload.unit())
+                .unit(stringToUnit(payload.unit()))
                 .sourceTemplate(payload.sourceTemplateId() != null ? 
                     MesoTemplate.builder().id(payload.sourceTemplateId()).build() : null)
                 .sourceMeso(payload.sourceMesoId() != null ? 
@@ -84,7 +83,7 @@ public class MesocycleMapper {
                 entity.getUserId(),
                 entity.getName(),
                 entity.getDays(),
-                entity.getUnit(),
+                unitToString(entity.getUnit()),
                 entity.getSourceTemplateId(), // Uses the helper method
                 entity.getSourceMesoId(), // Uses the helper method
                 entity.getMicroRirs(),
@@ -136,7 +135,8 @@ public class MesocycleMapper {
                 .userId(payload.userId() != null ? payload.userId() : existingEntity.getUserId())
                 .name(payload.name() != null ? payload.name() : existingEntity.getName())
                 .days(payload.days() != null ? payload.days() : existingEntity.getDays())
-                .unit(payload.unit() != null ? payload.unit() : existingEntity.getUnit())
+                .unit(stringToUnit(payload.unit() != null ? payload.unit() :
+                                           unitToString(existingEntity.getUnit())))
                 .sourceTemplate(payload.sourceTemplateId() != null ? 
                     MesoTemplate.builder().id(payload.sourceTemplateId()).build() : existingEntity.getSourceTemplate())
                 .sourceMeso(payload.sourceMesoId() != null ? 
@@ -177,5 +177,23 @@ public class MesocycleMapper {
                 .generatedFrom(existingEntity.getGeneratedFrom()) // Preserve existing generatedFrom
                 .progressions(existingEntity.getProgressions()) // Preserve existing progressions
                 .build();
+    }
+
+    public Unit stringToUnit(String unitString) {
+        if (unitString == null) {
+            return null;
+        }
+        try {
+            return EnumConverter.stringToEnum(Unit.class, unitString);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid unit string: " + unitString);
+        }
+    }
+
+    public String unitToString(Unit unit) {
+        if (unit == null) {
+            return null;
+        }
+        return EnumConverter.enumToSerializedValue(unit);
     }
 }
