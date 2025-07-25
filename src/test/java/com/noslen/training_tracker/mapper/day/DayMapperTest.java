@@ -6,6 +6,7 @@ import com.noslen.training_tracker.dto.day.DayNotePayload;
 import com.noslen.training_tracker.dto.day.DayPayload;
 import com.noslen.training_tracker.enums.ExerciseType;
 import com.noslen.training_tracker.enums.Status;
+import com.noslen.training_tracker.enums.Unit;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.model.day.DayMuscleGroup;
@@ -69,7 +70,7 @@ class DayMapperTest {
                 now,
                 70,
                 now,
-                "kg",
+                "kgs",
                 now,
                 "Test Day",
                 List.of(notePayload),
@@ -127,7 +128,7 @@ class DayMapperTest {
                 .position(1)
                 .week(1)
                 .bodyweight(70.0)
-                .unit("kg")
+                .unit(Unit.KGS)
                 .bodyweightAt(now)
                 .createdAt(now)
                 .updatedAt(now)
@@ -159,7 +160,7 @@ class DayMapperTest {
         assertEquals(samplePayload.position().intValue(), result.getPosition()); // DTO uses Long, Entity uses Integer
         assertEquals(samplePayload.week().intValue(), result.getWeek()); // DTO uses Long, Entity uses Integer
         assertEquals(samplePayload.bodyweight().doubleValue(), result.getBodyweight()); // DTO uses Integer, Entity uses Double
-        assertEquals(samplePayload.unit(), result.getUnit());
+        assertEquals(Unit.KGS, result.getUnit());
         assertEquals(samplePayload.bodyweightAt(), result.getBodyweightAt());
         assertEquals(samplePayload.createdAt(), result.getCreatedAt());
         assertEquals(samplePayload.updatedAt(), result.getUpdatedAt());
@@ -186,7 +187,7 @@ class DayMapperTest {
     void toEntity_WithEmptyCollections_ShouldHandleGracefully() {
         // Given
         DayPayload payloadWithEmptyCollections = new DayPayload(
-                1L, 1L, 1L, 1L, now, now, 70, now, "kg", now,
+                1L, 1L, 1L, 1L, now, now, 70, now, "kgs", now,
                 "Test", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),"active"
         );
 
@@ -204,7 +205,7 @@ class DayMapperTest {
     void toEntity_WithNullCollections_ShouldHandleGracefully() {
         // Given
         DayPayload payloadWithNullCollections = new DayPayload(
-                1L, 1L, 1L, 1L, now, now, 70, now, "kg", now,
+                1L, 1L, 1L, 1L, now, now, 70, now, "kgs", now,
                 "Test", null, null, null,"active"
         );
 
@@ -240,7 +241,7 @@ class DayMapperTest {
         assertEquals(sampleEntity.getPosition().longValue(), result.position()); // Entity uses Integer, DTO uses Long
         assertEquals(sampleEntity.getWeek().longValue(), result.week()); // Entity uses Integer, DTO uses Long
         assertEquals(sampleEntity.getBodyweight().intValue(), result.bodyweight()); // Entity uses Double, DTO uses Integer
-        assertEquals(sampleEntity.getUnit(), result.unit());
+        assertEquals(dayMapper.unitToString(sampleEntity.getUnit()), result.unit());
         assertEquals(sampleEntity.getBodyweightAt(), result.bodyweightAt());
         assertEquals(sampleEntity.getCreatedAt(), result.createdAt());
         assertEquals(sampleEntity.getUpdatedAt(), result.updatedAt());
@@ -276,7 +277,7 @@ class DayMapperTest {
                 .position(1)
                 .week(1)
                 .bodyweight(70.0)
-                .unit("kg")
+                .unit(Unit.KGS)
                 .bodyweightAt(now)
                 .createdAt(now)
                 .updatedAt(now)
@@ -305,7 +306,7 @@ class DayMapperTest {
                 .position(1)
                 .week(1)
                 .bodyweight(70.0)
-                .unit("kg")
+                .unit(Unit.KGS)
                 .bodyweightAt(now)
                 .createdAt(now)
                 .updatedAt(now)
@@ -335,14 +336,14 @@ class DayMapperTest {
                 .position(1)
                 .week(1)
                 .bodyweight(65.0)
-                .unit("lb")
+                .unit(Unit.LBS)
                 .bodyweightAt(now.minusSeconds(3600))
                 .createdAt(now.minusSeconds(7200))
                 .updatedAt(now.minusSeconds(3600))
                 .build();
 
         DayPayload updatePayload = new DayPayload(
-                1L, 2L, 2L, 2L, now, now, 70, now, "kg", now, "New Label", 
+                1L, 2L, 2L, 2L, now, now, 70, now, "kgs", now, "New Label", 
                 Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "active"
         );
 
@@ -352,7 +353,7 @@ class DayMapperTest {
         // Then - updateEntity only updates mutable timestamp fields
         assertEquals("Old Label", existingEntity.getLabel()); // Label is immutable, not updated
         assertEquals(65.0, existingEntity.getBodyweight()); // Bodyweight is immutable, not updated
-        assertEquals("lb", existingEntity.getUnit()); // Unit is immutable, not updated
+        assertEquals(Unit.LBS, existingEntity.getUnit()); // Unit is immutable, not updated
         assertNotNull(existingEntity.getUpdatedAt()); // Only updatedAt is modified
 
         // Verify mesocycle relationship is preserved
@@ -386,12 +387,12 @@ class DayMapperTest {
                 .position(1)
                 .week(1)
                 .bodyweight(65.0)
-                .unit("lb")
+                .unit(Unit.LBS)
                 .createdAt(now.minusSeconds(7200))
                 .build();
 
         DayPayload updatePayload = new DayPayload(
-                1L, 2L, 2L, 2L, now, now, 70, now, "kg", now, "New Label", 
+                1L, 2L, 2L, 2L, now, now, 70, now, "kgs", now, "New Label", 
                 Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "active"
         );
 
@@ -408,7 +409,7 @@ class DayMapperTest {
         assertEquals(2, (int) result.getPosition());
         assertEquals(2, (int) result.getWeek());
         assertEquals(70.0, result.getBodyweight());
-        assertEquals("kg", result.getUnit());
+        assertEquals(Unit.KGS, result.getUnit());
         assertEquals(now, result.getBodyweightAt());
         assertEquals(now, result.getFinishedAt());
         assertEquals(now.minusSeconds(7200), result.getCreatedAt()); // Preserved from existing

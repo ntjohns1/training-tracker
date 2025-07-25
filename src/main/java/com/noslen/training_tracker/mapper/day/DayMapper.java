@@ -1,7 +1,10 @@
 package com.noslen.training_tracker.mapper.day;
 
 import com.noslen.training_tracker.dto.day.DayPayload;
+import com.noslen.training_tracker.enums.Unit;
 import com.noslen.training_tracker.model.day.Day;
+import com.noslen.training_tracker.util.EnumConverter;
+
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -46,7 +49,7 @@ public class DayMapper {
                 .updatedAt(payload.updatedAt())
                 .bodyweight(payload.bodyweight() != null ? payload.bodyweight().doubleValue() : null) // Convert Integer to Double
                 .bodyweightAt(payload.bodyweightAt())
-                .unit(payload.unit())
+                .unit(stringToUnit(payload.unit()))
                 .finishedAt(payload.finishedAt())
                 .label(payload.label())
                 // Note: Nested collections (notes, exercises, muscleGroups) are handled by service layer
@@ -74,7 +77,7 @@ public class DayMapper {
                 entity.getUpdatedAt(),
                 entity.getBodyweight() != null ? entity.getBodyweight().intValue() : null, // Convert Double to Integer
                 entity.getBodyweightAt(),
-                entity.getUnit(),
+                unitToString(entity.getUnit()),
                 entity.getFinishedAt(),
                 entity.getLabel(),
                 dayNoteMapper.toPayloadList(entity.getNotes()),
@@ -130,7 +133,7 @@ public class DayMapper {
                 .updatedAt(payload.updatedAt() != null ? payload.updatedAt() : existing.getUpdatedAt())
                 .bodyweight(payload.bodyweight() != null ? payload.bodyweight().doubleValue() : existing.getBodyweight())
                 .bodyweightAt(payload.bodyweightAt() != null ? payload.bodyweightAt() : existing.getBodyweightAt())
-                .unit(payload.unit() != null ? payload.unit() : existing.getUnit())
+                .unit(stringToUnit(payload.unit()) != null ? stringToUnit(payload.unit()) : existing.getUnit())
                 .finishedAt(payload.finishedAt() != null ? payload.finishedAt() : existing.getFinishedAt())
                 .label(payload.label() != null ? payload.label() : existing.getLabel())
                 .notes(existing.getNotes()) // Preserve existing collections
@@ -191,4 +194,24 @@ public class DayMapper {
             return "planned";
         }
     }
+
+
+    public Unit stringToUnit(String unit) {
+        if (unit == null) {
+            return null;
+        }
+        try {
+            return EnumConverter.stringToEnum(Unit.class, unit);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid unit string: " + unit);
+        }
+    }
+
+    public String unitToString(Unit unit) {
+        if (unit == null) {
+            return null;
+        }
+        return EnumConverter.enumToSerializedValue(unit);
+    }   
+    
 }
