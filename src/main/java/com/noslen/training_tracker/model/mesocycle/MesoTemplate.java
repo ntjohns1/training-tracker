@@ -14,10 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @Entity
@@ -30,11 +27,20 @@ public class MesoTemplate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+//    TODO: unique, generate UUID on create
     @Column(name = "template_key")
     private String templateKey;
+
+    @Setter
+    @Column(name = "name")
     private String name;
+
+    @Setter
     private String emphasis;
+
+    @Setter
     private String sex;
+
     private Long userId;
 
     @ManyToOne
@@ -48,13 +54,19 @@ public class MesoTemplate {
     @JsonProperty("source_meso_id")
     @JoinColumn(name = "source_meso_id")
     private Mesocycle sourceMeso;
+
     @ManyToOne
     @JsonBackReference(value = "meso-template-prev-template")
     @JsonProperty("prev_template_id")
     @JoinColumn(name = "prev_template_id")
     private MesoTemplate prevTemplate;
     private Instant createdAt;
+
+    @Setter
+    @Column(name = "updated_at")
     private Instant updatedAt;
+    @Setter
+    @Column(name = "deleted_at")
     private Instant deletedAt;
     private Integer frequency;
 

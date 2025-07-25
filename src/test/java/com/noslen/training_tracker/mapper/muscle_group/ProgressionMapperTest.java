@@ -1,28 +1,37 @@
 package com.noslen.training_tracker.mapper.muscle_group;
 
 import com.noslen.training_tracker.dto.muscle_group.ProgressionPayload;
+import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
 import com.noslen.training_tracker.model.muscle_group.Progression;
+import com.noslen.training_tracker.repository.muscle_group.MuscleGroupRepo;
 import com.noslen.training_tracker.enums.MgProgressionType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ProgressionMapperTest {
+
+    @Mock
+    private MuscleGroupRepo muscleGroupRepo;
 
     @InjectMocks
     private ProgressionMapper progressionMapper;
 
     private ProgressionPayload testPayload;
     private Progression testEntity;
+    private MuscleGroup testMuscleGroup;
 
     @BeforeEach
     void setUp() {
@@ -30,8 +39,11 @@ class ProgressionMapperTest {
                 1L, 2L, MgProgressionType.REGULAR
         );
 
+        testMuscleGroup = new MuscleGroup();
+        testMuscleGroup.setId(2L);
+
         testEntity = new Progression(
-                1L, 2L, MgProgressionType.REGULAR, null
+                1L, testMuscleGroup, MgProgressionType.REGULAR, null
         );
     }
 
@@ -43,7 +55,7 @@ class ProgressionMapperTest {
         // Then
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(1L);
-        assertThat(result.getMuscleGroupId()).isEqualTo(2L);
+        assertThat(result.getMuscleGroup()).isNull(); // Mapper no longer resolves MuscleGroup
         assertThat(result.getMgProgressionType()).isEqualTo(MgProgressionType.REGULAR);
         assertThat(result.getMesocycle()).isNull();
     }
@@ -81,23 +93,22 @@ class ProgressionMapperTest {
     @Test
     void updateEntity_WithValidData_ShouldUpdateMutableField() {
         // Given
-        Progression existing = new Progression(
-                1L, 2L, MgProgressionType.REGULAR, null
+        Progression existingEntity = new Progression(
+                1L, testMuscleGroup, MgProgressionType.REGULAR, null
         );
-
         ProgressionPayload updatePayload = new ProgressionPayload(
-                0L, 0L, MgProgressionType.SECONDARY
-                // Only this should be updated
+                1L, 2L, MgProgressionType.SECONDARY
         );
+        // No mocking needed since mapper doesn't use repository
 
         // When
-        progressionMapper.updateEntity(existing, updatePayload);
+        Progression result = progressionMapper.updateEntity(existingEntity, updatePayload);
 
         // Then
-        assertThat(existing.getMgProgressionType()).isEqualTo(MgProgressionType.SECONDARY);
-        // Other fields should remain unchanged since they don't have setters
-        assertThat(existing.getId()).isEqualTo(1L);
-        assertThat(existing.getMuscleGroupId()).isEqualTo(2L);
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(1L);
+        assertThat(result.getMuscleGroup()).isEqualTo(testMuscleGroup); // Keeps existing MuscleGroup
+        assertThat(result.getMgProgressionType()).isEqualTo(MgProgressionType.SECONDARY);
     }
 
     @Test

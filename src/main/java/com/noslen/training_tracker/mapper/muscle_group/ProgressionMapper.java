@@ -12,16 +12,17 @@ public class ProgressionMapper {
 
     /**
      * Converts ProgressionPayload to Progression entity
+     * Note: MuscleGroup entity must be set separately in the service layer
      */
     public Progression toEntity(ProgressionPayload payload) {
         if (payload == null) {
             return null;
         }
 
-        // Use constructor since most fields don't have setters
+        // Create entity with null MuscleGroup - service layer will set this
         Progression entity = new Progression(
                 payload.id(),
-                payload.muscleGroupId(),
+                null, // MuscleGroup will be set by service layer
                 payload.mgProgressionType(),
                 null // mesocycle - would need to be handled separately if needed
         );
@@ -46,38 +47,17 @@ public class ProgressionMapper {
 
     /**
      * Updates an existing Progression entity with data from ProgressionPayload
-     * Note: Since Progression is mostly immutable, this method only updates the one mutable field
+     * Note: MuscleGroup changes must be handled in the service layer
      */
-    public void updateEntity(Progression existing, ProgressionPayload payload) {
+    public Progression updateEntity(Progression existing, ProgressionPayload payload) {
         if (existing == null || payload == null) {
-            return;
-        }
-
-        // Only update the mutable field that has a setter
-        if (payload.mgProgressionType() != null) {
-            existing.setMgProgressionType(payload.mgProgressionType());
-        }
-
-        // Note: muscleGroupId and id cannot be updated because they don't have setters.
-        // If these need to be updated, a new entity should be created using mergeEntity method.
-    }
-
-    /**
-     * Creates a new Progression entity by merging existing entity with payload data
-     * This is useful when you need to update immutable fields
-     */
-    public Progression mergeEntity(Progression existing, ProgressionPayload payload) {
-        if (existing == null) {
-            return toEntity(payload);
-        }
-        if (payload == null) {
             return existing;
         }
 
         // Create new entity using constructor since fields don't have setters
         return new Progression(
                 existing.getId(), // Keep existing ID
-                payload.muscleGroupId() != 0 ? payload.muscleGroupId() : existing.getMuscleGroupId(),
+                existing.getMuscleGroup(), // Keep existing MuscleGroup - service handles changes
                 payload.mgProgressionType() != null ? payload.mgProgressionType() : existing.getMgProgressionType(),
                 existing.getMesocycle() // Keep existing mesocycle relationship
         );

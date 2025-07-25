@@ -1,7 +1,7 @@
 package com.noslen.training_tracker.model.muscle_group;
 
-import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 import com.noslen.training_tracker.enums.MgProgressionType;
+import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,13 +18,28 @@ public class Progression {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    // TODO: change to MuscleGroup
-    private Long muscleGroupId;
+
+    @ManyToOne
+    @JoinColumn(name = "muscle_group_id")
+    private MuscleGroup muscleGroup;
+
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "mg_progression_type")
     private MgProgressionType mgProgressionType;
 
     @ManyToOne
     @JoinColumn(name = "mesocycle_id")
     private Mesocycle mesocycle;
+
+    public long getMuscleGroupId() {
+        return muscleGroup.getId();
+    }
+
+    public Progression setMuscleGroup(MuscleGroup muscleGroup) {
+        this.muscleGroup = muscleGroup;
+        return this;
+    }
 
     public Progression setMgProgressionType(MgProgressionType mgProgressionType) {
         this.mgProgressionType = mgProgressionType;
@@ -33,15 +48,19 @@ public class Progression {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         Progression that = (Progression) o;
 
         if (!Objects.equals(id,
-                            that.id)) return false;
-        if (!Objects.equals(muscleGroupId,
-                            that.muscleGroupId)) return false;
+                            that.id))
+            return false;
+        if (!Objects.equals(muscleGroup,
+                            that.muscleGroup))
+            return false;
         return Objects.equals(mgProgressionType,
                               that.mgProgressionType);
     }
@@ -49,7 +68,7 @@ public class Progression {
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (muscleGroupId != null ? muscleGroupId.hashCode() : 0);
+        result = 31 * result + (muscleGroup != null ? muscleGroup.hashCode() : 0);
         result = 31 * result + (mgProgressionType != null ? mgProgressionType.hashCode() : 0);
         return result;
     }

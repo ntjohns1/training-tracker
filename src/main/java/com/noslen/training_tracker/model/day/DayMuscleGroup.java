@@ -6,21 +6,11 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @Entity
@@ -50,7 +40,9 @@ public class DayMuscleGroup {
     
     @Column(name = "recommended_sets")
     private Integer recommendedSets;
-    
+
+    @Setter
+    @Enumerated(EnumType.STRING)
     private Status status;
     
     @Column(name = "created_at")
