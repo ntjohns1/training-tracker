@@ -2,6 +2,7 @@ package com.noslen.training_tracker.mapper.day;
 
 import com.noslen.training_tracker.dto.day.ExerciseSetPayload;
 import com.noslen.training_tracker.enums.Status;
+import com.noslen.training_tracker.enums.Unit;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.model.day.ExerciseSet;
 import com.noslen.training_tracker.enums.SetType;
@@ -40,7 +41,7 @@ class ExerciseSetMapperTest {
 
         testPayload = new ExerciseSetPayload(
                 1L, 2L, 1, "regular", 100.0f, 105.0f, 95.0f, 110.0f,
-                10, 12, 80.0f, "kg", testTime, testTime, "complete"
+                10, 12, 80.0f, "kgs", testTime, testTime, "complete"
         );
 
         testEntity = ExerciseSet.builder()
@@ -55,7 +56,7 @@ class ExerciseSetMapperTest {
                 .reps(10)
                 .repsTarget(12)
                 .bodyweight(80.0f)
-                .unit("kg")
+                .unit(exerciseSetMapper.stringToUnit("kgs"))
                 .createdAt(testTime)
                 .finishedAt(testTime)
                 .status(Status.COMPLETE)
@@ -79,7 +80,7 @@ class ExerciseSetMapperTest {
         assertThat(result.getReps()).isEqualTo(10);
         assertThat(result.getRepsTarget()).isEqualTo(12);
         assertThat(result.getBodyweight()).isEqualTo(80.0f);
-        assertThat(result.getUnit()).isEqualTo("kg");
+        assertThat(result.getUnit()).isEqualTo(exerciseSetMapper.stringToUnit("kgs"));
         assertThat(result.getCreatedAt()).isEqualTo(testTime);
         assertThat(result.getFinishedAt()).isEqualTo(testTime);
         assertThat(result.getStatus()).isEqualTo(Status.COMPLETE);
@@ -145,7 +146,7 @@ class ExerciseSetMapperTest {
         assertThat(result.reps()).isEqualTo(10);
         assertThat(result.repsTarget()).isEqualTo(12);
         assertThat(result.bodyweight()).isEqualTo(80.0f);
-        assertThat(result.unit()).isEqualTo("kg");
+        assertThat(result.unit()).isEqualTo("kgs");
         assertThat(result.createdAt()).isEqualTo(testTime);
         assertThat(result.finishedAt()).isEqualTo(testTime);
         assertThat(result.status()).isEqualTo("complete");
@@ -169,7 +170,7 @@ class ExerciseSetMapperTest {
                 .setType(SetType.REGULAR)
                 .weight(100.0f)
                 .reps(10)
-                .unit("kg")
+                .unit(exerciseSetMapper.stringToUnit("kgs"))
                 .createdAt(testTime)
                 .status(Status.COMPLETE)
                 .dayExercise(null)
@@ -193,7 +194,7 @@ class ExerciseSetMapperTest {
                 .setType(SetType.REGULAR)
                 .weight(100.0f)
                 .reps(10)
-                .unit("kg")
+                .unit(exerciseSetMapper.stringToUnit("kgs"))
                 .createdAt(testTime)
                 .finishedAt(null)
                 .status(Status.READY)
@@ -219,7 +220,7 @@ class ExerciseSetMapperTest {
         assertThat(existing.getSetType()).isEqualTo(SetType.REGULAR); // unchanged
         assertThat(existing.getWeight()).isEqualTo(100.0f); // unchanged
         assertThat(existing.getReps()).isEqualTo(10); // unchanged
-        assertThat(existing.getUnit()).isEqualTo("kg"); // unchanged
+        assertThat(existing.getUnit()).isEqualTo(Unit.KGS); // unchanged
     }
 
     @Test
@@ -264,7 +265,7 @@ class ExerciseSetMapperTest {
                 .setType(SetType.REGULAR)
                 .weight(100.0f)
                 .reps(10)
-                .unit("kg")
+                .unit(exerciseSetMapper.stringToUnit("kgs"))
                 .createdAt(testTime)
                 .finishedAt(null)
                 .status(Status.READY)
@@ -294,7 +295,7 @@ class ExerciseSetMapperTest {
         assertThat(result.getReps()).isEqualTo(12);
         assertThat(result.getRepsTarget()).isEqualTo(15);
         assertThat(result.getBodyweight()).isEqualTo(85.0f);
-        assertThat(result.getUnit()).isEqualTo("lbs");
+        assertThat(result.getUnit()).isEqualTo(Unit.LBS);
         assertThat(result.getFinishedAt()).isEqualTo(testTime.plusSeconds(3600));
         assertThat(result.getStatus()).isEqualTo(Status.COMPLETE);
     }

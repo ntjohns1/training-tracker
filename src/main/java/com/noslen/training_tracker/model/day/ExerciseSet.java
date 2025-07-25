@@ -3,6 +3,7 @@ package com.noslen.training_tracker.model.day;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.enums.SetType;
+import com.noslen.training_tracker.enums.Unit;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,7 +31,6 @@ public class ExerciseSet {
     
     private Integer position;
     
-    // TODO: enum - Regular, Myo-Rep, Myo-Rep Match
     @Column(name = "set_type")
     private SetType setType;
     private Float weight;
@@ -41,8 +41,7 @@ public class ExerciseSet {
     private Integer repsTarget;
     private Float bodyweight;
 
-    // TODO: enum - kg, lbs
-    private String unit;
+    private Unit unit;
 
 
     @Setter
@@ -53,7 +52,6 @@ public class ExerciseSet {
     @Column(name = "finished_at")
     private Instant finishedAt;
 
-    // TODO: enum - ready, finished, skipped
     @Setter
     private Status status;
 

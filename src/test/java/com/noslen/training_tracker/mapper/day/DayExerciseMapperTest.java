@@ -58,7 +58,7 @@ class DayExerciseMapperTest {
                 .reps(10)
                 .repsTarget(12)
                 .bodyweight(80.0f)
-                .unit("kg")
+                .unit(exerciseSetMapper.stringToUnit("kg"))
                 .createdAt(testTime)
                 .finishedAt(testTime)
                 .status(Status.COMPLETE)

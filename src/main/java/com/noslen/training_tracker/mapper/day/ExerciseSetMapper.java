@@ -2,6 +2,7 @@ package com.noslen.training_tracker.mapper.day;
 
 import com.noslen.training_tracker.dto.day.ExerciseSetPayload;
 import com.noslen.training_tracker.enums.Status;
+import com.noslen.training_tracker.enums.Unit;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.model.day.ExerciseSet;
 import com.noslen.training_tracker.enums.SetType;
@@ -33,7 +34,7 @@ public class ExerciseSetMapper {
                 .reps(payload.reps())
                 .repsTarget(payload.repsTarget())
                 .bodyweight(payload.bodyweight())
-                .unit(payload.unit())
+                .unit(stringToUnit(payload.unit()))
                 .createdAt(payload.createdAt())
                 .finishedAt(payload.finishedAt())
                 .status(EnumConverter.stringToEnum(Status.class, payload.status()))
@@ -71,7 +72,7 @@ public class ExerciseSetMapper {
                 entity.getReps(),
                 entity.getRepsTarget(),
                 entity.getBodyweight(),
-                entity.getUnit(),
+                unitToString(entity.getUnit()),
                 entity.getCreatedAt(),
                 entity.getFinishedAt(),
                 EnumConverter.enumToString(entity.getStatus())
@@ -126,7 +127,7 @@ public class ExerciseSetMapper {
                 .reps(payload.reps() != null ? payload.reps() : existing.getReps())
                 .repsTarget(payload.repsTarget() != null ? payload.repsTarget() : existing.getRepsTarget())
                 .bodyweight(payload.bodyweight() != null ? payload.bodyweight() : existing.getBodyweight())
-                .unit(payload.unit() != null ? payload.unit() : existing.getUnit())
+                .unit(stringToUnit(payload.unit()) != null ? stringToUnit(payload.unit()) : existing.getUnit())
                 .createdAt(payload.createdAt() != null ? payload.createdAt() : existing.getCreatedAt())
                 .finishedAt(payload.finishedAt() != null ? payload.finishedAt() : existing.getFinishedAt())
                 .status(EnumConverter.stringToEnum(Status.class, payload.status()))
@@ -144,4 +145,22 @@ public class ExerciseSetMapper {
                 .map(this::toPayload)
                 .collect(Collectors.toList());
     }
+
+    public Unit stringToUnit(String unit) {
+        if (unit == null) {
+            return null;
+        }
+        try {
+            return EnumConverter.stringToEnum(Unit.class, unit);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid unit string: " + unit);
+        }
+    }
+
+    public String unitToString(Unit unit) {
+        if (unit == null) {
+            return null;
+        }
+        return EnumConverter.enumToSerializedValue(unit);
+    }   
 }
