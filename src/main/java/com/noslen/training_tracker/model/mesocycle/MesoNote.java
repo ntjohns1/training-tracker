@@ -17,6 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Entity
@@ -41,6 +42,8 @@ public class MesoNote {
     private Long noteId;
     private Instant createdAt;
     private Instant updatedAt;
+    // TODO: update mapper
+    @Setter
     private String text;
     
     @JsonProperty("mesoId")
