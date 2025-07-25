@@ -7,10 +7,7 @@ import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.muscle_group.Progression;
 import com.noslen.training_tracker.enums.Unit;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.List;
@@ -83,11 +80,14 @@ public class Mesocycle {
     @JsonProperty("notes")
     private List<MesoNote> notes;
 
+    @Setter
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private Status status;
     private String generatedFrom;
 
     @OneToMany(mappedBy = "mesocycle", cascade = CascadeType.ALL, orphanRemoval = true)
-    @MapKey(name = "muscleGroupId")
+    @MapKeyJoinColumn(name = "muscle_group_id")
     @JsonProperty("progressions")
     private Map<Long, Progression> progressions;
 

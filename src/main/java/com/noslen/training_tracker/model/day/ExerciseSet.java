@@ -30,7 +30,8 @@ public class ExerciseSet {
     private DayExercise dayExercise;
     
     private Integer position;
-    
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "set_type")
     private SetType setType;
     private Float weight;
@@ -41,6 +42,7 @@ public class ExerciseSet {
     private Integer repsTarget;
     private Float bodyweight;
 
+    @Enumerated(EnumType.STRING)
     private Unit unit;
 
 
@@ -53,6 +55,7 @@ public class ExerciseSet {
     private Instant finishedAt;
 
     @Setter
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     /**
