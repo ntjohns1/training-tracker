@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.day;
 
-import com.noslen.training_tracker.dto.day.DayNotePayload;
+import com.noslen.training_tracker.dto.day.response.DayNoteResponse;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.day.DayNote;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class DayNoteMapperTest {
 
     private DayNoteMapper mapper;
-    private DayNotePayload samplePayload;
+    private DayNoteResponse samplePayload;
     private DayNote sampleEntity;
     private Instant now;
     private Day day = Day.builder().id(1L).build();
@@ -25,7 +25,7 @@ class DayNoteMapperTest {
         mapper = new DayNoteMapper();
         now = Instant.now();
 
-        samplePayload = new DayNotePayload(
+        samplePayload = new DayNoteResponse(
                 1L,
                 10L,
                 20L,
@@ -35,15 +35,14 @@ class DayNoteMapperTest {
                 "Test note content"
         );
 
-        sampleEntity = DayNote.builder()
-                .id(1L)
-                .day(day)
-                .noteId(20L)
-                .text("Test note content")
-                .pinned(true)
-                .createdAt(now)
-                .updatedAt(now)
-                .build();
+        sampleEntity = new DayNote();
+        sampleEntity.setId(1L);
+        sampleEntity.setDay(day);
+        sampleEntity.setNoteId(20L);
+        sampleEntity.setText("Test note content");
+        sampleEntity.setPinned(true);
+        sampleEntity.setCreatedAt(now);
+        sampleEntity.setUpdatedAt(now);
     }
 
     @Test
@@ -76,7 +75,7 @@ class DayNoteMapperTest {
     @Test
     void toEntity_WithNullFields_ShouldHandleGracefully() {
         // Given
-        DayNotePayload payloadWithNulls = new DayNotePayload(
+        DayNoteResponse payloadWithNulls = new DayNoteResponse(
                 null, null, null, null, null, null, null
         );
 
@@ -97,7 +96,7 @@ class DayNoteMapperTest {
     @Test
     void toEntity_WithFalsePinned_ShouldHandleCorrectly() {
         // Given
-        DayNotePayload payloadWithFalsePinned = new DayNotePayload(
+        DayNoteResponse payloadWithFalsePinned = new DayNoteResponse(
                 1L, 10L, 20L, false, now, now, "Test note"
         );
 
@@ -112,7 +111,7 @@ class DayNoteMapperTest {
     @Test
     void toPayload_WithValidEntity_ShouldReturnPayload() {
         // When
-        DayNotePayload result = mapper.toPayload(sampleEntity);
+        DayNoteResponse result = mapper.toPayload(sampleEntity);
 
         // Then
         assertNotNull(result);
@@ -128,7 +127,7 @@ class DayNoteMapperTest {
     @Test
     void toPayload_WithNullEntity_ShouldReturnNull() {
         // When
-        DayNotePayload result = mapper.toPayload(null);
+        DayNoteResponse result = mapper.toPayload(null);
 
         // Then
         assertNull(result);
@@ -138,17 +137,16 @@ class DayNoteMapperTest {
     void toPayload_WithEntityHavingRelationships_ShouldExtractIds() {
         // Given
         Day day = Day.builder().id(100L).build();
-        DayNote entityWithRelationships = DayNote.builder()
-                .day(day)
-                .noteId(200L)
-                .text("Test note")
-                .pinned(true)
-                .createdAt(now)
-                .updatedAt(now)
-                .build();
+        DayNote entityWithRelationships = new DayNote();
+        entityWithRelationships.setDay(day);
+        entityWithRelationships.setNoteId(200L);
+        entityWithRelationships.setText("Test note");
+        entityWithRelationships.setPinned(true);
+        entityWithRelationships.setCreatedAt(now);
+        entityWithRelationships.setUpdatedAt(now);
 
         // When
-        DayNotePayload result = mapper.toPayload(entityWithRelationships);
+        DayNoteResponse result = mapper.toPayload(entityWithRelationships);
 
         // Then
         assertNotNull(result);
@@ -163,15 +161,14 @@ class DayNoteMapperTest {
     @Test
     void toPayload_WithNullRelationships_ShouldHandleGracefully() {
         // Given
-        DayNote entityWithNullRelationships = DayNote.builder()
-                .text("Test note")
-                .pinned(false)
-                .createdAt(now)
-                .updatedAt(now)
-                .build();
+        DayNote entityWithNullRelationships = new DayNote();
+        entityWithNullRelationships.setText("Test note");
+        entityWithNullRelationships.setPinned(false);
+        entityWithNullRelationships.setCreatedAt(now);
+        entityWithNullRelationships.setUpdatedAt(now);
 
         // When
-        DayNotePayload result = mapper.toPayload(entityWithNullRelationships);
+        DayNoteResponse result = mapper.toPayload(entityWithNullRelationships);
 
         // Then
         assertNotNull(result);
@@ -186,16 +183,15 @@ class DayNoteMapperTest {
     @Test
     void updateEntity_WithValidData_ShouldUpdateMutableFields() {
         // Given
-        DayNote existingEntity = DayNote.builder()
-                .day(Day.builder().id(10L).build())
-                .noteId(20L)
-                .text("Old text")
-                .pinned(false)
-                .createdAt(now.minusSeconds(3600))
-                .updatedAt(now.minusSeconds(1800))
-                .build();
+        DayNote existingEntity = new DayNote();
+        existingEntity.setDay(Day.builder().id(10L).build());
+        existingEntity.setNoteId(20L);
+        existingEntity.setText("Old text");
+        existingEntity.setPinned(false);
+        existingEntity.setCreatedAt(now.minusSeconds(3600));
+        existingEntity.setUpdatedAt(now.minusSeconds(1800));
 
-        DayNotePayload updatePayload = new DayNotePayload(
+        DayNoteResponse updatePayload = new DayNoteResponse(
                 1L, 15L, 25L, true, now.minusSeconds(3600), now, "Updated note content"
         );
 
@@ -218,7 +214,8 @@ class DayNoteMapperTest {
     @Test
     void updateEntity_WithNullPayload_ShouldNotCrash() {
         // Given
-        DayNote existingEntity = DayNote.builder().id(1L).build();
+        DayNote existingEntity = new DayNote();
+        existingEntity.setId(1L);
 
         // When & Then
         assertDoesNotThrow(() -> mapper.updateEntity(existingEntity, null));
@@ -233,14 +230,14 @@ class DayNoteMapperTest {
     @Test
     void updateEntity_WithNullRelationshipIds_ShouldHandleGracefully() {
         // Given
-        DayNote existingEntity = DayNote.builder()
-                .day(Day.builder().id(10L).build())
-                .noteId(20L)
-                .text("Old text")
-                .pinned(false)
-                .build();
+        DayNote existingEntity = new DayNote();
+        existingEntity.setDay(Day.builder().id(10L).build());
+        existingEntity.setNoteId(20L);
+        existingEntity.setText("Old text");
+        existingEntity.setPinned(false);
+        existingEntity.setCreatedAt(now.minusSeconds(3600)); // Added createdAt timestamp
 
-        DayNotePayload payloadWithNullIds = new DayNotePayload(
+        DayNoteResponse payloadWithNullIds = new DayNoteResponse(
                 1L, null, null, true, now, now, "New text"
         );
 
@@ -260,16 +257,15 @@ class DayNoteMapperTest {
     @Test
     void mergeEntity_WithValidData_ShouldCreateNewEntityWithUpdatedFields() {
         // Given
-        DayNote existingEntity = DayNote.builder()
-                .day(Day.builder().id(10L).build())
-                .noteId(20L)
-                .text("Old text")
-                .pinned(false)
-                .createdAt(now.minusSeconds(3600))
-                .updatedAt(now.minusSeconds(1800))
-                .build();
+        DayNote existingEntity = new DayNote();
+        existingEntity.setDay(Day.builder().id(10L).build());
+        existingEntity.setNoteId(20L);
+        existingEntity.setText("Old text");
+        existingEntity.setPinned(false);
+        existingEntity.setCreatedAt(now.minusSeconds(3600));
+        existingEntity.setUpdatedAt(now.minusSeconds(1800));
 
-        DayNotePayload updatePayload = new DayNotePayload(
+        DayNoteResponse updatePayload = new DayNoteResponse(
                 1L, 15L, 25L, true, now.minusSeconds(3600), now, "Updated note content"
         );
 
@@ -295,7 +291,8 @@ class DayNoteMapperTest {
     @Test
     void mergeEntity_WithNullPayload_ShouldReturnNull() {
         // Given
-        DayNote existingEntity = DayNote.builder().id(1L).build();
+        DayNote existingEntity = new DayNote();
+        existingEntity.setId(1L);
 
         // When
         DayNote result = mapper.mergeEntity(existingEntity, null);
@@ -318,15 +315,14 @@ class DayNoteMapperTest {
     @Test
     void mergeEntity_WithNullRelationshipIds_ShouldHandleGracefully() {
         // Given
-        DayNote existingEntity = DayNote.builder()
-                .day(Day.builder().id(10L).build())
-                .noteId(20L)
-                .text("Old text")
-                .pinned(false)
-                .createdAt(now.minusSeconds(3600))
-                .build();
+        DayNote existingEntity = new DayNote();
+        existingEntity.setDay(Day.builder().id(10L).build());
+        existingEntity.setNoteId(20L);
+        existingEntity.setText("Old text");
+        existingEntity.setPinned(false);
+        existingEntity.setCreatedAt(now.minusSeconds(3600)); // Added createdAt timestamp
 
-        DayNotePayload payloadWithNullIds = new DayNotePayload(
+        DayNoteResponse payloadWithNullIds = new DayNoteResponse(
                 1L, null, null, true, now.minusSeconds(3600), now, "New text"
         );
 
@@ -347,11 +343,10 @@ class DayNoteMapperTest {
     @Test
     void updateEntity_WithEmptyText_ShouldHandleCorrectly() {
         // Given
-        DayNote existingEntity = DayNote.builder()
-                .text("Old text")
-                .build();
+        DayNote existingEntity = new DayNote();
+        existingEntity.setText("Old text");
 
-        DayNotePayload payloadWithEmptyText = new DayNotePayload(
+        DayNoteResponse payloadWithEmptyText = new DayNoteResponse(
                 1L, 10L, 20L, false, now, now, ""
         );
 

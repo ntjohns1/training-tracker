@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.service.day;
 
-import com.noslen.training_tracker.dto.day.DayExercisePayload;
+import com.noslen.training_tracker.dto.day.response.DayExerciseResponse;
 import com.noslen.training_tracker.mapper.day.DayExerciseMapper;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.repository.day.DayExerciseRepo;
@@ -46,12 +46,12 @@ public class DayExerciseServiceTests {
     @Test
     void createDayExercise_Success() {
         // Arrange
-        DayExercisePayload inputPayload = new DayExercisePayload(
+        DayExerciseResponse inputPayload = new DayExerciseResponse(
                 null, 1L, 2L, 1, 0, null, null, null, 3L, null, "active"
         );
         DayExercise entity = DayExercise.builder().id(1L).build();
         DayExercise savedEntity = DayExercise.builder().id(1L).build();
-        DayExercisePayload expectedPayload = new DayExercisePayload(
+        DayExerciseResponse expectedPayload = new DayExerciseResponse(
                 1L, 1L, 2L, 1, 0, Instant.now(), Instant.now(), null, 3L, null, "active"
         );
 
@@ -60,7 +60,7 @@ public class DayExerciseServiceTests {
         when(mapper.toPayload(savedEntity)).thenReturn(expectedPayload);
 
         // Act
-        DayExercisePayload result = service.createDayExercise(inputPayload);
+        DayExerciseResponse result = service.createDayExercise(inputPayload);
 
         // Assert
         assertNotNull(result);
@@ -77,19 +77,19 @@ public class DayExerciseServiceTests {
                 IllegalArgumentException.class,
                 () -> service.createDayExercise(null)
         );
-        assertEquals("DayExercisePayload cannot be null", exception.getMessage());
+        assertEquals("DayExerciseResponse cannot be null", exception.getMessage());
     }
 
     @Test
     void updateDayExercise_Success() {
         // Arrange
         Long id = 1L;
-        DayExercisePayload updatePayload = new DayExercisePayload(
+        DayExerciseResponse updatePayload = new DayExerciseResponse(
                 1L, 1L, 2L, 2, 1, null, null, null, 3L, null, "complete"
         );
         DayExercise existingEntity = DayExercise.builder().id(1L).build();
         DayExercise savedEntity = DayExercise.builder().id(1L).build();
-        DayExercisePayload expectedPayload = new DayExercisePayload(
+        DayExerciseResponse expectedPayload = new DayExerciseResponse(
                 1L, 1L, 2L, 2, 1, Instant.now(), Instant.now(), null, 3L, null, "complete"
         );
 
@@ -99,7 +99,7 @@ public class DayExerciseServiceTests {
         when(mapper.toPayload(savedEntity)).thenReturn(expectedPayload);
 
         // Act
-        DayExercisePayload result = service.updateDayExercise(id, updatePayload);
+        DayExerciseResponse result = service.updateDayExercise(id, updatePayload);
 
         // Assert
         assertNotNull(result);
@@ -114,7 +114,7 @@ public class DayExerciseServiceTests {
     void updateDayExercise_NotFound_ThrowsException() {
         // Arrange
         Long id = 1L;
-        DayExercisePayload updatePayload = new DayExercisePayload(
+        DayExerciseResponse updatePayload = new DayExerciseResponse(
                 1L, 1L, 2L, 2, 1, null, null, null, 3L, null, "complete"
         );
 
@@ -161,7 +161,7 @@ public class DayExerciseServiceTests {
         // Arrange
         Long id = 1L;
         DayExercise entity = DayExercise.builder().id(1L).build();
-        DayExercisePayload expectedPayload = new DayExercisePayload(
+        DayExerciseResponse expectedPayload = new DayExerciseResponse(
                 1L, 1L, 2L, 1, 0, Instant.now(), Instant.now(), null, 3L, null, "active"
         );
 
@@ -169,7 +169,7 @@ public class DayExerciseServiceTests {
         when(mapper.toPayload(entity)).thenReturn(expectedPayload);
 
         // Act
-        DayExercisePayload result = service.getDayExercise(id);
+        DayExerciseResponse result = service.getDayExercise(id);
 
         // Assert
         assertNotNull(result);
@@ -196,7 +196,7 @@ public class DayExerciseServiceTests {
         Long dayId = 1L;
         Long exerciseId = 2L;
         DayExercise entity = DayExercise.builder().id(1L).build();
-        DayExercisePayload expectedPayload = new DayExercisePayload(
+        DayExerciseResponse expectedPayload = new DayExerciseResponse(
                 1L, 1L, 2L, 1, 0, Instant.now(), Instant.now(), null, 3L, null, "active"
         );
 
@@ -204,7 +204,7 @@ public class DayExerciseServiceTests {
         when(mapper.toPayload(entity)).thenReturn(expectedPayload);
 
         // Act
-        DayExercisePayload result = service.getDayExercise(dayId, exerciseId);
+        DayExerciseResponse result = service.getDayExercise(dayId, exerciseId);
 
         // Assert
         assertNotNull(result);
@@ -221,16 +221,16 @@ public class DayExerciseServiceTests {
                 DayExercise.builder().id(1L).build(),
                 DayExercise.builder().id(2L).build()
         );
-        List<DayExercisePayload> expectedPayloads = List.of(
-                new DayExercisePayload(1L, 1L, 2L, 1, 0, Instant.now(), Instant.now(), null, 3L, null, "active"),
-                new DayExercisePayload(2L, 1L, 3L, 2, 0, Instant.now(), Instant.now(), null, 3L, null, "active")
+        List<DayExerciseResponse> expectedPayloads = List.of(
+                new DayExerciseResponse(1L, 1L, 2L, 1, 0, Instant.now(), Instant.now(), null, 3L, null, "active"),
+                new DayExerciseResponse(2L, 1L, 3L, 2, 0, Instant.now(), Instant.now(), null, 3L, null, "active")
         );
 
         when(repo.findByDay_Id(dayId)).thenReturn(entities);
         when(mapper.toPayloadList(entities)).thenReturn(expectedPayloads);
 
         // Act
-        List<DayExercisePayload> result = service.getDayExercisesByDayId(dayId);
+        List<DayExerciseResponse> result = service.getDayExercisesByDayId(dayId);
 
         // Assert
         assertNotNull(result);

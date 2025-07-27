@@ -3,10 +3,10 @@ package com.noslen.training_tracker.service.exercise;
 import java.time.Instant;
 import java.util.Optional;
 
+import com.noslen.training_tracker.dto.exercise.response.ExerciseNoteResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.noslen.training_tracker.dto.exercise.ExerciseNotePayload;
 import com.noslen.training_tracker.mapper.exercise.ExerciseNoteMapper;
 import com.noslen.training_tracker.model.exercise.ExerciseNote;
 import com.noslen.training_tracker.repository.exercise.ExerciseNoteRepo;
@@ -23,38 +23,20 @@ public class ExerciseNoteServiceImpl implements ExerciseNoteService {
 
     @Override
     @Transactional
-    public ExerciseNotePayload createExerciseNote(ExerciseNotePayload exerciseNotePayload) {
-        if (exerciseNotePayload == null) {
-            throw new IllegalArgumentException("ExerciseNotePayload cannot be null");
+    public ExerciseNoteResponse createExerciseNote(ExerciseNoteResponse exerciseNoteResponse) {
+        if (exerciseNoteResponse == null) {
+            throw new IllegalArgumentException("ExerciseNoteResponse cannot be null");
         }
 
         // Convert payload to entity
-        ExerciseNote exerciseNote = mapper.toEntity(exerciseNotePayload);
+        ExerciseNote exerciseNote = mapper.toEntity(exerciseNoteResponse);
         
         // Set creation timestamp if not already set
         if (exerciseNote.getCreatedAt() == null) {
-            exerciseNote = ExerciseNote.builder()
-                    .id(exerciseNote.getId())
-                    .userId(exerciseNote.getUserId())
-                    .noteId(exerciseNote.getNoteId())
-                    .exercise(exerciseNote.getExercise())
-                    .dayExercise(exerciseNote.getDayExercise())
-                    .createdAt(Instant.now())
-                    .updatedAt(exerciseNote.getUpdatedAt() != null ? exerciseNote.getUpdatedAt() : Instant.now())
-                    .text(exerciseNote.getText())
-                    .build();
+            exerciseNote.setCreatedAt(Instant.now());
         }
         if (exerciseNote.getUpdatedAt() == null) {
-            exerciseNote = ExerciseNote.builder()
-                    .id(exerciseNote.getId())
-                    .userId(exerciseNote.getUserId())
-                    .noteId(exerciseNote.getNoteId())
-                    .exercise(exerciseNote.getExercise())
-                    .dayExercise(exerciseNote.getDayExercise())
-                    .createdAt(exerciseNote.getCreatedAt())
-                    .updatedAt(Instant.now())
-                    .text(exerciseNote.getText())
-                    .build();
+            exerciseNote.setUpdatedAt(Instant.now());
         }
 
         // Save entity
@@ -66,12 +48,12 @@ public class ExerciseNoteServiceImpl implements ExerciseNoteService {
 
     @Override
     @Transactional
-    public ExerciseNotePayload updateExerciseNote(Long exerciseNoteId, ExerciseNotePayload exerciseNotePayload) {
+    public ExerciseNoteResponse updateExerciseNote(Long exerciseNoteId, ExerciseNoteResponse exerciseNoteResponse) {
         if (exerciseNoteId == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
-        if (exerciseNotePayload == null) {
-            throw new IllegalArgumentException("ExerciseNotePayload cannot be null");
+        if (exerciseNoteResponse == null) {
+            throw new IllegalArgumentException("ExerciseNoteResponse cannot be null");
         }
 
         Optional<ExerciseNote> existingOptional = repo.findById(exerciseNoteId);
@@ -82,7 +64,8 @@ public class ExerciseNoteServiceImpl implements ExerciseNoteService {
         ExerciseNote existing = existingOptional.get();
         
         // Update entity with payload data using mapper
-        mapper.updateEntity(existing, exerciseNotePayload);
+        mapper.updateEntity(existing,
+                            exerciseNoteResponse);
         
         // Ensure updated timestamp is set
         existing.setUpdatedAt(Instant.now());
@@ -110,7 +93,7 @@ public class ExerciseNoteServiceImpl implements ExerciseNoteService {
 
     @Override
     @Transactional(readOnly = true)
-    public ExerciseNotePayload getExerciseNote(Long exerciseNoteId) {
+    public ExerciseNoteResponse getExerciseNote(Long exerciseNoteId) {
         if (exerciseNoteId == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }

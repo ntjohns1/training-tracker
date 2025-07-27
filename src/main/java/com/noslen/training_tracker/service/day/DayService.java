@@ -2,14 +2,14 @@ package com.noslen.training_tracker.service.day;
 
 import java.util.List;
 
-import com.noslen.training_tracker.dto.day.DayPayload;
+import com.noslen.training_tracker.dto.day.response.DayResponse;
 
 public interface DayService {
 
-    DayPayload createDay(DayPayload dayPayload);
-    DayPayload updateDay(Long id, DayPayload dayPayload);
-    DayPayload getDay(Long id);
+    DayResponse createDay(DayResponse dayResponse);
+    DayResponse updateDay(Long id, DayResponse dayResponse);
+    DayResponse getDay(Long id);
     void deleteDay(Long id);
-    List<DayPayload> getDaysByMesocycleId(Long mesocycleId);
+    List<DayResponse> getDaysByMesocycleId(Long mesocycleId);
 
 }

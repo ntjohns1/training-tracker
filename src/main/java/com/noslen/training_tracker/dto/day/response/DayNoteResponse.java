@@ -1,11 +1,12 @@
-package com.noslen.training_tracker.dto.mesocycle;
+package com.noslen.training_tracker.dto.day.response;
 
 import java.time.Instant;
 
-public record MesoNotePayload(
+public record DayNoteResponse(
         Long id,
-        Long mesoId,
+        Long dayId,
         Long noteId,
+        Boolean pinned,
         Instant createdAt,
         Instant updatedAt,
         String text) {

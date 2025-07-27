@@ -10,10 +10,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.time.Instant;
 import java.util.Objects;
 
@@ -22,46 +20,40 @@ import java.util.Objects;
 @Table(name = "day_notes")
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class DayNote {
 
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @ManyToOne
     @JoinColumn(name = "day_id")
     @JsonBackReference(value = "daynote-day")
     private Day day;
 
+    @Setter
     @Column(name = "note_id")
     private Long noteId;
 
+    @Setter
     private Boolean pinned;
 
+    @Setter
     @Column(name = "created_at")
     private Instant createdAt;
 
+    @Setter
     @Column(name = "updated_at")
     private Instant updatedAt;
 
+    @Setter
     private String text;
 
     @JsonProperty("dayId")
     public Long getDayId() {
         return day != null ? day.getId() : null;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     @Override

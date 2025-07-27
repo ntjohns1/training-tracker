@@ -1,5 +1,7 @@
 package com.noslen.training_tracker.dto.day;
 
+import com.noslen.training_tracker.dto.day.response.DayExerciseResponse;
+import com.noslen.training_tracker.dto.day.response.ExerciseSetResponse;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.json.JacksonTester;
@@ -13,14 +15,14 @@ import java.util.ArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JsonTest
-public class DayExercisePayloadJsonTests {
+public class DayExerciseResponseJsonTests {
     @Autowired
-    private JacksonTester<DayExercisePayload> json;
+    private JacksonTester<DayExerciseResponse> json;
 
     @Test
     void testSerialize() throws IOException {
-        ArrayList<ExerciseSetPayload> sets = new ArrayList<>();
-        ExerciseSetPayload exerciseSetPayload1 = new ExerciseSetPayload(
+        ArrayList<ExerciseSetResponse> sets = new ArrayList<>();
+        ExerciseSetResponse exerciseSetResponse1 = new ExerciseSetResponse(
             156620877L, 
             121219682L, 
             0, 
@@ -36,7 +38,7 @@ public class DayExercisePayloadJsonTests {
             Instant.parse("2025-06-12T00:44:33.064Z"),
             Instant.parse("2025-06-18T20:24:27.587Z"), 
             "complete");
-        ExerciseSetPayload exerciseSetPayload2 = new ExerciseSetPayload(
+        ExerciseSetResponse exerciseSetResponse2 = new ExerciseSetResponse(
             156620878L, 
             121219682L, 
             1, 
@@ -52,9 +54,9 @@ public class DayExercisePayloadJsonTests {
             Instant.parse("2025-06-12T00:44:33.064Z"),
             Instant.parse("2025-06-18T20:24:36.532Z"), 
             "complete");
-        sets.add(exerciseSetPayload1);
-        sets.add(exerciseSetPayload2);
-        DayExercisePayload dayExercisePayload = new DayExercisePayload(
+        sets.add(exerciseSetResponse1);
+        sets.add(exerciseSetResponse2);
+        DayExerciseResponse dayExerciseResponse = new DayExerciseResponse(
             121219682L,
             19749539L,
             161L,
@@ -67,6 +69,6 @@ public class DayExercisePayloadJsonTests {
             sets,
             "complete");
         ClassPathResource resource = new ClassPathResource("example/day_exercise.json");
-        assertThat(json.write(dayExercisePayload)).isEqualToJson(resource);
+        assertThat(json.write(dayExerciseResponse)).isEqualToJson(resource);
     }
 }

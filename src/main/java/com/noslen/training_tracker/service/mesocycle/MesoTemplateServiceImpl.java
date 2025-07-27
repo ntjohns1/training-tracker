@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.service.mesocycle;
 
-import com.noslen.training_tracker.dto.mesocycle.MesoTemplatePayload;
+import com.noslen.training_tracker.dto.mesocycle.response.MesoTemplateResponse;
 import com.noslen.training_tracker.mapper.mesocycle.MesoTemplateMapper;
 import com.noslen.training_tracker.model.mesocycle.MesoTemplate;
 import com.noslen.training_tracker.repository.mesocycle.MesoTemplateRepo;
@@ -27,9 +27,9 @@ public class MesoTemplateServiceImpl implements MesoTemplateService {
     }
 
     @Override
-    public MesoTemplatePayload createMesoTemplate(MesoTemplatePayload mesoTemplatePayload) {
+    public MesoTemplateResponse createMesoTemplate(MesoTemplateResponse mesoTemplateResponse) {
         // Convert payload to entity
-        MesoTemplate mesoTemplate = mesoTemplateMapper.toEntity(mesoTemplatePayload);
+        MesoTemplate mesoTemplate = mesoTemplateMapper.toEntity(mesoTemplateResponse);
         
         // Set timestamps
         Instant now = Instant.now();
@@ -58,7 +58,7 @@ public class MesoTemplateServiceImpl implements MesoTemplateService {
 
     @Override
     @Transactional(readOnly = true)
-    public MesoTemplatePayload getMesoTemplate(Long id) {
+    public MesoTemplateResponse getMesoTemplate(Long id) {
         MesoTemplate mesoTemplate = mesoTemplateRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("MesoTemplate not found with id: " + id));
         
@@ -67,7 +67,7 @@ public class MesoTemplateServiceImpl implements MesoTemplateService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<MesoTemplatePayload> getMesoTemplatesByUserId(Long userId) {
+    public List<MesoTemplateResponse> getMesoTemplatesByUserId(Long userId) {
         List<MesoTemplate> mesoTemplates = mesoTemplateRepo.findByUserId(userId);
         
         return mesoTemplates.stream()
@@ -76,13 +76,14 @@ public class MesoTemplateServiceImpl implements MesoTemplateService {
     }
 
     @Override
-    public MesoTemplatePayload updateMesoTemplate(Long id, MesoTemplatePayload mesoTemplatePayload) {
+    public MesoTemplateResponse updateMesoTemplate(Long id, MesoTemplateResponse mesoTemplateResponse) {
         // Find existing entity
         MesoTemplate existingMesoTemplate = mesoTemplateRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("MesoTemplate not found with id: " + id));
 
         // Since MesoTemplate is immutable, create a new entity with updated values
-        MesoTemplate updatedMesoTemplate = mesoTemplateMapper.mergeEntity(existingMesoTemplate, mesoTemplatePayload);
+        MesoTemplate updatedMesoTemplate = mesoTemplateMapper.mergeEntity(existingMesoTemplate,
+                                                                          mesoTemplateResponse);
         
         // Save the updated entity
         MesoTemplate savedMesoTemplate = mesoTemplateRepo.save(updatedMesoTemplate);
@@ -119,7 +120,7 @@ public class MesoTemplateServiceImpl implements MesoTemplateService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<MesoTemplatePayload> getAllMesoTemplates() {
+    public List<MesoTemplateResponse> getAllMesoTemplates() {
         List<MesoTemplate> mesoTemplates = mesoTemplateRepo.findAll();
         
         return mesoTemplates.stream()
@@ -129,7 +130,7 @@ public class MesoTemplateServiceImpl implements MesoTemplateService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<MesoTemplatePayload> getAllActiveMesoTemplates() {
+    public List<MesoTemplateResponse> getAllActiveMesoTemplates() {
         List<MesoTemplate> activeMesoTemplates = mesoTemplateRepo.findByDeletedAtIsNull();
         
         return activeMesoTemplates.stream()

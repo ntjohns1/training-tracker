@@ -1,18 +1,18 @@
 package com.noslen.training_tracker.service.muscle_group;
 
-import com.noslen.training_tracker.dto.muscle_group.MuscleGroupPayload;
+import com.noslen.training_tracker.dto.muscle_group.response.MuscleGroupResponse;
 
 import java.util.List;
 
 public interface MuscleGroupService {
 
-    List<MuscleGroupPayload> getAllMuscleGroups();
+    List<MuscleGroupResponse> getAllMuscleGroups();
 
-    MuscleGroupPayload getMuscleGroupById(Long id);
+    MuscleGroupResponse getMuscleGroupById(Long id);
 
-    MuscleGroupPayload createMuscleGroup(MuscleGroupPayload muscleGroupPayload);
+    MuscleGroupResponse createMuscleGroup(MuscleGroupResponse muscleGroupResponse);
 
-    MuscleGroupPayload updateMuscleGroup(Long id, MuscleGroupPayload muscleGroupPayload);
+    MuscleGroupResponse updateMuscleGroup(Long id, MuscleGroupResponse muscleGroupResponse);
 
     void deleteMuscleGroup(Long id);
 

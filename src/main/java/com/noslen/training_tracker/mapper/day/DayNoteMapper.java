@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.day;
 
-import com.noslen.training_tracker.dto.day.DayNotePayload;
+import com.noslen.training_tracker.dto.day.response.DayNoteResponse;
 import com.noslen.training_tracker.model.day.DayNote;
 import org.springframework.stereotype.Component;
 
@@ -8,46 +8,46 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * POJO Mapper for converting between DayNote entity and DayNotePayload DTO.
+ * POJO Mapper for converting between DayNote entity and DayNoteResponse DTO.
  * Handles manual mapping logic and supports immutable model fields.
  */
 @Component
 public class DayNoteMapper {
 
     /**
-     * Converts DayNotePayload DTO to DayNote entity.
+     * Converts DayNoteResponse DTO to DayNote entity.
      * Note: Day relationship is not set by this mapper and should be handled by the service layer.
      *
-     * @param payload the DayNotePayload to convert
+     * @param payload the DayNoteResponse to convert
      * @return the converted DayNote entity, or null if payload is null
      */
-    public DayNote toEntity(DayNotePayload payload) {
+    public DayNote toEntity(DayNoteResponse payload) {
         if (payload == null) {
             return null;
         }
 
-        return DayNote.builder()
-                .id(payload.id())
-                .noteId(payload.noteId())
-                .pinned(payload.pinned())
-                .createdAt(payload.createdAt())
-                .updatedAt(payload.updatedAt())
-                .text(payload.text())
-                .build();
+        DayNote dayNote = new DayNote();
+        dayNote.setId(payload.id());
+        dayNote.setNoteId(payload.noteId());
+        dayNote.setPinned(payload.pinned());
+        dayNote.setCreatedAt(payload.createdAt());
+        dayNote.setUpdatedAt(payload.updatedAt());
+        dayNote.setText(payload.text());
+        return dayNote;
     }
 
     /**
-     * Converts DayNote entity to DayNotePayload DTO.
+     * Converts DayNote entity to DayNoteResponse DTO.
      *
      * @param entity the DayNote entity to convert
-     * @return the converted DayNotePayload DTO, or null if entity is null
+     * @return the converted DayNoteResponse DTO, or null if entity is null
      */
-    public DayNotePayload toPayload(DayNote entity) {
+    public DayNoteResponse toPayload(DayNote entity) {
         if (entity == null) {
             return null;
         }
 
-        return new DayNotePayload(
+        return new DayNoteResponse(
                 entity.getId(),
                 entity.getDayId(), // Uses the derived property from entity
                 entity.getNoteId(),
@@ -59,13 +59,13 @@ public class DayNoteMapper {
     }
 
     /**
-     * Updates mutable fields of an existing DayNote entity from DayNotePayload.
+     * Updates mutable fields of an existing DayNote entity from DayNoteResponse.
      * Only updates fields that can be modified after creation.
      *
      * @param entity  the existing DayNote entity to update
-     * @param payload the DayNotePayload containing update data
+     * @param payload the DayNoteResponse containing update data
      */
-    public void updateEntity(DayNote entity, DayNotePayload payload) {
+    public void updateEntity(DayNote entity, DayNoteResponse payload) {
         if (entity == null || payload == null) {
             return;
         }
@@ -87,10 +87,10 @@ public class DayNoteMapper {
      * Used when immutable fields need to be changed.
      *
      * @param existing the existing DayNote entity
-     * @param payload  the DayNotePayload containing update data
+     * @param payload  the DayNoteResponse containing update data
      * @return a new DayNote entity with merged data
      */
-    public DayNote mergeEntity(DayNote existing, DayNotePayload payload) {
+    public DayNote mergeEntity(DayNote existing, DayNoteResponse payload) {
         if (existing == null) {
             return toEntity(payload);
         }
@@ -98,24 +98,24 @@ public class DayNoteMapper {
             return existing;
         }
 
-        return DayNote.builder()
-                .id(existing.getId()) // Always preserve existing ID
-                .day(existing.getDay()) // Preserve relationship
-                .noteId(payload.noteId() != null && payload.noteId() != 0 ? payload.noteId() : existing.getNoteId())
-                .pinned(payload.pinned() != null ? payload.pinned() : existing.getPinned())
-                .createdAt(existing.getCreatedAt()) // Preserve creation timestamp
-                .updatedAt(payload.updatedAt() != null ? payload.updatedAt() : existing.getUpdatedAt())
-                .text(payload.text() != null ? payload.text() : existing.getText())
-                .build();
+        DayNote dayNote = new DayNote();
+        dayNote.setId(existing.getId()); // Always preserve existing ID
+        dayNote.setDay(existing.getDay()); // Preserve relationship
+        dayNote.setNoteId(payload.noteId() != null && payload.noteId() != 0 ? payload.noteId() : existing.getNoteId());
+        dayNote.setPinned(payload.pinned() != null ? payload.pinned() : existing.getPinned());
+        dayNote.setCreatedAt(existing.getCreatedAt()); // Preserve creation timestamp
+        dayNote.setUpdatedAt(payload.updatedAt() != null ? payload.updatedAt() : existing.getUpdatedAt());
+        dayNote.setText(payload.text() != null ? payload.text() : existing.getText());
+        return dayNote;
     }
 
     /**
-     * Converts a list of DayNote entities to a list of DayNotePayload DTOs.
+     * Converts a list of DayNote entities to a list of DayNoteResponse DTOs.
      *
      * @param entities the list of DayNote entities to convert
-     * @return the converted list of DayNotePayload DTOs, or null if input is null
+     * @return the converted list of DayNoteResponse DTOs, or null if input is null
      */
-    public List<DayNotePayload> toPayloadList(List<DayNote> entities) {
+    public List<DayNoteResponse> toPayloadList(List<DayNote> entities) {
         if (entities == null) {
             return null;
         }
@@ -126,12 +126,12 @@ public class DayNoteMapper {
     }
 
     /**
-     * Converts a list of DayNotePayload DTOs to a list of DayNote entities.
+     * Converts a list of DayNoteResponse DTOs to a list of DayNote entities.
      *
-     * @param payloads the list of DayNotePayload DTOs to convert
+     * @param payloads the list of DayNoteResponse DTOs to convert
      * @return the converted list of DayNote entities, or null if input is null
      */
-    public List<DayNote> toEntityList(List<DayNotePayload> payloads) {
+    public List<DayNote> toEntityList(List<DayNoteResponse> payloads) {
         if (payloads == null) {
             return null;
         }

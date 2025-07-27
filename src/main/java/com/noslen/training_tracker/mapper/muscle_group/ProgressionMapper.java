@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.muscle_group;
 
-import com.noslen.training_tracker.dto.muscle_group.ProgressionPayload;
+import com.noslen.training_tracker.dto.muscle_group.response.ProgressionResponse;
 import com.noslen.training_tracker.model.muscle_group.Progression;
 import org.springframework.stereotype.Component;
 
@@ -11,10 +11,10 @@ import java.util.stream.Collectors;
 public class ProgressionMapper {
 
     /**
-     * Converts ProgressionPayload to Progression entity
+     * Converts ProgressionResponse to Progression entity
      * Note: MuscleGroup entity must be set separately in the service layer
      */
-    public Progression toEntity(ProgressionPayload payload) {
+    public Progression toEntity(ProgressionResponse payload) {
         if (payload == null) {
             return null;
         }
@@ -31,14 +31,14 @@ public class ProgressionMapper {
     }
 
     /**
-     * Converts Progression entity to ProgressionPayload
+     * Converts Progression entity to ProgressionResponse
      */
-    public ProgressionPayload toPayload(Progression entity) {
+    public ProgressionResponse toPayload(Progression entity) {
         if (entity == null) {
             return null;
         }
 
-        return new ProgressionPayload(
+        return new ProgressionResponse(
                 entity.getId(),
                 entity.getMuscleGroupId(),
                 entity.getMgProgressionType()
@@ -46,10 +46,10 @@ public class ProgressionMapper {
     }
 
     /**
-     * Updates an existing Progression entity with data from ProgressionPayload
+     * Updates an existing Progression entity with data from ProgressionResponse
      * Note: MuscleGroup changes must be handled in the service layer
      */
-    public Progression updateEntity(Progression existing, ProgressionPayload payload) {
+    public Progression updateEntity(Progression existing, ProgressionResponse payload) {
         if (existing == null || payload == null) {
             return existing;
         }
@@ -66,7 +66,7 @@ public class ProgressionMapper {
     /**
      * Converts a list of Progression entities to ProgressionPayloads
      */
-    public List<ProgressionPayload> toPayloadList(List<Progression> entities) {
+    public List<ProgressionResponse> toPayloadList(List<Progression> entities) {
         if (entities == null) {
             return null;
         }

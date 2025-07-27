@@ -1,10 +1,10 @@
 package com.noslen.training_tracker.service.exercise;
 
-import com.noslen.training_tracker.dto.exercise.ExerciseNotePayload;
+import com.noslen.training_tracker.dto.exercise.response.ExerciseNoteResponse;
 
 public interface ExerciseNoteService {
-    ExerciseNotePayload createExerciseNote(ExerciseNotePayload exerciseNotePayload);
-    ExerciseNotePayload updateExerciseNote(Long exerciseNoteId, ExerciseNotePayload exerciseNotePayload);
+    ExerciseNoteResponse createExerciseNote(ExerciseNoteResponse exerciseNoteResponse);
+    ExerciseNoteResponse updateExerciseNote(Long exerciseNoteId, ExerciseNoteResponse exerciseNoteResponse);
     void deleteExerciseNote(Long exerciseNoteId);
-    ExerciseNotePayload getExerciseNote(Long exerciseNoteId);
+    ExerciseNoteResponse getExerciseNote(Long exerciseNoteId);
 }

@@ -1,8 +1,8 @@
-package com.noslen.training_tracker.dto.mesocycle;
+package com.noslen.training_tracker.dto.mesocycle.response;
 
 import java.time.Instant;
 
-public record MesoTemplatePayload(
+public record MesoTemplateResponse(
         Long id,
         String key,
         String name,

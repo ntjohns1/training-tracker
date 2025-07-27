@@ -1,8 +1,8 @@
-package com.noslen.training_tracker.dto.exercise;
+package com.noslen.training_tracker.dto.exercise.response;
 
 import java.time.Instant;
 
-public record ExerciseNotePayload(
+public record ExerciseNoteResponse(
         Long id,
         Long exerciseId,
         Long userId,

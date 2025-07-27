@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
+import com.noslen.training_tracker.dto.muscle_group.response.ProgressionResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.noslen.training_tracker.dto.muscle_group.ProgressionPayload;
 import com.noslen.training_tracker.enums.MgProgressionType;
 import com.noslen.training_tracker.mapper.muscle_group.ProgressionMapper;
 import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
@@ -47,18 +47,18 @@ public class ProgressionServiceTests {
 
     @Test
     void testCreateProgression() {
-        ProgressionPayload inputPayload = new ProgressionPayload(0L, 1L, MgProgressionType.REGULAR);
+        ProgressionResponse inputPayload = new ProgressionResponse(0L, 1L, MgProgressionType.REGULAR);
         Progression entityFromMapper = new Progression(null, null, MgProgressionType.REGULAR, null); // Mapper returns null MuscleGroup
         Progression entityWithMuscleGroup = new Progression(null, testMuscleGroup, MgProgressionType.REGULAR, null);
         Progression savedEntity = new Progression(1L, testMuscleGroup, MgProgressionType.REGULAR, null);
-        ProgressionPayload expectedPayload = new ProgressionPayload(1L, 1L, MgProgressionType.REGULAR);
+        ProgressionResponse expectedPayload = new ProgressionResponse(1L, 1L, MgProgressionType.REGULAR);
         
         when(mapper.toEntity(inputPayload)).thenReturn(entityFromMapper);
         when(muscleGroupRepo.findById(1L)).thenReturn(Optional.of(testMuscleGroup));
         when(repo.save(entityWithMuscleGroup)).thenReturn(savedEntity);
         when(mapper.toPayload(savedEntity)).thenReturn(expectedPayload);
 
-        ProgressionPayload result = service.createProgression(inputPayload);
+        ProgressionResponse result = service.createProgression(inputPayload);
 
         assertEquals(expectedPayload, result);
         verify(mapper).toEntity(inputPayload);
@@ -70,17 +70,17 @@ public class ProgressionServiceTests {
     @Test
     void testUpdateProgression() {
         Long progressionId = 1L;
-        ProgressionPayload updatePayload = new ProgressionPayload(1L, 1L, MgProgressionType.SECONDARY);
+        ProgressionResponse updatePayload = new ProgressionResponse(1L, 1L, MgProgressionType.SECONDARY);
         Progression existingEntity = new Progression(1L, testMuscleGroup, MgProgressionType.REGULAR, null);
         Progression updatedEntity = new Progression(1L, testMuscleGroup, MgProgressionType.SECONDARY, null);
-        ProgressionPayload expectedPayload = new ProgressionPayload(1L, 1L, MgProgressionType.SECONDARY);
+        ProgressionResponse expectedPayload = new ProgressionResponse(1L, 1L, MgProgressionType.SECONDARY);
 
         when(repo.findById(progressionId)).thenReturn(Optional.of(existingEntity));
         when(mapper.updateEntity(existingEntity, updatePayload)).thenReturn(updatedEntity);
         when(repo.save(updatedEntity)).thenReturn(updatedEntity);
         when(mapper.toPayload(updatedEntity)).thenReturn(expectedPayload);
 
-        ProgressionPayload result = service.updateProgression(progressionId, updatePayload);
+        ProgressionResponse result = service.updateProgression(progressionId, updatePayload);
 
         assertEquals(expectedPayload, result);
         verify(repo).findById(progressionId);
@@ -103,12 +103,12 @@ public class ProgressionServiceTests {
     void testGetProgression() {
         Long progressionId = 1L;
         Progression entity = new Progression(1L, testMuscleGroup, MgProgressionType.REGULAR, null);
-        ProgressionPayload expectedPayload = new ProgressionPayload(1L, 1L, MgProgressionType.REGULAR);
+        ProgressionResponse expectedPayload = new ProgressionResponse(1L, 1L, MgProgressionType.REGULAR);
 
         when(repo.findById(progressionId)).thenReturn(Optional.of(entity));
         when(mapper.toPayload(entity)).thenReturn(expectedPayload);
 
-        ProgressionPayload result = service.getProgression(progressionId);
+        ProgressionResponse result = service.getProgression(progressionId);
 
         assertEquals(expectedPayload, result);
         verify(repo).findById(progressionId);

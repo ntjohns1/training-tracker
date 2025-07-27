@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.day;
 
-import com.noslen.training_tracker.dto.day.DayMuscleGroupPayload;
+import com.noslen.training_tracker.dto.day.response.DayMuscleGroupResponse;
 import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.day.DayMuscleGroup;
@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class DayMuscleGroupMapperTest {
 
     private DayMuscleGroupMapper mapper;
-    private DayMuscleGroupPayload samplePayload;
+    private DayMuscleGroupResponse samplePayload;
     private DayMuscleGroup sampleEntity;
     private Instant now;
 
@@ -29,7 +29,7 @@ class DayMuscleGroupMapperTest {
         muscleGroup.setName(MgName.CHEST);
         muscleGroup.setId(20L);
 
-        samplePayload = new DayMuscleGroupPayload(
+        samplePayload = new DayMuscleGroupResponse(
                 1L,
                 10L,
                 20L,
@@ -84,7 +84,7 @@ class DayMuscleGroupMapperTest {
     @Test
     void toEntity_WithNullFields_ShouldHandleGracefully() {
         // Given
-        DayMuscleGroupPayload payloadWithNulls = new DayMuscleGroupPayload(
+        DayMuscleGroupResponse payloadWithNulls = new DayMuscleGroupResponse(
                 null, null, null, null, null, null, null, null, null, null
         );
 
@@ -103,7 +103,7 @@ class DayMuscleGroupMapperTest {
     @Test
     void toPayload_WithValidEntity_ShouldReturnPayload() {
         // When
-        DayMuscleGroupPayload result = mapper.toPayload(sampleEntity);
+        DayMuscleGroupResponse result = mapper.toPayload(sampleEntity);
 
         // Then
         assertNotNull(result);
@@ -117,7 +117,7 @@ class DayMuscleGroupMapperTest {
     @Test
     void toPayload_WithNullEntity_ShouldReturnNull() {
         // When
-        DayMuscleGroupPayload result = mapper.toPayload(null);
+        DayMuscleGroupResponse result = mapper.toPayload(null);
 
         // Then
         assertNull(result);
@@ -139,7 +139,7 @@ class DayMuscleGroupMapperTest {
                 .build();
 
         // When
-        DayMuscleGroupPayload result = mapper.toPayload(entityWithRelationships);
+        DayMuscleGroupResponse result = mapper.toPayload(entityWithRelationships);
 
         // Then
         assertNotNull(result);
@@ -162,7 +162,7 @@ class DayMuscleGroupMapperTest {
         .build();
         
         // When
-        DayMuscleGroupPayload result = mapper.toPayload(entityWithNullRelationships);
+        DayMuscleGroupResponse result = mapper.toPayload(entityWithNullRelationships);
         
         // Then
         assertNotNull(result);
@@ -186,7 +186,7 @@ class DayMuscleGroupMapperTest {
                 .updatedAt(now.minusSeconds(1800))
                 .build();
 
-        DayMuscleGroupPayload updatePayload = new DayMuscleGroupPayload(
+        DayMuscleGroupResponse updatePayload = new DayMuscleGroupResponse(
                 1L, 15L, 25L, 1, 1, 1, now.minusSeconds(3600), now, 2, "complete"
         );
 
@@ -230,7 +230,7 @@ class DayMuscleGroupMapperTest {
                 .muscleGroup(muscleGroup)
                 .build();
 
-        DayMuscleGroupPayload payloadWithNullIds = new DayMuscleGroupPayload(
+        DayMuscleGroupResponse payloadWithNullIds = new DayMuscleGroupResponse(
                 1L, null, null, 1, 1, 1, now.minusSeconds(3600), now, 1, "complete"
         );
 
@@ -260,7 +260,7 @@ class DayMuscleGroupMapperTest {
                 .updatedAt(now.minusSeconds(1800))
                 .build();
 
-        DayMuscleGroupPayload updatePayload = new DayMuscleGroupPayload(
+        DayMuscleGroupResponse updatePayload = new DayMuscleGroupResponse(
                 1L, 15L, 25L, 1, 1, 1, now.minusSeconds(3600), now, 1, "complete"
         );
 
@@ -318,7 +318,7 @@ class DayMuscleGroupMapperTest {
                 .createdAt(now.minusSeconds(3600))
                 .build();
 
-        DayMuscleGroupPayload payloadWithNullIds = new DayMuscleGroupPayload(
+        DayMuscleGroupResponse payloadWithNullIds = new DayMuscleGroupResponse(
                 1L, null, null, 1, 1, 1, now.minusSeconds(3600), now, 1, "complete"
         );
 

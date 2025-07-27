@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.day;
 
-import com.noslen.training_tracker.dto.day.ExerciseSetPayload;
+import com.noslen.training_tracker.dto.day.response.ExerciseSetResponse;
 import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.enums.Unit;
 import com.noslen.training_tracker.model.day.DayExercise;
@@ -16,35 +16,35 @@ import java.util.stream.Collectors;
 public class ExerciseSetMapper {
 
     /**
-     * Converts ExerciseSetPayload to ExerciseSet entity
+     * Converts ExerciseSetResponse to ExerciseSet entity
      */
-    public ExerciseSet toEntity(ExerciseSetPayload payload) {
+    public ExerciseSet toEntity(ExerciseSetResponse payload) {
         if (payload == null) {
             return null;
         }
 
-        return ExerciseSet.builder()
-                .id(payload.id())
-                .position(payload.position())
-                .setType(EnumConverter.stringToEnum(SetType.class, payload.setType()))
-                .weight(payload.weight())
-                .weightTarget(payload.weightTarget())
-                .weightTargetMin(payload.weightTargetMin())
-                .weightTargetMax(payload.weightTargetMax())
-                .reps(payload.reps())
-                .repsTarget(payload.repsTarget())
-                .bodyweight(payload.bodyweight())
-                .unit(stringToUnit(payload.unit()))
-                .createdAt(payload.createdAt())
-                .finishedAt(payload.finishedAt())
-                .status(EnumConverter.stringToEnum(Status.class, payload.status()))
-                .build();
+        ExerciseSet exerciseSet = new ExerciseSet();
+        exerciseSet.setId(payload.id());
+        exerciseSet.setPosition(payload.position());
+        exerciseSet.setSetType(EnumConverter.stringToEnum(SetType.class, payload.setType()));
+        exerciseSet.setWeight(payload.weight());
+        exerciseSet.setWeightTarget(payload.weightTarget());
+        exerciseSet.setWeightTargetMin(payload.weightTargetMin());
+        exerciseSet.setWeightTargetMax(payload.weightTargetMax());
+        exerciseSet.setReps(payload.reps());
+        exerciseSet.setRepsTarget(payload.repsTarget());
+        exerciseSet.setBodyweight(payload.bodyweight());
+        exerciseSet.setUnit(stringToUnit(payload.unit()));
+        exerciseSet.setCreatedAt(payload.createdAt());
+        exerciseSet.setFinishedAt(payload.finishedAt());
+        exerciseSet.setStatus(EnumConverter.stringToEnum(Status.class, payload.status()));
+        return exerciseSet;
     }
 
     /**
-     * Converts ExerciseSetPayload to ExerciseSet entity with DayExercise reference
+     * Converts ExerciseSetResponse to ExerciseSet entity with DayExercise reference
      */
-    public ExerciseSet toEntity(ExerciseSetPayload payload, DayExercise dayExercise) {
+    public ExerciseSet toEntity(ExerciseSetResponse payload, DayExercise dayExercise) {
         ExerciseSet entity = toEntity(payload);
         if (entity != null && dayExercise != null) {
             entity.setDayExercise(dayExercise);
@@ -53,14 +53,14 @@ public class ExerciseSetMapper {
     }
 
     /**
-     * Converts ExerciseSet entity to ExerciseSetPayload
+     * Converts ExerciseSet entity to ExerciseSetResponse
      */
-    public ExerciseSetPayload toPayload(ExerciseSet entity) {
+    public ExerciseSetResponse toPayload(ExerciseSet entity) {
         if (entity == null) {
             return null;
         }
 
-        return new ExerciseSetPayload(
+        return new ExerciseSetResponse(
                 entity.getId(),
                 entity.getDayExerciseId(),
                 entity.getPosition(),
@@ -80,10 +80,10 @@ public class ExerciseSetMapper {
     }
 
     /**
-     * Updates an existing ExerciseSet entity with data from ExerciseSetPayload
+     * Updates an existing ExerciseSet entity with data from ExerciseSetResponse
      * Note: Since ExerciseSet has limited mutable fields, this method only updates those with setters
      */
-    public void updateEntity(ExerciseSet existing, ExerciseSetPayload payload) {
+    public void updateEntity(ExerciseSet existing, ExerciseSetResponse payload) {
         if (existing == null || payload == null) {
             return;
         }
@@ -107,7 +107,7 @@ public class ExerciseSetMapper {
      * Creates a new ExerciseSet entity by merging existing entity with payload data
      * This is useful when you need to update immutable fields
      */
-    public ExerciseSet mergeEntity(ExerciseSet existing, ExerciseSetPayload payload) {
+    public ExerciseSet mergeEntity(ExerciseSet existing, ExerciseSetResponse payload) {
         if (existing == null) {
             return toEntity(payload);
         }
@@ -115,29 +115,29 @@ public class ExerciseSetMapper {
             return existing;
         }
 
-        return ExerciseSet.builder()
-                .id(existing.getId()) // Keep existing ID
-                .dayExercise(existing.getDayExercise()) // Keep existing relationship
-                .position(payload.position() != null ? payload.position() : existing.getPosition())
-                .setType(payload.setType() != null ? EnumConverter.stringToEnum(SetType.class, payload.setType()) : existing.getSetType())
-                .weight(payload.weight() != null ? payload.weight() : existing.getWeight())
-                .weightTarget(payload.weightTarget() != null ? payload.weightTarget() : existing.getWeightTarget())
-                .weightTargetMin(payload.weightTargetMin() != null ? payload.weightTargetMin() : existing.getWeightTargetMin())
-                .weightTargetMax(payload.weightTargetMax() != null ? payload.weightTargetMax() : existing.getWeightTargetMax())
-                .reps(payload.reps() != null ? payload.reps() : existing.getReps())
-                .repsTarget(payload.repsTarget() != null ? payload.repsTarget() : existing.getRepsTarget())
-                .bodyweight(payload.bodyweight() != null ? payload.bodyweight() : existing.getBodyweight())
-                .unit(stringToUnit(payload.unit()) != null ? stringToUnit(payload.unit()) : existing.getUnit())
-                .createdAt(payload.createdAt() != null ? payload.createdAt() : existing.getCreatedAt())
-                .finishedAt(payload.finishedAt() != null ? payload.finishedAt() : existing.getFinishedAt())
-                .status(EnumConverter.stringToEnum(Status.class, payload.status()))
-                .build();
+        ExerciseSet exerciseSet = new ExerciseSet();
+        exerciseSet.setId(existing.getId()); // Keep existing ID
+        exerciseSet.setDayExercise(existing.getDayExercise()); // Keep existing relationship
+        exerciseSet.setPosition(payload.position() != null ? payload.position() : existing.getPosition());
+        exerciseSet.setSetType(payload.setType() != null ? EnumConverter.stringToEnum(SetType.class, payload.setType()) : existing.getSetType());
+        exerciseSet.setWeight(payload.weight() != null ? payload.weight() : existing.getWeight());
+        exerciseSet.setWeightTarget(payload.weightTarget() != null ? payload.weightTarget() : existing.getWeightTarget());
+        exerciseSet.setWeightTargetMin(payload.weightTargetMin() != null ? payload.weightTargetMin() : existing.getWeightTargetMin());
+        exerciseSet.setWeightTargetMax(payload.weightTargetMax() != null ? payload.weightTargetMax() : existing.getWeightTargetMax());
+        exerciseSet.setReps(payload.reps() != null ? payload.reps() : existing.getReps());
+        exerciseSet.setRepsTarget(payload.repsTarget() != null ? payload.repsTarget() : existing.getRepsTarget());
+        exerciseSet.setBodyweight(payload.bodyweight() != null ? payload.bodyweight() : existing.getBodyweight());
+        exerciseSet.setUnit(stringToUnit(payload.unit()) != null ? stringToUnit(payload.unit()) : existing.getUnit());
+        exerciseSet.setCreatedAt(payload.createdAt() != null ? payload.createdAt() : existing.getCreatedAt());
+        exerciseSet.setFinishedAt(payload.finishedAt() != null ? payload.finishedAt() : existing.getFinishedAt());
+        exerciseSet.setStatus(EnumConverter.stringToEnum(Status.class, payload.status()));
+        return exerciseSet;
     }
 
     /**
      * Converts a list of ExerciseSet entities to ExerciseSetPayloads
      */
-    public List<ExerciseSetPayload> toPayloadList(List<ExerciseSet> entities) {
+    public List<ExerciseSetResponse> toPayloadList(List<ExerciseSet> entities) {
         if (entities == null) {
             return null;
         }

@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.service.muscle_group;
 
-import com.noslen.training_tracker.dto.muscle_group.ProgressionPayload;
+import com.noslen.training_tracker.dto.muscle_group.response.ProgressionResponse;
 import com.noslen.training_tracker.mapper.muscle_group.ProgressionMapper;
 import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
 import com.noslen.training_tracker.model.muscle_group.Progression;
@@ -26,17 +26,17 @@ public class ProgressionServiceImpl implements ProgressionService {
     }
 
     @Override
-    public ProgressionPayload createProgression(ProgressionPayload progressionPayload) {
-        if (progressionPayload == null) {
-            throw new IllegalArgumentException("ProgressionPayload cannot be null");
+    public ProgressionResponse createProgression(ProgressionResponse progressionResponse) {
+        if (progressionResponse == null) {
+            throw new IllegalArgumentException("ProgressionResponse cannot be null");
         }
 
         // Convert payload to entity (with null MuscleGroup initially)
-        Progression progression = mapper.toEntity(progressionPayload);
+        Progression progression = mapper.toEntity(progressionResponse);
 
         // Fetch and set the MuscleGroup entity
-        MuscleGroup muscleGroup = muscleGroupRepo.findById(progressionPayload.muscleGroupId())
-                .orElseThrow(() -> new RuntimeException("MuscleGroup not found with id: " + progressionPayload.muscleGroupId()));
+        MuscleGroup muscleGroup = muscleGroupRepo.findById(progressionResponse.muscleGroupId())
+                .orElseThrow(() -> new RuntimeException("MuscleGroup not found with id: " + progressionResponse.muscleGroupId()));
         
         // Create new entity with the resolved MuscleGroup
         progression = new Progression(
@@ -54,12 +54,12 @@ public class ProgressionServiceImpl implements ProgressionService {
     }
 
     @Override
-    public ProgressionPayload updateProgression(Long progressionId, ProgressionPayload progressionPayload) {
+    public ProgressionResponse updateProgression(Long progressionId, ProgressionResponse progressionResponse) {
         if (progressionId == null) {
             throw new IllegalArgumentException("Progression ID cannot be null");
         }
-        if (progressionPayload == null) {
-            throw new IllegalArgumentException("ProgressionPayload cannot be null");
+        if (progressionResponse == null) {
+            throw new IllegalArgumentException("ProgressionResponse cannot be null");
         }
 
         Optional<Progression> existingOptional = repo.findById(progressionId);
@@ -70,14 +70,15 @@ public class ProgressionServiceImpl implements ProgressionService {
         Progression existing = existingOptional.get();
         
         // Update entity with payload data using mapper
-        Progression updatedProgression = mapper.updateEntity(existing, progressionPayload);
+        Progression updatedProgression = mapper.updateEntity(existing,
+                                                             progressionResponse);
         
         // Handle MuscleGroup change if muscleGroupId is different
-        if (progressionPayload.muscleGroupId() != 0 && 
-            progressionPayload.muscleGroupId() != existing.getMuscleGroup().getId()) {
+        if (progressionResponse.muscleGroupId() != 0 &&
+            progressionResponse.muscleGroupId() != existing.getMuscleGroup().getId()) {
             
-            MuscleGroup newMuscleGroup = muscleGroupRepo.findById(progressionPayload.muscleGroupId())
-                    .orElseThrow(() -> new RuntimeException("MuscleGroup not found with id: " + progressionPayload.muscleGroupId()));
+            MuscleGroup newMuscleGroup = muscleGroupRepo.findById(progressionResponse.muscleGroupId())
+                    .orElseThrow(() -> new RuntimeException("MuscleGroup not found with id: " + progressionResponse.muscleGroupId()));
             
             // Create new entity with updated MuscleGroup
             updatedProgression = new Progression(
@@ -110,7 +111,7 @@ public class ProgressionServiceImpl implements ProgressionService {
 
     @Override
     @Transactional(readOnly = true)
-    public ProgressionPayload getProgression(Long progressionId) {
+    public ProgressionResponse getProgression(Long progressionId) {
         if (progressionId == null) {
             throw new IllegalArgumentException("Progression ID cannot be null");
         }

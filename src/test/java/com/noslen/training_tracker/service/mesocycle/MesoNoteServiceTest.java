@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.service.mesocycle;
 
-import com.noslen.training_tracker.dto.mesocycle.MesoNotePayload;
+import com.noslen.training_tracker.dto.mesocycle.response.MesoNoteResponse;
 import com.noslen.training_tracker.mapper.mesocycle.MesoNoteMapper;
 import com.noslen.training_tracker.model.mesocycle.MesoNote;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
@@ -32,7 +32,7 @@ class MesoNoteServiceTest {
     @InjectMocks
     private MesoNoteServiceImpl mesoNoteService;
 
-    private MesoNotePayload samplePayload;
+    private MesoNoteResponse samplePayload;
     private MesoNote sampleEntity;
     private Instant now;
 
@@ -41,34 +41,32 @@ class MesoNoteServiceTest {
         MockitoAnnotations.openMocks(this);
         now = Instant.now();
 
-        samplePayload = new MesoNotePayload(
+        samplePayload = new MesoNoteResponse(
                 1L, 10L, 20L, now, now, "Test meso note");
 
-        sampleEntity = MesoNote.builder()
-                .id(1L)
-                .mesocycle(Mesocycle.builder().id(10L).build())
-                .noteId(20L)
-                .text("Test meso note")
-                .createdAt(now)
-                .updatedAt(now)
-                .build();
+        sampleEntity = new MesoNote();
+        sampleEntity.setId(1L);
+        sampleEntity.setMesocycle(Mesocycle.builder().id(10L).build());
+        sampleEntity.setNoteId(20L);
+        sampleEntity.setText("Test meso note");
+        sampleEntity.setCreatedAt(now);
+        sampleEntity.setUpdatedAt(now);
     }
 
     @Test
     void createMesoNote_Success() {
         // Given
-        MesoNote entityToSave = MesoNote.builder()
-                .mesocycle(Mesocycle.builder().id(10L).build())
-                .noteId(20L)
-                .text("Test meso note")
-                .build();
+        MesoNote entityToSave = new MesoNote();
+        entityToSave.setMesocycle(Mesocycle.builder().id(10L).build());
+        entityToSave.setNoteId(20L);
+        entityToSave.setText("Test meso note");
 
         when(mesoNoteMapper.toEntity(samplePayload)).thenReturn(entityToSave);
         when(mesoNoteRepo.save(any(MesoNote.class))).thenReturn(sampleEntity);
         when(mesoNoteMapper.toPayload(sampleEntity)).thenReturn(samplePayload);
 
         // When
-        MesoNotePayload result = mesoNoteService.createMesoNote(samplePayload);
+        MesoNoteResponse result = mesoNoteService.createMesoNote(samplePayload);
 
         // Then
         assertNotNull(result);
@@ -88,7 +86,7 @@ class MesoNoteServiceTest {
         when(mesoNoteMapper.toPayload(sampleEntity)).thenReturn(samplePayload);
 
         // When
-        MesoNotePayload result = mesoNoteService.getMesoNote(1L);
+        MesoNoteResponse result = mesoNoteService.getMesoNote(1L);
 
         // Then
         assertNotNull(result);
@@ -122,7 +120,7 @@ class MesoNoteServiceTest {
         when(mesoNoteMapper.toPayload(sampleEntity)).thenReturn(samplePayload);
 
         // When
-        List<MesoNotePayload> result = mesoNoteService.getMesoNotesByMesoId(10L);
+        List<MesoNoteResponse> result = mesoNoteService.getMesoNotesByMesoId(10L);
 
         // Then
         assertNotNull(result);
@@ -136,16 +134,15 @@ class MesoNoteServiceTest {
     @Test
     void updateMesoNote_Success() {
         // Given
-        MesoNote updatedEntity = MesoNote.builder()
-                .id(1L)
-                .mesocycle(Mesocycle.builder().id(10L).build())
-                .noteId(20L)
-                .text("Updated text")
-                .createdAt(now)
-                .updatedAt(now)
-                .build();
+        MesoNote updatedEntity = new MesoNote();
+        updatedEntity.setId(1L);
+        updatedEntity.setMesocycle(Mesocycle.builder().id(10L).build());
+        updatedEntity.setNoteId(20L);
+        updatedEntity.setText("Updated text");
+        updatedEntity.setCreatedAt(now);
+        updatedEntity.setUpdatedAt(now);
 
-        MesoNotePayload updatedPayload = new MesoNotePayload(
+        MesoNoteResponse updatedPayload = new MesoNoteResponse(
                 1L, 10L, 20L, now, now, "Updated text");
 
         when(mesoNoteRepo.findById(1L)).thenReturn(Optional.of(sampleEntity));
@@ -154,7 +151,7 @@ class MesoNoteServiceTest {
         when(mesoNoteMapper.toPayload(updatedEntity)).thenReturn(updatedPayload);
 
         // When
-        MesoNotePayload result = mesoNoteService.updateMesoNote(1L, samplePayload);
+        MesoNoteResponse result = mesoNoteService.updateMesoNote(1L, samplePayload);
 
         // Then
         assertNotNull(result);
@@ -217,7 +214,7 @@ class MesoNoteServiceTest {
         when(mesoNoteMapper.toPayload(sampleEntity)).thenReturn(samplePayload);
 
         // When
-        List<MesoNotePayload> result = mesoNoteService.getAllMesoNotes();
+        List<MesoNoteResponse> result = mesoNoteService.getAllMesoNotes();
 
         // Then
         assertNotNull(result);
@@ -234,7 +231,7 @@ class MesoNoteServiceTest {
         when(mesoNoteRepo.findAll()).thenReturn(Arrays.asList());
 
         // When
-        List<MesoNotePayload> result = mesoNoteService.getAllMesoNotes();
+        List<MesoNoteResponse> result = mesoNoteService.getAllMesoNotes();
 
         // Then
         assertNotNull(result);
