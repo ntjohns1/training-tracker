@@ -2,12 +2,14 @@ package com.noslen.training_tracker.service.mesocycle;
 
 import com.noslen.training_tracker.dto.mesocycle.MesocyclePayload;
 import com.noslen.training_tracker.mapper.mesocycle.MesocycleMapper;
+import com.noslen.training_tracker.mapper.mesocycle.MesoNoteMapper;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 import com.noslen.training_tracker.repository.mesocycle.MesocycleRepo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,29 +22,31 @@ public class MesocycleServiceImpl implements MesocycleService {
 
     private final MesocycleRepo mesocycleRepo;
     private final MesocycleMapper mesocycleMapper;
+    private final MesoNoteMapper mesoNoteMapper;
 
-    public MesocycleServiceImpl(MesocycleRepo mesocycleRepo, MesocycleMapper mesocycleMapper) {
+    public MesocycleServiceImpl(MesocycleRepo mesocycleRepo, MesocycleMapper mesocycleMapper, MesoNoteMapper mesoNoteMapper) {
         this.mesocycleRepo = mesocycleRepo;
         this.mesocycleMapper = mesocycleMapper;
+        this.mesoNoteMapper = mesoNoteMapper;
     }
 
     @Override
     public MesocyclePayload createMesocycle(MesocyclePayload mesocyclePayload) {
-        // Convert payload to entity
-        Mesocycle mesocycle = mesocycleMapper.toEntity(mesocyclePayload);
+        // Convert payload to entity using mapper, then enhance with timestamps
+        Mesocycle baseMesocycle = mesocycleMapper.toEntity(mesocyclePayload);
         
-        // Set timestamps
+        // Set timestamps and initialize fields for new mesocycle
         Instant now = Instant.now();
-        mesocycle = Mesocycle.builder()
-                .id(mesocycle.getId())
-                .mesocycleKey(mesocycle.getMesocycleKey())
-                .userId(mesocycle.getUserId())
-                .name(mesocycle.getName())
-                .days(mesocycle.getDays())
-                .unit(mesocycle.getUnit())
-                .sourceTemplate(mesocycle.getSourceTemplate())
-                .sourceMeso(mesocycle.getSourceMeso())
-                .microRirs(mesocycle.getMicroRirs())
+        Mesocycle mesocycle = Mesocycle.builder()
+                .id(baseMesocycle.getId())
+                .mesocycleKey(baseMesocycle.getMesocycleKey())
+                .userId(baseMesocycle.getUserId())
+                .name(baseMesocycle.getName())
+                .days(baseMesocycle.getDays())
+                .unit(baseMesocycle.getUnit())
+                .sourceTemplate(baseMesocycle.getSourceTemplate())
+                .sourceMeso(baseMesocycle.getSourceMeso())
+                .microRirs(baseMesocycle.getMicroRirs())
                 .createdAt(now)
                 .updatedAt(now)
                 .finishedAt(null) // New mesocycles are not finished
@@ -58,11 +62,11 @@ public class MesocycleServiceImpl implements MesocycleService {
                 .lastWorkoutFinishedAt(null)
                 .lastWorkoutSkippedAt(null)
                 .lastWorkoutPartialedAt(null)
-                .weeks(mesocycle.getWeeks())
-                .notes(mesocycle.getNotes())
+                .weeks(baseMesocycle.getWeeks())
+                .notes(baseMesocycle.getNotes())
                 .status(null) // Will be set based on business logic
                 .generatedFrom(null) // Will be set based on business logic
-                .progressions(mesocycle.getProgressions())
+                .progressions(baseMesocycle.getProgressions())
                 .build();
 
         // Save entity

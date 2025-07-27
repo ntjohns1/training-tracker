@@ -1,5 +1,6 @@
 package com.noslen.training_tracker.dto.mesocycle;
 
+import com.noslen.training_tracker.dto.muscle_group.ProgressionResponse;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.json.JacksonTester;
@@ -10,7 +11,6 @@ import com.noslen.training_tracker.dto.day.DayMuscleGroupPayload;
 import com.noslen.training_tracker.dto.day.DayNotePayload;
 import com.noslen.training_tracker.dto.day.DayPayload;
 import com.noslen.training_tracker.dto.day.ExerciseSetPayload;
-import com.noslen.training_tracker.dto.muscle_group.ProgressionPayload;
 import com.noslen.training_tracker.enums.MgProgressionType;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +35,7 @@ public class CurrentMesoPayloadJsonTests {
 
         private List<Week> weeks;
         private Set<MesoNotePayload> notes;
-        private Map<Long, ProgressionPayload> progressions;
+        private Map<Long, ProgressionResponse> progressions;
         private CurrentMesoPayload currentMesoPayload;
         private ClassPathResource resource;
 
@@ -54,7 +54,7 @@ public class CurrentMesoPayloadJsonTests {
                                 "For P7: \nBack to cable Lateral Raises");
                 notes.add(note);
 
-                ProgressionPayload progression1 = new ProgressionPayload(
+                ProgressionResponse progression1 = new ProgressionResponse(
                                 6159088L,
                                 1L,
                                 MgProgressionType.REGULAR);

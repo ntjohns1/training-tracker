@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.muscle_group;
 
-import com.noslen.training_tracker.dto.muscle_group.MuscleGroupPayload;
+import com.noslen.training_tracker.dto.muscle_group.MuscleGroupResponse;
 import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
 import com.noslen.training_tracker.enums.MgName;
 import com.noslen.training_tracker.util.EnumConverter;
@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
 public class MuscleGroupMapper {
 
     /**
-     * Converts MuscleGroupPayload to MuscleGroup entity
+     * Converts MuscleGroupResponse to MuscleGroup entity
      */
-    public MuscleGroup toEntity(MuscleGroupPayload payload) {
+    public MuscleGroup toEntity(MuscleGroupResponse payload) {
         if (payload == null) {
             return null;
         }
@@ -31,14 +31,14 @@ public class MuscleGroupMapper {
     }
 
     /**
-     * Converts MuscleGroup entity to MuscleGroupPayload
+     * Converts MuscleGroup entity to MuscleGroupResponse
      */
-    public MuscleGroupPayload toPayload(MuscleGroup entity) {
+    public MuscleGroupResponse toPayload(MuscleGroup entity) {
         if (entity == null) {
             return null;
         }
 
-        return new MuscleGroupPayload(
+        return new MuscleGroupResponse(
                 entity.getId(),
                 mgNameToString(entity.getName()),
                 entity.getCreatedAt(),
@@ -47,9 +47,9 @@ public class MuscleGroupMapper {
     }
 
     /**
-     * Updates an existing MuscleGroup entity with data from MuscleGroupPayload
+     * Updates an existing MuscleGroup entity with data from MuscleGroupResponse
      */
-    public void updateEntity(MuscleGroup existing, MuscleGroupPayload payload) {
+    public void updateEntity(MuscleGroup existing, MuscleGroupResponse payload) {
         if (existing == null || payload == null) {
             return;
         }
@@ -70,7 +70,7 @@ public class MuscleGroupMapper {
      * Creates a new MuscleGroup entity by merging existing entity with payload data
      * This is useful when you need to update all fields
      */
-    public MuscleGroup mergeEntity(MuscleGroup existing, MuscleGroupPayload payload) {
+    public MuscleGroup mergeEntity(MuscleGroup existing, MuscleGroupResponse payload) {
         if (existing == null) {
             return toEntity(payload);
         }
@@ -90,7 +90,7 @@ public class MuscleGroupMapper {
     /**
      * Converts a list of MuscleGroup entities to MuscleGroupPayloads
      */
-    public List<MuscleGroupPayload> toPayloadList(List<MuscleGroup> entities) {
+    public List<MuscleGroupResponse> toPayloadList(List<MuscleGroup> entities) {
         if (entities == null) {
             return null;
         }

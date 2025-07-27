@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.muscle_group;
 
-import com.noslen.training_tracker.dto.muscle_group.MuscleGroupPayload;
+import com.noslen.training_tracker.dto.muscle_group.MuscleGroupResponse;
 import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
 import com.noslen.training_tracker.enums.MgName;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +22,7 @@ class MuscleGroupMapperTest {
     @InjectMocks
     private MuscleGroupMapper muscleGroupMapper;
 
-    private MuscleGroupPayload testPayload;
+    private MuscleGroupResponse testPayload;
     private MuscleGroup testEntity;
     private Instant testTime;
 
@@ -30,7 +30,7 @@ class MuscleGroupMapperTest {
     void setUp() {
         testTime = Instant.now();
         
-        testPayload = new MuscleGroupPayload(
+        testPayload = new MuscleGroupResponse(
                 1L, "Chest", testTime, testTime
         );
 
@@ -66,7 +66,7 @@ class MuscleGroupMapperTest {
     @Test
     void toEntity_WithNullCreatedAt_ShouldSetCurrentTime() {
         // Given
-        MuscleGroupPayload payloadWithNullCreatedAt = new MuscleGroupPayload(
+        MuscleGroupResponse payloadWithNullCreatedAt = new MuscleGroupResponse(
                 1L, "Chest", null, testTime
         );
 
@@ -82,7 +82,7 @@ class MuscleGroupMapperTest {
     @Test
     void toEntity_WithNullUpdatedAt_ShouldSetCurrentTime() {
         // Given
-        MuscleGroupPayload payloadWithNullUpdatedAt = new MuscleGroupPayload(
+        MuscleGroupResponse payloadWithNullUpdatedAt = new MuscleGroupResponse(
                 1L, "Chest", testTime, null
         );
 
@@ -98,7 +98,7 @@ class MuscleGroupMapperTest {
     @Test
     void toPayload_WithValidEntity_ShouldMapCorrectly() {
         // When
-        MuscleGroupPayload result = muscleGroupMapper.toPayload(testEntity);
+        MuscleGroupResponse result = muscleGroupMapper.toPayload(testEntity);
 
         // Then
         assertThat(result).isNotNull();
@@ -111,7 +111,7 @@ class MuscleGroupMapperTest {
     @Test
     void toPayload_WithNullEntity_ShouldReturnNull() {
         // When
-        MuscleGroupPayload result = muscleGroupMapper.toPayload(null);
+        MuscleGroupResponse result = muscleGroupMapper.toPayload(null);
 
         // Then
         assertThat(result).isNull();
@@ -126,7 +126,7 @@ class MuscleGroupMapperTest {
         existing.setCreatedAt(testTime);
         existing.setUpdatedAt(testTime);
 
-        MuscleGroupPayload updatePayload = new MuscleGroupPayload(
+        MuscleGroupResponse updatePayload = new MuscleGroupResponse(
                 null, "Back", null, null
         );
 
@@ -157,7 +157,7 @@ class MuscleGroupMapperTest {
         existing.setCreatedAt(testTime);
         existing.setUpdatedAt(testTime);
 
-        MuscleGroupPayload partialPayload = new MuscleGroupPayload(
+        MuscleGroupResponse partialPayload = new MuscleGroupResponse(
                 null, null, testTime.plusSeconds(3600), null
         );
 
@@ -179,7 +179,7 @@ class MuscleGroupMapperTest {
         existing.setCreatedAt(testTime);
         existing.setUpdatedAt(testTime);
 
-        MuscleGroupPayload updatePayload = new MuscleGroupPayload(
+        MuscleGroupResponse updatePayload = new MuscleGroupResponse(
                 null, "Back", null, null
         );
 
@@ -220,7 +220,7 @@ class MuscleGroupMapperTest {
         List<MuscleGroup> entities = Arrays.asList(testEntity, testEntity);
 
         // When
-        List<MuscleGroupPayload> result = muscleGroupMapper.toPayloadList(entities);
+        List<MuscleGroupResponse> result = muscleGroupMapper.toPayloadList(entities);
 
         // Then
         assertThat(result).hasSize(2);
@@ -231,7 +231,7 @@ class MuscleGroupMapperTest {
     @Test
     void toPayloadList_WithNullList_ShouldReturnNull() {
         // When
-        List<MuscleGroupPayload> result = muscleGroupMapper.toPayloadList(null);
+        List<MuscleGroupResponse> result = muscleGroupMapper.toPayloadList(null);
 
         // Then
         assertThat(result).isNull();
@@ -240,7 +240,7 @@ class MuscleGroupMapperTest {
     @Test
     void toPayloadList_WithEmptyList_ShouldReturnEmptyList() {
         // When
-        List<MuscleGroupPayload> result = muscleGroupMapper.toPayloadList(Collections.emptyList());
+        List<MuscleGroupResponse> result = muscleGroupMapper.toPayloadList(Collections.emptyList());
 
         // Then
         assertThat(result).isEmpty();
@@ -252,7 +252,7 @@ class MuscleGroupMapperTest {
         List<MuscleGroup> entitiesWithNull = Arrays.asList(testEntity, null, testEntity);
 
         // When
-        List<MuscleGroupPayload> result = muscleGroupMapper.toPayloadList(entitiesWithNull);
+        List<MuscleGroupResponse> result = muscleGroupMapper.toPayloadList(entitiesWithNull);
 
         // Then
         assertThat(result).hasSize(3);

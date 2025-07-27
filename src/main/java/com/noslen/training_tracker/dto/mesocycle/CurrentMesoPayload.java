@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.dto.mesocycle;
 
-import com.noslen.training_tracker.dto.muscle_group.ProgressionPayload;
+import com.noslen.training_tracker.dto.muscle_group.ProgressionResponse;
 
 import java.time.Instant;
 import java.util.List;
@@ -36,5 +36,5 @@ public record CurrentMesoPayload(
         Set<MesoNotePayload> notes,
         String status,
         String generatedFrom,
-        Map<Long, ProgressionPayload> progressions) {
+        Map<Long, ProgressionResponse> progressions) {
 }

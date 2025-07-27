@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.muscle_group;
 
-import com.noslen.training_tracker.dto.muscle_group.ProgressionPayload;
+import com.noslen.training_tracker.dto.muscle_group.ProgressionResponse;
 import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
 import com.noslen.training_tracker.model.muscle_group.Progression;
 import com.noslen.training_tracker.repository.muscle_group.MuscleGroupRepo;
@@ -28,13 +28,13 @@ class ProgressionMapperTest {
     @InjectMocks
     private ProgressionMapper progressionMapper;
 
-    private ProgressionPayload testPayload;
+    private ProgressionResponse testPayload;
     private Progression testEntity;
     private MuscleGroup testMuscleGroup;
 
     @BeforeEach
     void setUp() {
-        testPayload = new ProgressionPayload(
+        testPayload = new ProgressionResponse(
                 1L, 2L, MgProgressionType.REGULAR
         );
 
@@ -71,7 +71,7 @@ class ProgressionMapperTest {
     @Test
     void toPayload_WithValidEntity_ShouldMapCorrectly() {
         // When
-        ProgressionPayload result = progressionMapper.toPayload(testEntity);
+        ProgressionResponse result = progressionMapper.toPayload(testEntity);
 
         // Then
         assertThat(result).isNotNull();
@@ -83,7 +83,7 @@ class ProgressionMapperTest {
     @Test
     void toPayload_WithNullEntity_ShouldReturnNull() {
         // When
-        ProgressionPayload result = progressionMapper.toPayload(null);
+        ProgressionResponse result = progressionMapper.toPayload(null);
 
         // Then
         assertThat(result).isNull();
@@ -95,7 +95,7 @@ class ProgressionMapperTest {
         Progression existingEntity = new Progression(
                 1L, testMuscleGroup, MgProgressionType.REGULAR, null
         );
-        ProgressionPayload updatePayload = new ProgressionPayload(
+        ProgressionResponse updatePayload = new ProgressionResponse(
                 1L, 2L, MgProgressionType.SECONDARY
         );
         // No mocking needed since mapper doesn't use repository
@@ -124,7 +124,7 @@ class ProgressionMapperTest {
         List<Progression> entities = Arrays.asList(testEntity, testEntity);
 
         // When
-        List<ProgressionPayload> result = progressionMapper.toPayloadList(entities);
+        List<ProgressionResponse> result = progressionMapper.toPayloadList(entities);
 
         // Then
         assertThat(result).hasSize(2);
@@ -135,7 +135,7 @@ class ProgressionMapperTest {
     @Test
     void toPayloadList_WithNullList_ShouldReturnNull() {
         // When
-        List<ProgressionPayload> result = progressionMapper.toPayloadList(null);
+        List<ProgressionResponse> result = progressionMapper.toPayloadList(null);
 
         // Then
         assertThat(result).isNull();
@@ -144,7 +144,7 @@ class ProgressionMapperTest {
     @Test
     void toPayloadList_WithEmptyList_ShouldReturnEmptyList() {
         // When
-        List<ProgressionPayload> result = progressionMapper.toPayloadList(Collections.emptyList());
+        List<ProgressionResponse> result = progressionMapper.toPayloadList(Collections.emptyList());
 
         // Then
         assertThat(result).isEmpty();

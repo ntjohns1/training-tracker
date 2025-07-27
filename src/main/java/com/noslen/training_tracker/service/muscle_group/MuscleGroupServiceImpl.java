@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.service.muscle_group;
 
-import com.noslen.training_tracker.dto.muscle_group.MuscleGroupPayload;
+import com.noslen.training_tracker.dto.muscle_group.MuscleGroupResponse;
 import com.noslen.training_tracker.mapper.muscle_group.MuscleGroupMapper;
 import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
 import com.noslen.training_tracker.repository.muscle_group.MuscleGroupRepo;
@@ -25,14 +25,14 @@ public class MuscleGroupServiceImpl implements MuscleGroupService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<MuscleGroupPayload> getAllMuscleGroups() {
+    public List<MuscleGroupResponse> getAllMuscleGroups() {
         List<MuscleGroup> muscleGroups = repo.findAll();
         return mapper.toPayloadList(muscleGroups);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public MuscleGroupPayload getMuscleGroupById(Long id) {
+    public MuscleGroupResponse getMuscleGroupById(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
@@ -45,13 +45,13 @@ public class MuscleGroupServiceImpl implements MuscleGroupService {
     }
 
     @Override
-    public MuscleGroupPayload createMuscleGroup(MuscleGroupPayload muscleGroupPayload) {
-        if (muscleGroupPayload == null) {
-            throw new IllegalArgumentException("MuscleGroupPayload cannot be null");
+    public MuscleGroupResponse createMuscleGroup(MuscleGroupResponse muscleGroupResponse) {
+        if (muscleGroupResponse == null) {
+            throw new IllegalArgumentException("MuscleGroupResponse cannot be null");
         }
 
         // Convert payload to entity
-        MuscleGroup muscleGroup = mapper.toEntity(muscleGroupPayload);
+        MuscleGroup muscleGroup = mapper.toEntity(muscleGroupResponse);
         
         // Set creation timestamp if not already set
         if (muscleGroup.getCreatedAt() == null) {
@@ -69,12 +69,12 @@ public class MuscleGroupServiceImpl implements MuscleGroupService {
     }
 
     @Override
-    public MuscleGroupPayload updateMuscleGroup(Long id, MuscleGroupPayload muscleGroupPayload) {
+    public MuscleGroupResponse updateMuscleGroup(Long id, MuscleGroupResponse muscleGroupResponse) {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
-        if (muscleGroupPayload == null) {
-            throw new IllegalArgumentException("MuscleGroupPayload cannot be null");
+        if (muscleGroupResponse == null) {
+            throw new IllegalArgumentException("MuscleGroupResponse cannot be null");
         }
 
         Optional<MuscleGroup> existingOptional = repo.findById(id);
@@ -85,7 +85,8 @@ public class MuscleGroupServiceImpl implements MuscleGroupService {
         MuscleGroup existing = existingOptional.get();
         
         // Update entity with payload data using mapper
-        mapper.updateEntity(existing, muscleGroupPayload);
+        mapper.updateEntity(existing,
+                            muscleGroupResponse);
         
         // Ensure updated timestamp is set
         existing.setUpdatedAt(Instant.now());
