@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.service.exercise;
 
-import com.noslen.training_tracker.dto.exercise.ExerciseNoteResponse;
+import com.noslen.training_tracker.dto.exercise.response.ExerciseNoteResponse;
 
 public interface ExerciseNoteService {
     ExerciseNoteResponse createExerciseNote(ExerciseNoteResponse exerciseNoteResponse);

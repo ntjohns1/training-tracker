@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.service.mesocycle;
 
-import com.noslen.training_tracker.dto.mesocycle.MesocycleResponse;
+import com.noslen.training_tracker.dto.mesocycle.response.MesocycleResponse;
 
 import java.util.List;
 

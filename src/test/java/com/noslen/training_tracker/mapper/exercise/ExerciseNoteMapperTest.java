@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.exercise;
 
-import com.noslen.training_tracker.dto.exercise.ExerciseNoteResponse;
+import com.noslen.training_tracker.dto.exercise.response.ExerciseNoteResponse;
 import com.noslen.training_tracker.model.exercise.ExerciseNote;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

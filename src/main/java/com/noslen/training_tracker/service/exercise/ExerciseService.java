@@ -2,8 +2,8 @@ package com.noslen.training_tracker.service.exercise;
 
 import java.util.List;
 
-import com.noslen.training_tracker.dto.exercise.ExerciseResponse;
-import com.noslen.training_tracker.dto.exercise.ExerciseNoteResponse;
+import com.noslen.training_tracker.dto.exercise.response.ExerciseResponse;
+import com.noslen.training_tracker.dto.exercise.response.ExerciseNoteResponse;
 
 public interface ExerciseService {
     ExerciseResponse createExercise(ExerciseResponse exerciseResponse);

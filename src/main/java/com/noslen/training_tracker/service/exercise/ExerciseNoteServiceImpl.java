@@ -3,7 +3,7 @@ package com.noslen.training_tracker.service.exercise;
 import java.time.Instant;
 import java.util.Optional;
 
-import com.noslen.training_tracker.dto.exercise.ExerciseNoteResponse;
+import com.noslen.training_tracker.dto.exercise.response.ExerciseNoteResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.factory;
 
-import com.noslen.training_tracker.dto.mesocycle.MesocycleResponse;
+import com.noslen.training_tracker.dto.mesocycle.response.MesocycleResponse;
 import com.noslen.training_tracker.model.mesocycle.MesoTemplate;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 import com.noslen.training_tracker.util.EnumConverter;

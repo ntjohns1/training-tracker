@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.service.mesocycle;
 
-import com.noslen.training_tracker.dto.mesocycle.MesoNoteResponse;
+import com.noslen.training_tracker.dto.mesocycle.response.MesoNoteResponse;
 import com.noslen.training_tracker.mapper.mesocycle.MesoNoteMapper;
 import com.noslen.training_tracker.model.mesocycle.MesoNote;
 import com.noslen.training_tracker.repository.mesocycle.MesoNoteRepo;

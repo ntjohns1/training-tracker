@@ -1,4 +1,4 @@
-package com.noslen.training_tracker.dto.mesocycle;
+package com.noslen.training_tracker.dto.mesocycle.response;
 
 import java.time.Instant;
 

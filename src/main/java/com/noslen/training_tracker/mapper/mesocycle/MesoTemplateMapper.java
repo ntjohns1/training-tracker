@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.mesocycle;
 
-import com.noslen.training_tracker.dto.mesocycle.MesoTemplateResponse;
+import com.noslen.training_tracker.dto.mesocycle.response.MesoTemplateResponse;
 import com.noslen.training_tracker.model.mesocycle.MesoTemplate;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 import org.springframework.stereotype.Component;

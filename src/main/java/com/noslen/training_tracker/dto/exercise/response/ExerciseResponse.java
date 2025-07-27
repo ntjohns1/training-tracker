@@ -1,4 +1,4 @@
-package com.noslen.training_tracker.dto.exercise;
+package com.noslen.training_tracker.dto.exercise.response;
 
 import java.time.Instant;
 import java.util.List;

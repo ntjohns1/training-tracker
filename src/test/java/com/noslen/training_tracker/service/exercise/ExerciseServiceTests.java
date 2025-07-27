@@ -13,8 +13,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import com.noslen.training_tracker.dto.exercise.ExerciseNoteResponse;
-import com.noslen.training_tracker.dto.exercise.ExerciseResponse;
+import com.noslen.training_tracker.dto.exercise.response.ExerciseNoteResponse;
+import com.noslen.training_tracker.dto.exercise.response.ExerciseResponse;
 import com.noslen.training_tracker.enums.ExerciseType;
 import com.noslen.training_tracker.enums.MgSubType;
 

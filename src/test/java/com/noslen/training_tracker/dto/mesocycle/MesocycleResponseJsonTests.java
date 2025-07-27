@@ -1,5 +1,7 @@
 package com.noslen.training_tracker.dto.mesocycle;
 
+import com.noslen.training_tracker.dto.mesocycle.response.MesoNoteResponse;
+import com.noslen.training_tracker.dto.mesocycle.response.MesocycleResponse;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.json.JacksonTester;

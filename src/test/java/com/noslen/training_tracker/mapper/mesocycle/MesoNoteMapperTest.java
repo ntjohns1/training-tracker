@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.mesocycle;
 
-import com.noslen.training_tracker.dto.mesocycle.MesoNoteResponse;
+import com.noslen.training_tracker.dto.mesocycle.response.MesoNoteResponse;
 import com.noslen.training_tracker.model.mesocycle.MesoNote;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 import org.junit.jupiter.api.BeforeEach;

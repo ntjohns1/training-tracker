@@ -1,13 +1,9 @@
-package com.noslen.training_tracker.dto.mesocycle;
-
-import com.noslen.training_tracker.dto.muscle_group.ProgressionResponse;
+package com.noslen.training_tracker.dto.mesocycle.response;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-public record CurrentMesoResponse(
+public record MesocycleResponse(
         Long id,
         String key,
         Long userId,
@@ -32,9 +28,6 @@ public record CurrentMesoResponse(
         Instant lastWorkoutFinishedAt,
         Instant lastWorkoutSkippedAt,
         Instant lastWorkoutPartialedAt,
-        List<Week> weeks,
-        Set<MesoNoteResponse> notes,
-        String status,
-        String generatedFrom,
-        Map<Long, ProgressionResponse> progressions) {
+        Integer weeks,
+        List<MesoNoteResponse> notes) {
 }

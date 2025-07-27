@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.noslen.training_tracker.dto.exercise.ExerciseResponse;
+import com.noslen.training_tracker.dto.exercise.response.ExerciseResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.noslen.training_tracker.dto.exercise.ExerciseNoteResponse;
+import com.noslen.training_tracker.dto.exercise.response.ExerciseNoteResponse;
 import com.noslen.training_tracker.mapper.exercise.ExerciseMapper;
 import com.noslen.training_tracker.mapper.exercise.ExerciseNoteMapper;
 import com.noslen.training_tracker.model.exercise.Exercise;

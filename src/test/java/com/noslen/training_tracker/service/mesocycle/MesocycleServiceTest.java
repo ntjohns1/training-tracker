@@ -1,7 +1,7 @@
 package com.noslen.training_tracker.service.mesocycle;
 
-import com.noslen.training_tracker.dto.mesocycle.MesoNoteResponse;
-import com.noslen.training_tracker.dto.mesocycle.MesocycleResponse;
+import com.noslen.training_tracker.dto.mesocycle.response.MesoNoteResponse;
+import com.noslen.training_tracker.dto.mesocycle.response.MesocycleResponse;
 import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.enums.Unit;
 import com.noslen.training_tracker.factory.MesocycleFactory;

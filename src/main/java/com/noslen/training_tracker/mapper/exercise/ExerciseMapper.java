@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.exercise;
 
-import com.noslen.training_tracker.dto.exercise.ExerciseResponse;
+import com.noslen.training_tracker.dto.exercise.response.ExerciseResponse;
 import com.noslen.training_tracker.enums.ExerciseType;
 import com.noslen.training_tracker.enums.MgSubType;
 import com.noslen.training_tracker.model.exercise.Exercise;
