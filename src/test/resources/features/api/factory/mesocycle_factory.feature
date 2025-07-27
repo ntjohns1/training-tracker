@@ -7,12 +7,15 @@ Feature: Mesocycle Factory
     Given the MesocycleFactory is properly configured with dependencies
     And the system has access to MesocycleMapper for DTO conversions
 
-  Scenario: Create new Mesocycle from Response DTO
+  Scenario: Create new Mesocycle from Request DTO
     Given I have a valid MesocycleResponse DTO with basic mesocycle data
     When I call createFromResponse with the DTO
     Then a new Mesocycle entity should be created
     And the entity should have proper timestamps set (createdAt and updatedAt)
     And all fields from the DTO should be mapped correctly
+    And the Day entities should be mapped correctly
+    And the Exercise entities should be mapped correctly
+    And the ExerciseSet entities should be mapped correctly
     And the entity should be ready for persistence
 
   Scenario: Create new Mesocycle with all optional fields

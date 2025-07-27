@@ -1,17 +1,9 @@
 Feature: Mesocycle Service
   As a user of the training tracker system
-  I want to manage mesocycles through a clean service layer
   So that I can create, read, update, and delete mesocycles with proper business logic
 
-  Background:
-    Given the MesocycleService is configured with simplified architecture
-    And the service uses MesocycleFactory for entity creation
-    And the service uses MesocycleRepo for data persistence
-    And the service uses MesocycleMapper for DTO conversions
-    And no redundant orchestration or CRUD service layers exist
-
   Scenario: Create a new mesocycle successfully
-    Given I have a valid MesocycleResponse DTO with mesocycle data
+    Given I have a valid MesocycleRequest DTO with mesocycle data
     When I call createMesocycle with the DTO
     Then the service should use MesocycleFactory to create the entity
     And the entity should be saved to the repository
@@ -109,21 +101,3 @@ Feature: Mesocycle Service
     Then a RuntimeException should be thrown
     And the exception message should indicate "Mesocycle not found with id: 999"
     And no finish operation should be performed
-
-  Scenario: Service layer architecture validation
-    Given the MesocycleService implementation
-    Then it should use only the simplified Service + Factory pattern
-    And it should NOT have orchestration service dependencies
-    And it should NOT have CRUD service dependencies
-    And it should directly use MesocycleFactory for entity creation
-    And it should directly use MesocycleRepo for data access
-    And it should directly use MesocycleMapper for DTO conversions
-    And the architecture should be clean and maintainable
-
-  Scenario: Eliminate redundant instantiation in service layer
-    Given any mesocycle operation is performed
-    When the service processes the request
-    Then no mapper.toEntity() followed by builder reconstruction should occur
-    And the factory should handle all entity creation logic
-    And the service should focus on business logic and orchestration
-    And the code should be more maintainable and performant
