@@ -1,19 +1,19 @@
 package com.noslen.training_tracker.service.mesocycle;
 
 import com.noslen.training_tracker.dto.mesocycle.MesocycleResponse;
+import com.noslen.training_tracker.factory.MesocycleFactory;
 import com.noslen.training_tracker.mapper.mesocycle.MesocycleMapper;
-import com.noslen.training_tracker.mapper.mesocycle.MesoNoteMapper;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 import com.noslen.training_tracker.repository.mesocycle.MesocycleRepo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Service implementation for Mesocycle operations
+ * Service implementation for Mesocycle operations.
+ * Uses MesocycleFactory for clean entity creation without redundant instantiation.
  */
 @Service
 @Transactional
@@ -21,57 +21,23 @@ public class MesocycleServiceImpl implements MesocycleService {
 
     private final MesocycleRepo mesocycleRepo;
     private final MesocycleMapper mesocycleMapper;
-    private final MesoNoteMapper mesoNoteMapper;
+    private final MesocycleFactory mesocycleFactory;
 
-    public MesocycleServiceImpl(MesocycleRepo mesocycleRepo, MesocycleMapper mesocycleMapper, MesoNoteMapper mesoNoteMapper) {
+    public MesocycleServiceImpl(MesocycleRepo mesocycleRepo, MesocycleMapper mesocycleMapper, MesocycleFactory mesocycleFactory) {
         this.mesocycleRepo = mesocycleRepo;
         this.mesocycleMapper = mesocycleMapper;
-        this.mesoNoteMapper = mesoNoteMapper;
+        this.mesocycleFactory = mesocycleFactory;
     }
 
     @Override
     public MesocycleResponse createMesocycle(MesocycleResponse mesocycleResponse) {
-        // Convert payload to entity using mapper, then enhance with timestamps
-        Mesocycle baseMesocycle = mesocycleMapper.toEntity(mesocycleResponse);
+        // Use factory to create entity directly from DTO - no redundant instantiation
+        Mesocycle mesocycle = mesocycleFactory.createFromResponse(mesocycleResponse);
         
-        // Set timestamps and initialize fields for new mesocycle
-        Instant now = Instant.now();
-        Mesocycle mesocycle = Mesocycle.builder()
-                .id(baseMesocycle.getId())
-                .mesocycleKey(baseMesocycle.getMesocycleKey())
-                .userId(baseMesocycle.getUserId())
-                .name(baseMesocycle.getName())
-                .days(baseMesocycle.getDays())
-                .unit(baseMesocycle.getUnit())
-                .sourceTemplate(baseMesocycle.getSourceTemplate())
-                .sourceMeso(baseMesocycle.getSourceMeso())
-                .microRirs(baseMesocycle.getMicroRirs())
-                .createdAt(now)
-                .updatedAt(now)
-                .finishedAt(null) // New mesocycles are not finished
-                .deletedAt(null) // New mesocycles are not deleted
-                .firstMicroCompletedAt(null)
-                .firstWorkoutCompletedAt(null)
-                .firstExerciseCompletedAt(null)
-                .firstSetCompletedAt(null)
-                .lastMicroFinishedAt(null)
-                .lastSetCompletedAt(null)
-                .lastSetSkippedAt(null)
-                .lastWorkoutCompletedAt(null)
-                .lastWorkoutFinishedAt(null)
-                .lastWorkoutSkippedAt(null)
-                .lastWorkoutPartialedAt(null)
-                .weeks(baseMesocycle.getWeeks())
-                .notes(baseMesocycle.getNotes())
-                .status(null) // Will be set based on business logic
-                .generatedFrom(null) // Will be set based on business logic
-                .progressions(baseMesocycle.getProgressions())
-                .build();
-
         // Save entity
         Mesocycle savedMesocycle = mesocycleRepo.save(mesocycle);
         
-        // Convert back to payload and return
+        // Convert back to response DTO
         return mesocycleMapper.toPayload(savedMesocycle);
     }
 
@@ -99,15 +65,14 @@ public class MesocycleServiceImpl implements MesocycleService {
         // Find existing entity
         Mesocycle existingMesocycle = mesocycleRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Mesocycle not found with id: " + id));
-
-        // Since Mesocycle is immutable, create a new entity with updated values
-        Mesocycle updatedMesocycle = mesocycleMapper.mergeEntity(existingMesocycle,
-                                                                 mesocycleResponse);
         
-        // Save the updated entity
+        // Use mapper for merge operation (existing functionality)
+        Mesocycle updatedMesocycle = mesocycleMapper.mergeEntity(existingMesocycle, mesocycleResponse);
+        
+        // Save updated entity
         Mesocycle savedMesocycle = mesocycleRepo.save(updatedMesocycle);
         
-        // Convert back to payload and return
+        // Convert back to response DTO
         return mesocycleMapper.toPayload(savedMesocycle);
     }
 
@@ -116,40 +81,11 @@ public class MesocycleServiceImpl implements MesocycleService {
         // Find existing entity
         Mesocycle existingMesocycle = mesocycleRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Mesocycle not found with id: " + id));
-
-        // Perform soft delete by setting deletedAt timestamp
-        Mesocycle deletedMesocycle = Mesocycle.builder()
-                .id(existingMesocycle.getId())
-                .mesocycleKey(existingMesocycle.getMesocycleKey())
-                .userId(existingMesocycle.getUserId())
-                .name(existingMesocycle.getName())
-                .days(existingMesocycle.getDays())
-                .unit(existingMesocycle.getUnit())
-                .sourceTemplate(existingMesocycle.getSourceTemplate())
-                .sourceMeso(existingMesocycle.getSourceMeso())
-                .microRirs(existingMesocycle.getMicroRirs())
-                .createdAt(existingMesocycle.getCreatedAt())
-                .updatedAt(Instant.now())
-                .finishedAt(existingMesocycle.getFinishedAt())
-                .deletedAt(Instant.now()) // Set deletion timestamp
-                .firstMicroCompletedAt(existingMesocycle.getFirstMicroCompletedAt())
-                .firstWorkoutCompletedAt(existingMesocycle.getFirstWorkoutCompletedAt())
-                .firstExerciseCompletedAt(existingMesocycle.getFirstExerciseCompletedAt())
-                .firstSetCompletedAt(existingMesocycle.getFirstSetCompletedAt())
-                .lastMicroFinishedAt(existingMesocycle.getLastMicroFinishedAt())
-                .lastSetCompletedAt(existingMesocycle.getLastSetCompletedAt())
-                .lastSetSkippedAt(existingMesocycle.getLastSetSkippedAt())
-                .lastWorkoutCompletedAt(existingMesocycle.getLastWorkoutCompletedAt())
-                .lastWorkoutFinishedAt(existingMesocycle.getLastWorkoutFinishedAt())
-                .lastWorkoutSkippedAt(existingMesocycle.getLastWorkoutSkippedAt())
-                .lastWorkoutPartialedAt(existingMesocycle.getLastWorkoutPartialedAt())
-                .weeks(existingMesocycle.getWeeks())
-                .notes(existingMesocycle.getNotes())
-                .status(existingMesocycle.getStatus())
-                .generatedFrom(existingMesocycle.getGeneratedFrom())
-                .progressions(existingMesocycle.getProgressions())
-                .build();
         
+        // Use factory to create soft-deleted entity
+        Mesocycle deletedMesocycle = mesocycleFactory.createForSoftDelete(existingMesocycle);
+        
+        // Save the soft-deleted entity
         mesocycleRepo.save(deletedMesocycle);
     }
 
@@ -188,44 +124,14 @@ public class MesocycleServiceImpl implements MesocycleService {
         // Find existing entity
         Mesocycle existingMesocycle = mesocycleRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Mesocycle not found with id: " + id));
-
-        // Create finished mesocycle by setting finishedAt timestamp
-        Mesocycle finishedMesocycle = Mesocycle.builder()
-                .id(existingMesocycle.getId())
-                .mesocycleKey(existingMesocycle.getMesocycleKey())
-                .userId(existingMesocycle.getUserId())
-                .name(existingMesocycle.getName())
-                .days(existingMesocycle.getDays())
-                .unit(existingMesocycle.getUnit())
-                .sourceTemplate(existingMesocycle.getSourceTemplate())
-                .sourceMeso(existingMesocycle.getSourceMeso())
-                .microRirs(existingMesocycle.getMicroRirs())
-                .createdAt(existingMesocycle.getCreatedAt())
-                .updatedAt(Instant.now())
-                .finishedAt(Instant.now()) // Set finish timestamp
-                .deletedAt(existingMesocycle.getDeletedAt())
-                .firstMicroCompletedAt(existingMesocycle.getFirstMicroCompletedAt())
-                .firstWorkoutCompletedAt(existingMesocycle.getFirstWorkoutCompletedAt())
-                .firstExerciseCompletedAt(existingMesocycle.getFirstExerciseCompletedAt())
-                .firstSetCompletedAt(existingMesocycle.getFirstSetCompletedAt())
-                .lastMicroFinishedAt(existingMesocycle.getLastMicroFinishedAt())
-                .lastSetCompletedAt(existingMesocycle.getLastSetCompletedAt())
-                .lastSetSkippedAt(existingMesocycle.getLastSetSkippedAt())
-                .lastWorkoutCompletedAt(existingMesocycle.getLastWorkoutCompletedAt())
-                .lastWorkoutFinishedAt(existingMesocycle.getLastWorkoutFinishedAt())
-                .lastWorkoutSkippedAt(existingMesocycle.getLastWorkoutSkippedAt())
-                .lastWorkoutPartialedAt(existingMesocycle.getLastWorkoutPartialedAt())
-                .weeks(existingMesocycle.getWeeks())
-                .notes(existingMesocycle.getNotes())
-                .status(existingMesocycle.getStatus())
-                .generatedFrom(existingMesocycle.getGeneratedFrom())
-                .progressions(existingMesocycle.getProgressions())
-                .build();
         
-        // Save the finished mesocycle
+        // Use factory to create finished entity
+        Mesocycle finishedMesocycle = mesocycleFactory.createForFinish(existingMesocycle);
+        
+        // Save the finished entity
         Mesocycle savedMesocycle = mesocycleRepo.save(finishedMesocycle);
         
-        // Convert back to payload and return
+        // Convert back to response DTO
         return mesocycleMapper.toPayload(savedMesocycle);
     }
 }
