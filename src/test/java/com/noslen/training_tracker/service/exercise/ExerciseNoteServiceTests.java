@@ -41,14 +41,13 @@ public class ExerciseNoteServiceTests {
         MockitoAnnotations.openMocks(this);
         testTime = Instant.now();
         
-        testEntity = ExerciseNote.builder()
-                .id(1L)
-                .userId(2L)
-                .noteId(3L)
-                .createdAt(testTime)
-                .updatedAt(testTime)
-                .text("Test note")
-                .build();
+        testEntity = new ExerciseNote();
+        testEntity.setId(1L);
+        testEntity.setUserId(2L);
+        testEntity.setNoteId(3L);
+        testEntity.setCreatedAt(testTime);
+        testEntity.setUpdatedAt(testTime);
+        testEntity.setText("Test note");
                 
         testPayload = new ExerciseNotePayload(
                 1L, 4L, 2L, 3L, 5L, testTime, testTime, "Test note"

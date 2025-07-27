@@ -5,6 +5,7 @@ import com.noslen.training_tracker.dto.day.ExerciseSetPayload;
 import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.model.day.ExerciseSet;
+import com.noslen.training_tracker.model.exercise.Exercise;
 import com.noslen.training_tracker.util.EnumConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -41,7 +42,9 @@ public class DayExerciseMapper {
             builder.day(com.noslen.training_tracker.model.day.Day.builder().id(payload.dayId()).build());
         }
         if (payload.exerciseId() != null) {
-            builder.exercise(com.noslen.training_tracker.model.exercise.Exercise.builder().id(payload.exerciseId()).build());
+            Exercise exercise = new Exercise();
+            exercise.setId(payload.exerciseId());
+            builder.exercise(exercise);
         }
         if (payload.muscleGroupId() != null) {
             builder.muscleGroup(com.noslen.training_tracker.model.day.DayMuscleGroup.builder().id(payload.muscleGroupId()).build());
@@ -114,7 +117,9 @@ public class DayExerciseMapper {
             existing.setDay(com.noslen.training_tracker.model.day.Day.builder().id(payload.dayId()).build());
         }
         if (payload.exerciseId() != null) {
-            existing.setExercise(com.noslen.training_tracker.model.exercise.Exercise.builder().id(payload.exerciseId()).build());
+            Exercise exercise = new Exercise();
+            exercise.setId(payload.exerciseId());
+            existing.setExercise(exercise);
         }
         if (payload.muscleGroupId() != null) {
             existing.setMuscleGroup(com.noslen.training_tracker.model.day.DayMuscleGroup.builder().id(payload.muscleGroupId()).build());
@@ -143,7 +148,7 @@ public class DayExerciseMapper {
                     com.noslen.training_tracker.model.day.Day.builder().id(payload.dayId()).build() : 
                     existing.getDay())
                 .exercise(payload.exerciseId() != null ? 
-                    com.noslen.training_tracker.model.exercise.Exercise.builder().id(payload.exerciseId()).build() : 
+                    createExerciseWithId(payload.exerciseId()) : 
                     existing.getExercise())
                 .muscleGroup(payload.muscleGroupId() != null ? 
                     com.noslen.training_tracker.model.day.DayMuscleGroup.builder().id(payload.muscleGroupId()).build() : 
@@ -156,6 +161,12 @@ public class DayExerciseMapper {
                 .updatedAt(Instant.now()) // Update timestamp
                 .sets(existing.getSets()) // Keep existing sets
                 .build();
+    }
+
+    private Exercise createExerciseWithId(Long id) {
+        Exercise exercise = new Exercise();
+        exercise.setId(id);
+        return exercise;
     }
 
     /**

@@ -44,23 +44,22 @@ class ExerciseSetMapperTest {
                 10, 12, 80.0f, "kgs", testTime, testTime, "complete"
         );
 
-        testEntity = ExerciseSet.builder()
-                .id(1L)
-                .dayExercise(testDayExercise)
-                .position(1)
-                .setType(SetType.REGULAR)
-                .weight(100.0f)
-                .weightTarget(105.0f)
-                .weightTargetMin(95.0f)
-                .weightTargetMax(110.0f)
-                .reps(10)
-                .repsTarget(12)
-                .bodyweight(80.0f)
-                .unit(exerciseSetMapper.stringToUnit("kgs"))
-                .createdAt(testTime)
-                .finishedAt(testTime)
-                .status(Status.COMPLETE)
-                .build();
+        testEntity = new ExerciseSet();
+        testEntity.setId(1L);
+        testEntity.setDayExercise(testDayExercise);
+        testEntity.setPosition(1);
+        testEntity.setSetType(SetType.REGULAR);
+        testEntity.setWeight(100.0f);
+        testEntity.setWeightTarget(105.0f);
+        testEntity.setWeightTargetMin(95.0f);
+        testEntity.setWeightTargetMax(110.0f);
+        testEntity.setReps(10);
+        testEntity.setRepsTarget(12);
+        testEntity.setBodyweight(80.0f);
+        testEntity.setUnit(exerciseSetMapper.stringToUnit("kgs"));
+        testEntity.setCreatedAt(testTime);
+        testEntity.setFinishedAt(testTime);
+        testEntity.setStatus(Status.COMPLETE);
     }
 
     @Test
@@ -164,17 +163,16 @@ class ExerciseSetMapperTest {
     @Test
     void toPayload_WithNullDayExercise_ShouldHandleGracefully() {
         // Given
-        ExerciseSet entityWithNullDayExercise = ExerciseSet.builder()
-                .id(1L)
-                .position(1)
-                .setType(SetType.REGULAR)
-                .weight(100.0f)
-                .reps(10)
-                .unit(exerciseSetMapper.stringToUnit("kgs"))
-                .createdAt(testTime)
-                .status(Status.COMPLETE)
-                .dayExercise(null)
-                .build();
+        ExerciseSet entityWithNullDayExercise = new ExerciseSet();
+        entityWithNullDayExercise.setId(1L);
+        entityWithNullDayExercise.setPosition(1);
+        entityWithNullDayExercise.setSetType(SetType.REGULAR);
+        entityWithNullDayExercise.setWeight(100.0f);
+        entityWithNullDayExercise.setReps(10);
+        entityWithNullDayExercise.setUnit(exerciseSetMapper.stringToUnit("kgs"));
+        entityWithNullDayExercise.setCreatedAt(testTime);
+        entityWithNullDayExercise.setStatus(Status.COMPLETE);
+        entityWithNullDayExercise.setDayExercise(null);
 
         // When
         ExerciseSetPayload result = exerciseSetMapper.toPayload(entityWithNullDayExercise);
@@ -188,17 +186,16 @@ class ExerciseSetMapperTest {
     @Test
     void updateEntity_WithValidData_ShouldUpdateMutableFields() {
         // Given
-        ExerciseSet existing = ExerciseSet.builder()
-                .id(1L)
-                .position(1)
-                .setType(SetType.REGULAR)
-                .weight(100.0f)
-                .reps(10)
-                .unit(exerciseSetMapper.stringToUnit("kgs"))
-                .createdAt(testTime)
-                .finishedAt(null)
-                .status(Status.READY)
-                .build();
+        ExerciseSet existing = new ExerciseSet();
+        existing.setId(1L);
+        existing.setPosition(1);
+        existing.setSetType(SetType.REGULAR);
+        existing.setWeight(100.0f);
+        existing.setReps(10);
+        existing.setUnit(exerciseSetMapper.stringToUnit("kgs"));
+        existing.setCreatedAt(testTime);
+        existing.setFinishedAt(null);
+        existing.setStatus(Status.READY);
 
         Instant newFinishedTime = testTime.plusSeconds(3600);
         ExerciseSetPayload updatePayload = new ExerciseSetPayload(
@@ -234,12 +231,11 @@ class ExerciseSetMapperTest {
     @Test
     void updateEntity_WithPartialData_ShouldUpdateOnlyProvidedFields() {
         // Given
-        ExerciseSet existing = ExerciseSet.builder()
-                .id(1L)
-                .createdAt(testTime)
-                .finishedAt(null)
-                .status(Status.READY)
-                .build();
+        ExerciseSet existing = new ExerciseSet();
+        existing.setId(1L);
+        existing.setCreatedAt(testTime);
+        existing.setFinishedAt(null);
+        existing.setStatus(Status.READY);
 
         ExerciseSetPayload partialPayload = new ExerciseSetPayload(
                 null, null, null, null, null, null, null, null,
@@ -258,18 +254,17 @@ class ExerciseSetMapperTest {
     @Test
     void mergeEntity_WithValidData_ShouldCreateNewEntityWithUpdatedFields() {
         // Given
-        ExerciseSet existing = ExerciseSet.builder()
-                .id(1L)
-                .dayExercise(testDayExercise)
-                .position(1)
-                .setType(SetType.REGULAR)
-                .weight(100.0f)
-                .reps(10)
-                .unit(exerciseSetMapper.stringToUnit("kgs"))
-                .createdAt(testTime)
-                .finishedAt(null)
-                .status(Status.READY)
-                .build();
+        ExerciseSet existing = new ExerciseSet();
+        existing.setId(1L);
+        existing.setDayExercise(testDayExercise);
+        existing.setPosition(1);
+        existing.setSetType(SetType.REGULAR);
+        existing.setWeight(100.0f);
+        existing.setReps(10);
+        existing.setUnit(exerciseSetMapper.stringToUnit("kgs"));
+        existing.setCreatedAt(testTime);
+        existing.setFinishedAt(null);
+        existing.setStatus(Status.READY);
 
         ExerciseSetPayload updatePayload = new ExerciseSetPayload(
                 null, null, 2, "myorep", 110.0f, 115.0f, 105.0f, 120.0f,

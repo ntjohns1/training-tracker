@@ -33,28 +33,10 @@ public class ExerciseNoteServiceImpl implements ExerciseNoteService {
         
         // Set creation timestamp if not already set
         if (exerciseNote.getCreatedAt() == null) {
-            exerciseNote = ExerciseNote.builder()
-                    .id(exerciseNote.getId())
-                    .userId(exerciseNote.getUserId())
-                    .noteId(exerciseNote.getNoteId())
-                    .exercise(exerciseNote.getExercise())
-                    .dayExercise(exerciseNote.getDayExercise())
-                    .createdAt(Instant.now())
-                    .updatedAt(exerciseNote.getUpdatedAt() != null ? exerciseNote.getUpdatedAt() : Instant.now())
-                    .text(exerciseNote.getText())
-                    .build();
+            exerciseNote.setCreatedAt(Instant.now());
         }
         if (exerciseNote.getUpdatedAt() == null) {
-            exerciseNote = ExerciseNote.builder()
-                    .id(exerciseNote.getId())
-                    .userId(exerciseNote.getUserId())
-                    .noteId(exerciseNote.getNoteId())
-                    .exercise(exerciseNote.getExercise())
-                    .dayExercise(exerciseNote.getDayExercise())
-                    .createdAt(exerciseNote.getCreatedAt())
-                    .updatedAt(Instant.now())
-                    .text(exerciseNote.getText())
-                    .build();
+            exerciseNote.setUpdatedAt(Instant.now());
         }
 
         // Save entity

@@ -99,9 +99,7 @@ class MesocycleMapperTest {
                 .lastWorkoutSkippedAt(now.minusSeconds(10))
                 .lastWorkoutPartialedAt(now.minusSeconds(5))
                 .weeks(Collections.emptyList())
-                .notes(Collections.singletonList(MesoNote.builder()
-                                                         .id(1L)
-                                                         .build()))
+                .notes(Collections.singletonList(createMesoNote(1L)))
                 .status(Status.READY)
                 .generatedFrom("template")
                 .progressions(Collections.emptyMap())
@@ -111,7 +109,7 @@ class MesocycleMapperTest {
     @Test
     void toEntity_WithValidPayload_ShouldReturnEntity() {
         // Given
-        MesoNote mockNote = MesoNote.builder().id(1L).build();
+        MesoNote mockNote = createMesoNote(1L);
         when(mesoNoteMapper.toEntity(any(MesoNotePayload.class))).thenReturn(mockNote);
 
         // When
@@ -361,7 +359,7 @@ class MesocycleMapperTest {
                 4, Arrays.asList(notePayload)
         );
 
-        MesoNote mockNote = MesoNote.builder().id(2L).build();
+        MesoNote mockNote = createMesoNote(2L);
         when(mesoNoteMapper.toEntity(notePayload)).thenReturn(mockNote);
 
         // When
@@ -427,7 +425,7 @@ class MesocycleMapperTest {
         // Given
         MesoTemplate existingSourceTemplate = MesoTemplate.builder().id(10L).build();
         Mesocycle existingSourceMeso = Mesocycle.builder().id(20L).build();
-        List<MesoNote> existingNotes = Arrays.asList(MesoNote.builder().id(5L).build());
+        List<MesoNote> existingNotes = Arrays.asList(createMesoNote(5L));
 
         Mesocycle existingEntity = Mesocycle.builder()
                 .id(1L)
@@ -496,5 +494,11 @@ class MesocycleMapperTest {
         assertNotNull(result);
         assertEquals(3, result.weeks());
         verifyNoInteractions(mesoNoteMapper);
+    }
+
+    private MesoNote createMesoNote(Long id) {
+        MesoNote note = new MesoNote();
+        note.setId(id);
+        return note;
     }
 }

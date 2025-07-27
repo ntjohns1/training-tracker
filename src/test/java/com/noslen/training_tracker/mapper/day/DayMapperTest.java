@@ -81,32 +81,33 @@ class DayMapperTest {
         );
 
         // Sample nested entities
-        DayNote noteEntity = DayNote.builder()
-                .id(1L)
-                .day(Day.builder().id(1L).build())
-                .noteId(1L)
-                .text("Test note")
-                .pinned(true)
-                .createdAt(now)
-                .updatedAt(now)
-                .build();
+        DayNote noteEntity = new DayNote();
+        noteEntity.setId(1L);
+        noteEntity.setDay(Day.builder().id(1L).build());
+        noteEntity.setNoteId(1L);
+        noteEntity.setText("Test note");
+        noteEntity.setPinned(true);
+        noteEntity.setCreatedAt(now);
+        noteEntity.setUpdatedAt(now);
+
+        Exercise exercise = new Exercise();
+        exercise.setId(1L);
+        exercise.setName("Test Exercise");
+        exercise.setMuscleGroupId(1L);
+        exercise.setYoutubeId("Test YouTube ID");
+        exercise.setExerciseType(ExerciseType.BARBELL);
+        exercise.setUserId(1L);
+        exercise.setCreatedAt(now);
+        exercise.setUpdatedAt(now);
+        exercise.setDeletedAt(now);
+        exercise.setMgSubType(MgSubType.VERTICAL);
+        ExerciseNote exerciseNote = new ExerciseNote();
+        exercise.setNotes(List.of(exerciseNote));
 
         DayExercise exerciseEntity = DayExercise.builder()
                 .id(1L)
                 .day(Day.builder().id(1L).build())
-                .exercise(Exercise.builder()
-                        .id(1L)
-                        .name("Test Exercise")
-                        .muscleGroupId(1L)
-                        .youtubeId("Test YouTube ID")
-                        .exerciseType(ExerciseType.BARBELL)
-                        .userId(1L)
-                        .createdAt(now)
-                        .updatedAt(now)
-                        .deletedAt(now)
-                        .mgSubType(MgSubType.VERTICAL)
-                        .notes(List.of(ExerciseNote.builder().build()))
-                        .build())
+                .exercise(exercise)
                 .position(1)
                 .jointPain(0)
                 .createdAt(now)
@@ -142,7 +143,9 @@ class DayMapperTest {
     @Test
     void toEntity_WithValidPayload_ShouldReturnEntity() {
         // Given
-        DayNote noteEntity = DayNote.builder().id(1L).build();
+        DayNote noteEntity = new DayNote();
+        noteEntity.setId(1L);
+
         DayExercise exerciseEntity = DayExercise.builder().id(1L).build();
         DayMuscleGroup muscleGroupEntity = DayMuscleGroup.builder().id(1L).build();
 

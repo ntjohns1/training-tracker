@@ -55,31 +55,29 @@ public class ExerciseServiceTests {
         MockitoAnnotations.openMocks(this);
         testTime = Instant.now();
         
-        testNoteEntity = ExerciseNote.builder()
-                .id(1L)
-                .userId(2L)
-                .noteId(3L)
-                .createdAt(testTime)
-                .updatedAt(testTime)
-                .text("Test note")
-                .build();
+        testNoteEntity = new ExerciseNote();
+        testNoteEntity.setId(1L);
+        testNoteEntity.setUserId(2L);
+        testNoteEntity.setNoteId(3L);
+        testNoteEntity.setCreatedAt(testTime);
+        testNoteEntity.setUpdatedAt(testTime);
+        testNoteEntity.setText("Test note");
                 
         testNotePayload = new ExerciseNotePayload(
                 1L, 4L, 2L, 3L, 5L, testTime, testTime, "Test note"
         );
         
-        testEntity = Exercise.builder()
-                .id(1L)
-                .name("Test Exercise")
-                .muscleGroupId(2L)
-                .youtubeId("youtube123")
-                .exerciseType(ExerciseType.BARBELL)
-                .userId(3L)
-                .createdAt(testTime)
-                .updatedAt(testTime)
-                .mgSubType(MgSubType.HORIZONTAL)
-                .notes(new ArrayList<>(Arrays.asList(testNoteEntity)))
-                .build();
+        testEntity = new Exercise();
+        testEntity.setId(1L);
+        testEntity.setName("Test Exercise");
+        testEntity.setMuscleGroupId(2L);
+        testEntity.setYoutubeId("youtube123");
+        testEntity.setExerciseType(ExerciseType.BARBELL);
+        testEntity.setUserId(3L);
+        testEntity.setCreatedAt(testTime);
+        testEntity.setUpdatedAt(testTime);
+        testEntity.setMgSubType(MgSubType.HORIZONTAL);
+        testEntity.setNotes(new ArrayList<>(Arrays.asList(testNoteEntity)));
                 
         testPayload = new ExercisePayload(
                 1L, "Test Exercise", 2L, "youtube123", "barbell", 3L,

@@ -44,24 +44,22 @@ class MesoNoteServiceTest {
         samplePayload = new MesoNotePayload(
                 1L, 10L, 20L, now, now, "Test meso note");
 
-        sampleEntity = MesoNote.builder()
-                .id(1L)
-                .mesocycle(Mesocycle.builder().id(10L).build())
-                .noteId(20L)
-                .text("Test meso note")
-                .createdAt(now)
-                .updatedAt(now)
-                .build();
+        sampleEntity = new MesoNote();
+        sampleEntity.setId(1L);
+        sampleEntity.setMesocycle(Mesocycle.builder().id(10L).build());
+        sampleEntity.setNoteId(20L);
+        sampleEntity.setText("Test meso note");
+        sampleEntity.setCreatedAt(now);
+        sampleEntity.setUpdatedAt(now);
     }
 
     @Test
     void createMesoNote_Success() {
         // Given
-        MesoNote entityToSave = MesoNote.builder()
-                .mesocycle(Mesocycle.builder().id(10L).build())
-                .noteId(20L)
-                .text("Test meso note")
-                .build();
+        MesoNote entityToSave = new MesoNote();
+        entityToSave.setMesocycle(Mesocycle.builder().id(10L).build());
+        entityToSave.setNoteId(20L);
+        entityToSave.setText("Test meso note");
 
         when(mesoNoteMapper.toEntity(samplePayload)).thenReturn(entityToSave);
         when(mesoNoteRepo.save(any(MesoNote.class))).thenReturn(sampleEntity);
@@ -136,14 +134,13 @@ class MesoNoteServiceTest {
     @Test
     void updateMesoNote_Success() {
         // Given
-        MesoNote updatedEntity = MesoNote.builder()
-                .id(1L)
-                .mesocycle(Mesocycle.builder().id(10L).build())
-                .noteId(20L)
-                .text("Updated text")
-                .createdAt(now)
-                .updatedAt(now)
-                .build();
+        MesoNote updatedEntity = new MesoNote();
+        updatedEntity.setId(1L);
+        updatedEntity.setMesocycle(Mesocycle.builder().id(10L).build());
+        updatedEntity.setNoteId(20L);
+        updatedEntity.setText("Updated text");
+        updatedEntity.setCreatedAt(now);
+        updatedEntity.setUpdatedAt(now);
 
         MesoNotePayload updatedPayload = new MesoNotePayload(
                 1L, 10L, 20L, now, now, "Updated text");

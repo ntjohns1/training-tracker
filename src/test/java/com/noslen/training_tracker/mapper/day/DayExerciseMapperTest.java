@@ -3,9 +3,12 @@ package com.noslen.training_tracker.mapper.day;
 import com.noslen.training_tracker.dto.day.DayExercisePayload;
 import com.noslen.training_tracker.dto.day.ExerciseSetPayload;
 import com.noslen.training_tracker.enums.Status;
+import com.noslen.training_tracker.enums.SetType;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.model.day.ExerciseSet;
-import com.noslen.training_tracker.enums.SetType;
+import com.noslen.training_tracker.model.day.DayMuscleGroup;
+import com.noslen.training_tracker.model.day.Day;
+import com.noslen.training_tracker.model.exercise.Exercise;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,32 +50,34 @@ class DayExerciseMapperTest {
                 10, 12, 80.0f, "kg", testTime, testTime, "complete"
         );
         
-        testSetEntity = ExerciseSet.builder()
-                .id(1L)
-                .position(1)
-                .setType(SetType.REGULAR)
-                .weight(100.0f)
-                .weightTarget(105.0f)
-                .weightTargetMin(95.0f)
-                .weightTargetMax(110.0f)
-                .reps(10)
-                .repsTarget(12)
-                .bodyweight(80.0f)
-                .unit(exerciseSetMapper.stringToUnit("kg"))
-                .createdAt(testTime)
-                .finishedAt(testTime)
-                .status(Status.COMPLETE)
-                .build();
+        testSetEntity = new ExerciseSet();
+        testSetEntity.setId(1L);
+        testSetEntity.setPosition(1);
+        testSetEntity.setSetType(SetType.REGULAR);
+        testSetEntity.setWeight(100.0f);
+        testSetEntity.setWeightTarget(105.0f);
+        testSetEntity.setWeightTargetMin(95.0f);
+        testSetEntity.setWeightTargetMax(110.0f);
+        testSetEntity.setReps(10);
+        testSetEntity.setRepsTarget(12);
+        testSetEntity.setBodyweight(80.0f);
+        testSetEntity.setUnit(exerciseSetMapper.stringToUnit("kg"));
+        testSetEntity.setCreatedAt(testTime);
+        testSetEntity.setFinishedAt(testTime);
+        testSetEntity.setStatus(Status.COMPLETE);
 
         testPayload = new DayExercisePayload(
                 1L, 2L, 3L, 1, 2, testTime, testTime, 4L, 5L,
                 List.of(testSetPayload), "ready"
         );
 
+        Exercise exercise = new Exercise();
+        exercise.setId(3L);
+        
         testEntity = DayExercise.builder()
                 .id(1L)
                 .day(com.noslen.training_tracker.model.day.Day.builder().id(2L).build())
-                .exercise(com.noslen.training_tracker.model.exercise.Exercise.builder().id(3L).build())
+                .exercise(exercise)
                 .position(1)
                 .jointPain(2)
                 .createdAt(testTime)

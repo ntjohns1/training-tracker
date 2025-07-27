@@ -23,22 +23,22 @@ public class ExerciseSetMapper {
             return null;
         }
 
-        return ExerciseSet.builder()
-                .id(payload.id())
-                .position(payload.position())
-                .setType(EnumConverter.stringToEnum(SetType.class, payload.setType()))
-                .weight(payload.weight())
-                .weightTarget(payload.weightTarget())
-                .weightTargetMin(payload.weightTargetMin())
-                .weightTargetMax(payload.weightTargetMax())
-                .reps(payload.reps())
-                .repsTarget(payload.repsTarget())
-                .bodyweight(payload.bodyweight())
-                .unit(stringToUnit(payload.unit()))
-                .createdAt(payload.createdAt())
-                .finishedAt(payload.finishedAt())
-                .status(EnumConverter.stringToEnum(Status.class, payload.status()))
-                .build();
+        ExerciseSet exerciseSet = new ExerciseSet();
+        exerciseSet.setId(payload.id());
+        exerciseSet.setPosition(payload.position());
+        exerciseSet.setSetType(EnumConverter.stringToEnum(SetType.class, payload.setType()));
+        exerciseSet.setWeight(payload.weight());
+        exerciseSet.setWeightTarget(payload.weightTarget());
+        exerciseSet.setWeightTargetMin(payload.weightTargetMin());
+        exerciseSet.setWeightTargetMax(payload.weightTargetMax());
+        exerciseSet.setReps(payload.reps());
+        exerciseSet.setRepsTarget(payload.repsTarget());
+        exerciseSet.setBodyweight(payload.bodyweight());
+        exerciseSet.setUnit(stringToUnit(payload.unit()));
+        exerciseSet.setCreatedAt(payload.createdAt());
+        exerciseSet.setFinishedAt(payload.finishedAt());
+        exerciseSet.setStatus(EnumConverter.stringToEnum(Status.class, payload.status()));
+        return exerciseSet;
     }
 
     /**
@@ -115,23 +115,23 @@ public class ExerciseSetMapper {
             return existing;
         }
 
-        return ExerciseSet.builder()
-                .id(existing.getId()) // Keep existing ID
-                .dayExercise(existing.getDayExercise()) // Keep existing relationship
-                .position(payload.position() != null ? payload.position() : existing.getPosition())
-                .setType(payload.setType() != null ? EnumConverter.stringToEnum(SetType.class, payload.setType()) : existing.getSetType())
-                .weight(payload.weight() != null ? payload.weight() : existing.getWeight())
-                .weightTarget(payload.weightTarget() != null ? payload.weightTarget() : existing.getWeightTarget())
-                .weightTargetMin(payload.weightTargetMin() != null ? payload.weightTargetMin() : existing.getWeightTargetMin())
-                .weightTargetMax(payload.weightTargetMax() != null ? payload.weightTargetMax() : existing.getWeightTargetMax())
-                .reps(payload.reps() != null ? payload.reps() : existing.getReps())
-                .repsTarget(payload.repsTarget() != null ? payload.repsTarget() : existing.getRepsTarget())
-                .bodyweight(payload.bodyweight() != null ? payload.bodyweight() : existing.getBodyweight())
-                .unit(stringToUnit(payload.unit()) != null ? stringToUnit(payload.unit()) : existing.getUnit())
-                .createdAt(payload.createdAt() != null ? payload.createdAt() : existing.getCreatedAt())
-                .finishedAt(payload.finishedAt() != null ? payload.finishedAt() : existing.getFinishedAt())
-                .status(EnumConverter.stringToEnum(Status.class, payload.status()))
-                .build();
+        ExerciseSet exerciseSet = new ExerciseSet();
+        exerciseSet.setId(existing.getId()); // Keep existing ID
+        exerciseSet.setDayExercise(existing.getDayExercise()); // Keep existing relationship
+        exerciseSet.setPosition(payload.position() != null ? payload.position() : existing.getPosition());
+        exerciseSet.setSetType(payload.setType() != null ? EnumConverter.stringToEnum(SetType.class, payload.setType()) : existing.getSetType());
+        exerciseSet.setWeight(payload.weight() != null ? payload.weight() : existing.getWeight());
+        exerciseSet.setWeightTarget(payload.weightTarget() != null ? payload.weightTarget() : existing.getWeightTarget());
+        exerciseSet.setWeightTargetMin(payload.weightTargetMin() != null ? payload.weightTargetMin() : existing.getWeightTargetMin());
+        exerciseSet.setWeightTargetMax(payload.weightTargetMax() != null ? payload.weightTargetMax() : existing.getWeightTargetMax());
+        exerciseSet.setReps(payload.reps() != null ? payload.reps() : existing.getReps());
+        exerciseSet.setRepsTarget(payload.repsTarget() != null ? payload.repsTarget() : existing.getRepsTarget());
+        exerciseSet.setBodyweight(payload.bodyweight() != null ? payload.bodyweight() : existing.getBodyweight());
+        exerciseSet.setUnit(stringToUnit(payload.unit()) != null ? stringToUnit(payload.unit()) : existing.getUnit());
+        exerciseSet.setCreatedAt(payload.createdAt() != null ? payload.createdAt() : existing.getCreatedAt());
+        exerciseSet.setFinishedAt(payload.finishedAt() != null ? payload.finishedAt() : existing.getFinishedAt());
+        exerciseSet.setStatus(EnumConverter.stringToEnum(Status.class, payload.status()));
+        return exerciseSet;
     }
 
     /**

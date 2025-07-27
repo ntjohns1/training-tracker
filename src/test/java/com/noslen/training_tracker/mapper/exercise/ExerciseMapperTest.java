@@ -46,14 +46,13 @@ class ExerciseMapperTest {
                 1L, 2L, 3L, 4L, 5L, testTime, testTime, "Test note"
         );
         
-        testNoteEntity = ExerciseNote.builder()
-                .id(1L)
-                .userId(3L)
-                .noteId(4L)
-                .createdAt(testTime)
-                .updatedAt(testTime)
-                .text("Test note")
-                .build();
+        testNoteEntity = new ExerciseNote();
+        testNoteEntity.setId(1L);
+        testNoteEntity.setUserId(3L);
+        testNoteEntity.setNoteId(4L);
+        testNoteEntity.setCreatedAt(testTime);
+        testNoteEntity.setUpdatedAt(testTime);
+        testNoteEntity.setText("Test note");
 
         testPayload = new ExercisePayload(
                 1L, "Test Exercise", 2L, "youtube123", "barbell", 3L,
@@ -61,19 +60,18 @@ class ExerciseMapperTest {
                 Collections.singletonList(testNotePayload)
         );
 
-        testEntity = Exercise.builder()
-                .id(1L)
-                .name("Test Exercise")
-                .muscleGroupId(2L)
-                .youtubeId("youtube123")
-                .exerciseType(ExerciseType.BARBELL)
-                .userId(3L)
-                .createdAt(testTime)
-                .updatedAt(testTime)
-                .deletedAt(null)
-                .mgSubType(MgSubType.VERTICAL)
-                .notes(Collections.singletonList(testNoteEntity))
-                .build();
+        testEntity = new Exercise();
+        testEntity.setId(1L);
+        testEntity.setName("Test Exercise");
+        testEntity.setMuscleGroupId(2L);
+        testEntity.setYoutubeId("youtube123");
+        testEntity.setExerciseType(ExerciseType.BARBELL);
+        testEntity.setUserId(3L);
+        testEntity.setCreatedAt(testTime);
+        testEntity.setUpdatedAt(testTime);
+        testEntity.setDeletedAt(null);
+        testEntity.setMgSubType(MgSubType.VERTICAL);
+        testEntity.setNotes(Collections.singletonList(testNoteEntity));
     }
 
     @Test
@@ -159,17 +157,16 @@ class ExerciseMapperTest {
     @Test
     void updateEntity_WithValidData_ShouldUpdateMutableFields() {
         // Given
-        Exercise existing = Exercise.builder()
-                .id(1L)
-                .name("Original Exercise")
-                .muscleGroupId(2L)
-                .youtubeId("original123")
-                .exerciseType(ExerciseType.BARBELL)
-                .userId(3L)
-                .createdAt(testTime)
-                .updatedAt(testTime)
-                .mgSubType(MgSubType.HORIZONTAL)
-                .build();
+        Exercise existing = new Exercise();
+        existing.setId(1L);
+        existing.setName("Original Exercise");
+        existing.setMuscleGroupId(2L);
+        existing.setYoutubeId("original123");
+        existing.setExerciseType(ExerciseType.BARBELL);
+        existing.setUserId(3L);
+        existing.setCreatedAt(testTime);
+        existing.setUpdatedAt(testTime);
+        existing.setMgSubType(MgSubType.HORIZONTAL);
 
         ExercisePayload updatePayload = new ExercisePayload(
                 0L, "Updated Exercise", 4L, "updated456", "barbell", 5L,
@@ -204,14 +201,16 @@ class ExerciseMapperTest {
     @Test
     void updateEntity_WithZeroValues_ShouldNotUpdate() {
         // Given
-        Exercise existing = Exercise.builder()
-                .id(1L)
-                .name("Original Exercise")
-                .muscleGroupId(2L)
-                .userId(3L)
-                .createdAt(testTime)
-                .updatedAt(testTime)
-                .build();
+        Exercise existing = new Exercise();
+        existing.setId(1L);
+        existing.setName("Original Exercise");
+        existing.setMuscleGroupId(2L);
+        existing.setYoutubeId("original123");
+        existing.setExerciseType(ExerciseType.BARBELL);
+        existing.setUserId(3L);
+        existing.setCreatedAt(testTime);
+        existing.setUpdatedAt(testTime);
+        existing.setMgSubType(MgSubType.HORIZONTAL);
 
         ExercisePayload updatePayload = new ExercisePayload(
                 0L, null, 0L, null, null, 0L,
@@ -224,23 +223,27 @@ class ExerciseMapperTest {
         // Then - nothing should change
         assertThat(existing.getName()).isEqualTo("Original Exercise");
         assertThat(existing.getMuscleGroupId()).isEqualTo(2L);
+        assertThat(existing.getYoutubeId()).isEqualTo("original123");
+        assertThat(existing.getExerciseType()).isEqualTo(ExerciseType.BARBELL);
         assertThat(existing.getUserId()).isEqualTo(3L);
+        assertThat(existing.getCreatedAt()).isEqualTo(testTime);
+        assertThat(existing.getUpdatedAt()).isEqualTo(testTime);
+        assertThat(existing.getMgSubType()).isEqualTo(MgSubType.HORIZONTAL);
     }
 
     @Test
     void mergeEntity_WithValidData_ShouldCreateNewEntityWithUpdatedFields() {
         // Given
-        Exercise existing = Exercise.builder()
-                .id(1L)
-                .name("Original Exercise")
-                .muscleGroupId(2L)
-                .youtubeId("original123")
-                .exerciseType(ExerciseType.BARBELL)
-                .userId(3L)
-                .createdAt(testTime)
-                .updatedAt(testTime)
-                .mgSubType(MgSubType.HORIZONTAL)
-                .build();
+        Exercise existing = new Exercise();
+        existing.setId(1L);
+        existing.setName("Original Exercise");
+        existing.setMuscleGroupId(2L);
+        existing.setYoutubeId("original123");
+        existing.setExerciseType(ExerciseType.BARBELL);
+        existing.setUserId(3L);
+        existing.setCreatedAt(testTime);
+        existing.setUpdatedAt(testTime);
+        existing.setMgSubType(MgSubType.HORIZONTAL);
 
         ExercisePayload updatePayload = new ExercisePayload(
                 0L, "Updated Exercise", 4L, "updated456", "dumbbell", 5L,
@@ -266,14 +269,16 @@ class ExerciseMapperTest {
     @Test
     void mergeEntity_WithZeroValues_ShouldKeepExistingValues() {
         // Given
-        Exercise existing = Exercise.builder()
-                .id(1L)
-                .name("Original Exercise")
-                .muscleGroupId(2L)
-                .userId(3L)
-                .createdAt(testTime)
-                .updatedAt(testTime)
-                .build();
+        Exercise existing = new Exercise();
+        existing.setId(1L);
+        existing.setName("Original Exercise");
+        existing.setMuscleGroupId(2L);
+        existing.setYoutubeId("original123");
+        existing.setExerciseType(ExerciseType.BARBELL);
+        existing.setUserId(3L);
+        existing.setCreatedAt(testTime);
+        existing.setUpdatedAt(testTime);
+        existing.setMgSubType(MgSubType.HORIZONTAL);
 
         ExercisePayload updatePayload = new ExercisePayload(
                 0L, null, 0L, null, null, 0L,
@@ -288,9 +293,12 @@ class ExerciseMapperTest {
         assertThat(result.getId()).isEqualTo(1L); // preserved
         assertThat(result.getName()).isEqualTo("Original Exercise"); // preserved (null means keep existing)
         assertThat(result.getMuscleGroupId()).isEqualTo(2L); // preserved (0 means keep existing)
+        assertThat(result.getYoutubeId()).isEqualTo("original123"); // preserved (null means keep existing)
+        assertThat(result.getExerciseType()).isEqualTo(ExerciseType.BARBELL); // preserved (null means keep existing)
         assertThat(result.getUserId()).isEqualTo(3L); // preserved (0 means keep existing)
         assertThat(result.getCreatedAt()).isEqualTo(testTime); // preserved
         assertThat(result.getUpdatedAt()).isEqualTo(testTime); // preserved (null means keep existing)
+        assertThat(result.getMgSubType()).isEqualTo(MgSubType.HORIZONTAL); // preserved (null means keep existing)
     }
 
     @Test

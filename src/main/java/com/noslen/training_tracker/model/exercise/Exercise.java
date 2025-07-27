@@ -13,9 +13,7 @@ import com.noslen.training_tracker.enums.MgSubType;
 import jakarta.persistence.*;
 import lombok.*;
 
-
 @Getter
-@Builder
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,6 +21,7 @@ import lombok.*;
 @JsonInclude(JsonInclude.Include.ALWAYS)
 public class Exercise {
 
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -34,7 +33,6 @@ public class Exercise {
     @JsonProperty("name")
     private String name;
 
-    // TODO: change to MuscleGroup
     @Setter
     @Column(name = "muscle_group_id")
     @JsonProperty("muscleGroupId")

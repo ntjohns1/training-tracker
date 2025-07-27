@@ -33,14 +33,13 @@ class ExerciseNoteMapperTest {
                 1L, 2L, 3L, 4L, 5L, testTime, testTime, "Test note text"
         );
 
-        testEntity = ExerciseNote.builder()
-                .id(1L)
-                .userId(3L)
-                .noteId(4L)
-                .createdAt(testTime)
-                .updatedAt(testTime)
-                .text("Test note text")
-                .build();
+        testEntity = new ExerciseNote();
+        testEntity.setId(1L);
+        testEntity.setUserId(3L);
+        testEntity.setNoteId(4L);
+        testEntity.setCreatedAt(testTime);
+        testEntity.setUpdatedAt(testTime);
+        testEntity.setText("Test note text");
     }
 
     @Test
@@ -99,14 +98,13 @@ class ExerciseNoteMapperTest {
     @Test
     void updateEntity_WithValidData_ShouldUpdateMutableFields() {
         // Given
-        ExerciseNote existing = ExerciseNote.builder()
-                .id(1L)
-                .userId(3L)
-                .noteId(4L)
-                .createdAt(testTime)
-                .updatedAt(testTime)
-                .text("Original text")
-                .build();
+        ExerciseNote existing = new ExerciseNote();
+        existing.setId(1L);
+        existing.setUserId(3L);
+        existing.setNoteId(4L);
+        existing.setCreatedAt(testTime);
+        existing.setUpdatedAt(testTime);
+        existing.setText("Original text");
 
         ExerciseNotePayload updatePayload = new ExerciseNotePayload(
                 0L, 0L, 0L, 0L, 0L, null, testTime.plusSeconds(60), "Updated text"
@@ -136,14 +134,13 @@ class ExerciseNoteMapperTest {
     @Test
     void updateEntity_WithNullValues_ShouldNotUpdate() {
         // Given
-        ExerciseNote existing = ExerciseNote.builder()
-                .id(1L)
-                .userId(3L)
-                .noteId(4L)
-                .createdAt(testTime)
-                .updatedAt(testTime)
-                .text("Original text")
-                .build();
+        ExerciseNote existing = new ExerciseNote();
+        existing.setId(1L);
+        existing.setUserId(3L);
+        existing.setNoteId(4L);
+        existing.setCreatedAt(testTime);
+        existing.setUpdatedAt(testTime);
+        existing.setText("Original text");
 
         ExerciseNotePayload updatePayload = new ExerciseNotePayload(
                 0L, 0L, 0L, 0L, 0L, null, null, null
@@ -160,14 +157,13 @@ class ExerciseNoteMapperTest {
     @Test
     void mergeEntity_WithValidData_ShouldCreateNewEntityWithUpdatedFields() {
         // Given
-        ExerciseNote existing = ExerciseNote.builder()
-                .id(1L)
-                .userId(3L)
-                .noteId(4L)
-                .createdAt(testTime)
-                .updatedAt(testTime)
-                .text("Original text")
-                .build();
+        ExerciseNote existing = new ExerciseNote();
+        existing.setId(1L);
+        existing.setUserId(3L);
+        existing.setNoteId(4L);
+        existing.setCreatedAt(testTime);
+        existing.setUpdatedAt(testTime);
+        existing.setText("Original text");
 
         ExerciseNotePayload updatePayload = new ExerciseNotePayload(
                 0L, 0L, 5L, 6L, 0L, null, testTime.plusSeconds(60), "Updated text"
@@ -189,14 +185,13 @@ class ExerciseNoteMapperTest {
     @Test
     void mergeEntity_WithZeroValues_ShouldKeepExistingValues() {
         // Given
-        ExerciseNote existing = ExerciseNote.builder()
-                .id(1L)
-                .userId(3L)
-                .noteId(4L)
-                .createdAt(testTime)
-                .updatedAt(testTime)
-                .text("Original text")
-                .build();
+        ExerciseNote existing = new ExerciseNote();
+        existing.setId(1L);
+        existing.setUserId(3L);
+        existing.setNoteId(4L);
+        existing.setCreatedAt(testTime);
+        existing.setUpdatedAt(testTime);
+        existing.setText("Original text");
 
         ExerciseNotePayload updatePayload = new ExerciseNotePayload(
                 0L, 0L, 0L, 0L, 0L, null, null, null

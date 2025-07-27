@@ -44,8 +44,11 @@ public class DayNoteServiceTests {
     void testCreateDayNote() {
         // Arrange
         DayNotePayload payload = new DayNotePayload(null, 1L, null, false, Instant.now(), Instant.now(), "Day Note");
-        DayNote entity = DayNote.builder().text("Day Note").build();
-        DayNote savedEntity = DayNote.builder().id(1L).text("Day Note").build();
+        DayNote entity = new DayNote();
+        entity.setText("Day Note");
+        DayNote savedEntity = new DayNote();
+        savedEntity.setId(1L);
+        savedEntity.setText("Day Note");
         DayNotePayload expectedPayload = new DayNotePayload(1L, 1L, null, false, Instant.now(), Instant.now(), "Day Note");
         
         when(mapper.toEntity(payload)).thenReturn(entity);
@@ -67,8 +70,12 @@ public class DayNoteServiceTests {
         // Arrange
         Long id = 1L;
         DayNotePayload payload = new DayNotePayload(id, 1L, null, false, Instant.now(), Instant.now(), "Updated Day Note");
-        DayNote existingEntity = DayNote.builder().id(id).text("Existing Day Note").build();
-        DayNote savedEntity = DayNote.builder().id(id).text("Updated Day Note").build();
+        DayNote existingEntity = new DayNote();
+        existingEntity.setId(id);
+        existingEntity.setText("Existing Day Note");
+        DayNote savedEntity = new DayNote();
+        savedEntity.setId(id);
+        savedEntity.setText("Updated Day Note");
         DayNotePayload expectedPayload = new DayNotePayload(id, 1L, null, false, Instant.now(), Instant.now(), "Updated Day Note");
 
         when(repo.findById(id)).thenReturn(Optional.of(existingEntity));
@@ -90,7 +97,9 @@ public class DayNoteServiceTests {
     void testGetDayNote() {
         // Arrange
         Long id = 1L;
-        DayNote entity = DayNote.builder().id(id).text("Day Note").build();
+        DayNote entity = new DayNote();
+        entity.setId(id);
+        entity.setText("Day Note");
         DayNotePayload expectedPayload = new DayNotePayload(id, 1L, null, false, Instant.now(), Instant.now(), "Day Note");
         
         when(repo.findById(id)).thenReturn(Optional.of(entity));
@@ -110,8 +119,14 @@ public class DayNoteServiceTests {
         // Arrange
         Long dayId = 1L;
         List<DayNote> entities = new ArrayList<>();
-        entities.add(DayNote.builder().id(1L).text("Day Note 1").build());
-        entities.add(DayNote.builder().id(2L).text("Day Note 2").build());
+        DayNote entity1 = new DayNote();
+        entity1.setId(1L);
+        entity1.setText("Day Note 1");
+        entities.add(entity1);
+        DayNote entity2 = new DayNote();
+        entity2.setId(2L);
+        entity2.setText("Day Note 2");
+        entities.add(entity2);
         
         List<DayNotePayload> expectedPayloads = new ArrayList<>();
         expectedPayloads.add(new DayNotePayload(1L, dayId, null, false, Instant.now(), Instant.now(), "Day Note 1"));

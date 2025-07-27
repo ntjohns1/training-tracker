@@ -26,14 +26,14 @@ public class DayNoteMapper {
             return null;
         }
 
-        return DayNote.builder()
-                .id(payload.id())
-                .noteId(payload.noteId())
-                .pinned(payload.pinned())
-                .createdAt(payload.createdAt())
-                .updatedAt(payload.updatedAt())
-                .text(payload.text())
-                .build();
+        DayNote dayNote = new DayNote();
+        dayNote.setId(payload.id());
+        dayNote.setNoteId(payload.noteId());
+        dayNote.setPinned(payload.pinned());
+        dayNote.setCreatedAt(payload.createdAt());
+        dayNote.setUpdatedAt(payload.updatedAt());
+        dayNote.setText(payload.text());
+        return dayNote;
     }
 
     /**
@@ -98,15 +98,15 @@ public class DayNoteMapper {
             return existing;
         }
 
-        return DayNote.builder()
-                .id(existing.getId()) // Always preserve existing ID
-                .day(existing.getDay()) // Preserve relationship
-                .noteId(payload.noteId() != null && payload.noteId() != 0 ? payload.noteId() : existing.getNoteId())
-                .pinned(payload.pinned() != null ? payload.pinned() : existing.getPinned())
-                .createdAt(existing.getCreatedAt()) // Preserve creation timestamp
-                .updatedAt(payload.updatedAt() != null ? payload.updatedAt() : existing.getUpdatedAt())
-                .text(payload.text() != null ? payload.text() : existing.getText())
-                .build();
+        DayNote dayNote = new DayNote();
+        dayNote.setId(existing.getId()); // Always preserve existing ID
+        dayNote.setDay(existing.getDay()); // Preserve relationship
+        dayNote.setNoteId(payload.noteId() != null && payload.noteId() != 0 ? payload.noteId() : existing.getNoteId());
+        dayNote.setPinned(payload.pinned() != null ? payload.pinned() : existing.getPinned());
+        dayNote.setCreatedAt(existing.getCreatedAt()); // Preserve creation timestamp
+        dayNote.setUpdatedAt(payload.updatedAt() != null ? payload.updatedAt() : existing.getUpdatedAt());
+        dayNote.setText(payload.text() != null ? payload.text() : existing.getText());
+        return dayNote;
     }
 
     /**

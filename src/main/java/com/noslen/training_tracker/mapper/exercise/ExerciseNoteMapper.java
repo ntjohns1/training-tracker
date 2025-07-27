@@ -18,15 +18,16 @@ public class ExerciseNoteMapper {
             return null;
         }
 
-        return ExerciseNote.builder()
-                .id(payload.id())
-                .userId(payload.userId())
-                .noteId(payload.noteId())
-                .createdAt(payload.createdAt())
-                .updatedAt(payload.updatedAt())
-                .text(payload.text())
-                // Note: exercise and dayExercise relationships are handled separately
-                .build();
+        ExerciseNote exerciseNote = new ExerciseNote();
+        exerciseNote.setId(payload.id());
+        exerciseNote.setUserId(payload.userId());
+        exerciseNote.setNoteId(payload.noteId());
+        exerciseNote.setCreatedAt(payload.createdAt());
+        exerciseNote.setUpdatedAt(payload.updatedAt());
+        exerciseNote.setText(payload.text());
+        // Note: exercise and dayExercise relationships are handled separately
+        
+        return exerciseNote;
     }
 
     /**
@@ -79,16 +80,17 @@ public class ExerciseNoteMapper {
             return toEntity(payload);
         }
 
-        return ExerciseNote.builder()
-                .id(existing.getId()) // Keep existing ID
-                .userId(payload.userId() != null && !payload.userId().equals(0L) ? payload.userId() : existing.getUserId())
-                .noteId(payload.noteId() != null && !payload.noteId().equals(0L) ? payload.noteId() : existing.getNoteId())
-                .exercise(existing.getExercise()) // Keep existing relationship
-                .dayExercise(existing.getDayExercise()) // Keep existing relationship
-                .createdAt(existing.getCreatedAt()) // Keep existing creation time
-                .updatedAt(payload.updatedAt() != null ? payload.updatedAt() : existing.getUpdatedAt())
-                .text(payload.text() != null ? payload.text() : existing.getText())
-                .build();
+        ExerciseNote exerciseNote = new ExerciseNote();
+        exerciseNote.setId(existing.getId()); // Keep existing ID
+        exerciseNote.setUserId(payload.userId() != null && !payload.userId().equals(0L) ? payload.userId() : existing.getUserId());
+        exerciseNote.setNoteId(payload.noteId() != null && !payload.noteId().equals(0L) ? payload.noteId() : existing.getNoteId());
+        exerciseNote.setExercise(existing.getExercise()); // Keep existing relationship
+        exerciseNote.setDayExercise(existing.getDayExercise()); // Keep existing relationship
+        exerciseNote.setCreatedAt(existing.getCreatedAt()); // Keep existing creation time
+        exerciseNote.setUpdatedAt(payload.updatedAt() != null ? payload.updatedAt() : existing.getUpdatedAt());
+        exerciseNote.setText(payload.text() != null ? payload.text() : existing.getText());
+        
+        return exerciseNote;
     }
 
     /**

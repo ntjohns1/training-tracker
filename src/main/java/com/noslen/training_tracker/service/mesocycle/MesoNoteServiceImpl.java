@@ -33,15 +33,12 @@ public class MesoNoteServiceImpl implements MesoNoteService {
         
         // Set timestamps
         Instant now = Instant.now();
-        mesoNote = MesoNote.builder()
-                .id(mesoNote.getId())
-                .mesocycle(mesoNote.getMesocycle())
-                .userId(mesoNote.getUserId())
-                .noteId(mesoNote.getNoteId())
-                .text(mesoNote.getText())
-                .createdAt(now)
-                .updatedAt(now)
-                .build();
+        if (mesoNote.getCreatedAt() == null) {
+            mesoNote.setCreatedAt(now);
+        }
+        if (mesoNote.getUpdatedAt() == null) {
+            mesoNote.setUpdatedAt(now);
+        }
 
         // Save entity
         MesoNote savedMesoNote = mesoNoteRepo.save(mesoNote);

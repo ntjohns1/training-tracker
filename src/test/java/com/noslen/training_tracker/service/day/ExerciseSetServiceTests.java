@@ -44,8 +44,11 @@ public class ExerciseSetServiceTests {
         // Arrange
         ExerciseSetPayload payload = new ExerciseSetPayload(null, 1L, 1, "working", 100.0f, 95.0f, 90.0f, 105.0f, 
                 10, 8, 70.0f, "kg", Instant.now(), Instant.now(), "complete");
-        ExerciseSet entity = ExerciseSet.builder().position(1).build();
-        ExerciseSet savedEntity = ExerciseSet.builder().id(1L).position(1).build();
+        ExerciseSet entity = new ExerciseSet();
+        entity.setPosition(1);
+        ExerciseSet savedEntity = new ExerciseSet();
+        savedEntity.setId(1L);
+        savedEntity.setPosition(1);
         ExerciseSetPayload expectedPayload = new ExerciseSetPayload(1L, 1L, 1, "working", 100.0f, 95.0f, 90.0f, 105.0f, 
                 10, 8, 70.0f, "kg", Instant.now(), Instant.now(), "complete");
         
@@ -69,8 +72,14 @@ public class ExerciseSetServiceTests {
         Long id = 1L;
         ExerciseSetPayload payload = new ExerciseSetPayload(id, 1L, 1, "working", 105.0f, 95.0f, 90.0f, 105.0f, 
                 12, 8, 70.0f, "kg", Instant.now(), Instant.now(), "complete");
-        ExerciseSet existingEntity = ExerciseSet.builder().id(id).position(1).build();
-        ExerciseSet savedEntity = ExerciseSet.builder().id(id).position(1).weight(105.0f).reps(12).build();
+        ExerciseSet existingEntity = new ExerciseSet();
+        existingEntity.setId(id);
+        existingEntity.setPosition(1);
+        ExerciseSet savedEntity = new ExerciseSet();
+        savedEntity.setId(id);
+        savedEntity.setPosition(1);
+        savedEntity.setWeight(105.0f);
+        savedEntity.setReps(12);
         ExerciseSetPayload expectedPayload = new ExerciseSetPayload(id, 1L, 1, "working", 105.0f, 95.0f, 90.0f, 105.0f, 
                 12, 8, 70.0f, "kg", Instant.now(), Instant.now(), "complete");
 
@@ -94,7 +103,9 @@ public class ExerciseSetServiceTests {
     void getExerciseSet() {
         // Arrange
         Long id = 1L;
-        ExerciseSet entity = ExerciseSet.builder().id(id).position(1).build();
+        ExerciseSet entity = new ExerciseSet();
+        entity.setId(id);
+        entity.setPosition(1);
         ExerciseSetPayload expectedPayload = new ExerciseSetPayload(id, 1L, 1, "working", 100.0f, 95.0f, 90.0f, 105.0f, 
                 10, 8, 70.0f, "kg", Instant.now(), Instant.now(), "complete");
         
@@ -129,8 +140,8 @@ public class ExerciseSetServiceTests {
         // Arrange
         Long dayExerciseId = 1L;
         List<ExerciseSet> entities = new ArrayList<>();
-        entities.add(ExerciseSet.builder().id(1L).position(1).build());
-        entities.add(ExerciseSet.builder().id(2L).position(2).build());
+        entities.add(createExerciseSet(1L, 1));
+        entities.add(createExerciseSet(2L, 2));
         
         List<ExerciseSetPayload> expectedPayloads = new ArrayList<>();
         expectedPayloads.add(new ExerciseSetPayload(1L, dayExerciseId, 1, "working", 100.0f, 95.0f, 90.0f, 105.0f, 
@@ -172,5 +183,12 @@ public class ExerciseSetServiceTests {
         // Act & Assert
         assertThrows(RuntimeException.class, () -> service.updateExerciseSet(id, payload));
         verify(repo, times(1)).findById(id);
+    }
+
+    private ExerciseSet createExerciseSet(Long id, int position) {
+        ExerciseSet entity = new ExerciseSet();
+        entity.setId(id);
+        entity.setPosition(position);
+        return entity;
     }
 }
