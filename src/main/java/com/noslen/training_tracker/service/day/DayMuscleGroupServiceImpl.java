@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-import com.noslen.training_tracker.dto.day.DayMuscleGroupResponse;
+import com.noslen.training_tracker.dto.day.response.DayMuscleGroupResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

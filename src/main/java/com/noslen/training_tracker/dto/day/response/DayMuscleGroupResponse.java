@@ -1,4 +1,4 @@
-package com.noslen.training_tracker.dto.day;
+package com.noslen.training_tracker.dto.day.response;
 
 import java.time.Instant;
 

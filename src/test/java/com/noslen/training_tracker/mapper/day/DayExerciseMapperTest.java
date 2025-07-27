@@ -1,7 +1,7 @@
 package com.noslen.training_tracker.mapper.day;
 
-import com.noslen.training_tracker.dto.day.DayExerciseResponse;
-import com.noslen.training_tracker.dto.day.ExerciseSetResponse;
+import com.noslen.training_tracker.dto.day.response.DayExerciseResponse;
+import com.noslen.training_tracker.dto.day.response.ExerciseSetResponse;
 import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.enums.SetType;
 import com.noslen.training_tracker.model.day.DayExercise;

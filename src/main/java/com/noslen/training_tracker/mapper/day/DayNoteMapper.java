@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.day;
 
-import com.noslen.training_tracker.dto.day.DayNoteResponse;
+import com.noslen.training_tracker.dto.day.response.DayNoteResponse;
 import com.noslen.training_tracker.model.day.DayNote;
 import org.springframework.stereotype.Component;
 

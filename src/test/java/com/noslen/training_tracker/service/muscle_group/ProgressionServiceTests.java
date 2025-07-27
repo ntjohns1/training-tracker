@@ -7,7 +7,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
-import com.noslen.training_tracker.dto.muscle_group.ProgressionResponse;
+import com.noslen.training_tracker.dto.muscle_group.response.ProgressionResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

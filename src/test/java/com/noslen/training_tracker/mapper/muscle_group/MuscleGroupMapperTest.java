@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.muscle_group;
 
-import com.noslen.training_tracker.dto.muscle_group.MuscleGroupResponse;
+import com.noslen.training_tracker.dto.muscle_group.response.MuscleGroupResponse;
 import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
 import com.noslen.training_tracker.enums.MgName;
 import org.junit.jupiter.api.BeforeEach;

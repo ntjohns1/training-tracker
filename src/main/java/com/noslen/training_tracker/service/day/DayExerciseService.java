@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.service.day;
 
-import com.noslen.training_tracker.dto.day.DayExerciseResponse;
+import com.noslen.training_tracker.dto.day.response.DayExerciseResponse;
 
 import java.util.List;
 

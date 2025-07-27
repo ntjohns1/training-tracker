@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.noslen.training_tracker.dto.day.DayNoteResponse;
+import com.noslen.training_tracker.dto.day.response.DayNoteResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

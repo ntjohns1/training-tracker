@@ -1,4 +1,4 @@
-package com.noslen.training_tracker.dto.muscle_group;
+package com.noslen.training_tracker.dto.muscle_group.response;
 
 import java.time.Instant;
 

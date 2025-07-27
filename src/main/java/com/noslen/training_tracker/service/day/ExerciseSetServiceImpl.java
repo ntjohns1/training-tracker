@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.noslen.training_tracker.dto.day.ExerciseSetResponse;
+import com.noslen.training_tracker.dto.day.response.ExerciseSetResponse;
 import com.noslen.training_tracker.mapper.day.ExerciseSetMapper;
 import com.noslen.training_tracker.model.day.ExerciseSet;
 import com.noslen.training_tracker.repository.day.ExerciseSetRepo;

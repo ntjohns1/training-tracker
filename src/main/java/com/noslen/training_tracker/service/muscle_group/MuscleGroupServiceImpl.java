@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.service.muscle_group;
 
-import com.noslen.training_tracker.dto.muscle_group.MuscleGroupResponse;
+import com.noslen.training_tracker.dto.muscle_group.response.MuscleGroupResponse;
 import com.noslen.training_tracker.mapper.muscle_group.MuscleGroupMapper;
 import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
 import com.noslen.training_tracker.repository.muscle_group.MuscleGroupRepo;

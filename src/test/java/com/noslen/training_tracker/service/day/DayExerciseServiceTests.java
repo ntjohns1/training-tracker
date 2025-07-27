@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.service.day;
 
-import com.noslen.training_tracker.dto.day.DayExerciseResponse;
+import com.noslen.training_tracker.dto.day.response.DayExerciseResponse;
 import com.noslen.training_tracker.mapper.day.DayExerciseMapper;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.repository.day.DayExerciseRepo;

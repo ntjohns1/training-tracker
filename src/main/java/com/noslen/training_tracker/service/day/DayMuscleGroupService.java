@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.service.day;
 
-import com.noslen.training_tracker.dto.day.DayMuscleGroupResponse;
+import com.noslen.training_tracker.dto.day.response.DayMuscleGroupResponse;
 
 import java.util.List;
 

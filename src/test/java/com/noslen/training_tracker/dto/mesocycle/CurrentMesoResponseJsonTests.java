@@ -1,13 +1,15 @@
 package com.noslen.training_tracker.dto.mesocycle;
 
-import com.noslen.training_tracker.dto.day.*;
-import com.noslen.training_tracker.dto.muscle_group.ProgressionResponse;
+import com.noslen.training_tracker.dto.day.response.*;
+import com.noslen.training_tracker.dto.mesocycle.response.CurrentMesoResponse;
+import com.noslen.training_tracker.dto.mesocycle.response.MesoNoteResponse;
+import com.noslen.training_tracker.dto.mesocycle.response.Week;
+import com.noslen.training_tracker.dto.muscle_group.response.ProgressionResponse;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.core.io.ClassPathResource;
 
-import com.noslen.training_tracker.dto.day.ExerciseSetResponse;
 import com.noslen.training_tracker.enums.MgProgressionType;
 
 import org.junit.jupiter.api.BeforeEach;

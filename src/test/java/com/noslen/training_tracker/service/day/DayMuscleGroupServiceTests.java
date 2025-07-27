@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.service.day;
 
-import com.noslen.training_tracker.dto.day.DayMuscleGroupResponse;
+import com.noslen.training_tracker.dto.day.response.DayMuscleGroupResponse;
 import com.noslen.training_tracker.mapper.day.DayMuscleGroupMapper;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.day.DayMuscleGroup;

@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.day;
 
-import com.noslen.training_tracker.dto.day.DayResponse;
+import com.noslen.training_tracker.dto.day.response.DayResponse;
 import com.noslen.training_tracker.enums.Unit;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.util.EnumConverter;

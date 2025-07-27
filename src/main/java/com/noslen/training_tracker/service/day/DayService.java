@@ -2,7 +2,7 @@ package com.noslen.training_tracker.service.day;
 
 import java.util.List;
 
-import com.noslen.training_tracker.dto.day.DayResponse;
+import com.noslen.training_tracker.dto.day.response.DayResponse;
 
 public interface DayService {
 

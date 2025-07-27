@@ -1,9 +1,9 @@
 package com.noslen.training_tracker.mapper.day;
 
-import com.noslen.training_tracker.dto.day.DayExerciseResponse;
-import com.noslen.training_tracker.dto.day.DayMuscleGroupResponse;
-import com.noslen.training_tracker.dto.day.DayNoteResponse;
-import com.noslen.training_tracker.dto.day.DayResponse;
+import com.noslen.training_tracker.dto.day.response.DayExerciseResponse;
+import com.noslen.training_tracker.dto.day.response.DayMuscleGroupResponse;
+import com.noslen.training_tracker.dto.day.response.DayNoteResponse;
+import com.noslen.training_tracker.dto.day.response.DayResponse;
 import com.noslen.training_tracker.enums.ExerciseType;
 import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.enums.Unit;

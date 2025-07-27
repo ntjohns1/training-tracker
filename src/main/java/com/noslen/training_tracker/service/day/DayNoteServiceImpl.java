@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-import com.noslen.training_tracker.dto.day.DayNoteResponse;
+import com.noslen.training_tracker.dto.day.response.DayNoteResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

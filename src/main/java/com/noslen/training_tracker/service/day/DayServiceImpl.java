@@ -4,27 +4,26 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-import com.noslen.training_tracker.dto.day.DayResponse;
+import com.noslen.training_tracker.dto.day.response.DayResponse;
+import com.noslen.training_tracker.factory.DayFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.noslen.training_tracker.mapper.day.DayMapper;
 import com.noslen.training_tracker.model.day.Day;
-import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 import com.noslen.training_tracker.repository.day.DayRepo;
-import com.noslen.training_tracker.repository.mesocycle.MesocycleRepo;
 
 @Service
 public class DayServiceImpl implements DayService {
     
-    private final DayRepo repo;
-    private final MesocycleRepo mesocycleRepo;
-    private final DayMapper mapper;
+    private final DayRepo dayRepo;
+    private final DayMapper dayMapper;
+    private final DayFactory dayFactory;
 
-    public DayServiceImpl(DayRepo repo, MesocycleRepo mesocycleRepo, DayMapper mapper) {
-        this.repo = repo;
-        this.mesocycleRepo = mesocycleRepo;
-        this.mapper = mapper;
+    public DayServiceImpl(DayRepo dayRepo, DayMapper dayMapper, DayFactory dayFactory) {
+        this.dayRepo = dayRepo;
+        this.dayMapper = dayMapper;
+        this.dayFactory = dayFactory;
     }
 
     @Override
@@ -34,38 +33,12 @@ public class DayServiceImpl implements DayService {
             throw new IllegalArgumentException("DayResponse cannot be null");
         }
 
-        // Convert payload to entity
-        Day day = mapper.toEntity(dayResponse);
+        // Use factory to create properly initialized entity
+        Day day = dayFactory.createFromResponse(dayResponse);
         
-        // Handle mesocycle relationship if mesoId is provided
-        if (dayResponse.mesoId() != null) {
-            Optional<Mesocycle> mesocycleOpt = mesocycleRepo.findById(dayResponse.mesoId());
-            if (mesocycleOpt.isEmpty()) {
-                throw new RuntimeException("Mesocycle not found with id: " + dayResponse.mesoId());
-            }
-            // Rebuild entity with mesocycle relationship
-            day = Day.builder()
-                    .id(day.getId())
-                    .mesocycle(mesocycleOpt.get())
-                    .week(day.getWeek())
-                    .position(day.getPosition())
-                    .createdAt(Instant.now())
-                    .updatedAt(Instant.now())
-                    .bodyweight(day.getBodyweight())
-                    .bodyweightAt(day.getBodyweightAt())
-                    .unit(day.getUnit())
-                    .finishedAt(day.getFinishedAt())
-                    .label(day.getLabel())
-                    .build();
-        } else {
-            // Set timestamps for new entity
-            day.setCreatedAt(Instant.now());
-            day.setUpdatedAt(Instant.now());
-        }
-
         // Save and return as DTO
-        Day savedDay = repo.save(day);
-        return mapper.toPayload(savedDay);
+        Day savedDay = dayRepo.save(day);
+        return dayMapper.toPayload(savedDay);
     }
 
     @Override
@@ -79,7 +52,7 @@ public class DayServiceImpl implements DayService {
         }
 
         // Find existing entity
-        Optional<Day> existingOpt = repo.findById(id);
+        Optional<Day> existingOpt = dayRepo.findById(id);
         if (existingOpt.isEmpty()) {
             throw new RuntimeException("Day not found with id: " + id);
         }
@@ -87,13 +60,12 @@ public class DayServiceImpl implements DayService {
         Day existingDay = existingOpt.get();
         
         // Update entity with payload data using merge since most fields are immutable
-        Day updatedDay = mapper.mergeEntity(existingDay,
-                                            dayResponse);
+        Day updatedDay = dayMapper.mergeEntity(existingDay, dayResponse);
         updatedDay.setUpdatedAt(Instant.now());
         
         // Save and return as DTO
-        Day savedDay = repo.save(updatedDay);
-        return mapper.toPayload(savedDay);
+        Day savedDay = dayRepo.save(updatedDay);
+        return dayMapper.toPayload(savedDay);
     }
 
     @Override
@@ -103,12 +75,12 @@ public class DayServiceImpl implements DayService {
             throw new IllegalArgumentException("ID cannot be null");
         }
 
-        Optional<Day> dayOpt = repo.findById(id);
+        Optional<Day> dayOpt = dayRepo.findById(id);
         if (dayOpt.isEmpty()) {
             throw new RuntimeException("Day not found with id: " + id);
         }
 
-        return mapper.toPayload(dayOpt.get());
+        return dayMapper.toPayload(dayOpt.get());
     }
 
     @Override
@@ -118,11 +90,11 @@ public class DayServiceImpl implements DayService {
             throw new IllegalArgumentException("ID cannot be null");
         }
 
-        if (!repo.existsById(id)) {
+        if (!dayRepo.existsById(id)) {
             throw new RuntimeException("Day not found with id: " + id);
         }
 
-        repo.deleteById(id);
+        dayRepo.deleteById(id);
     }
 
     @Override
@@ -132,7 +104,7 @@ public class DayServiceImpl implements DayService {
             throw new IllegalArgumentException("Mesocycle ID cannot be null");
         }
 
-        List<Day> days = repo.findByMesocycleId(mesocycleId);
-        return mapper.toPayloadList(days);
+        List<Day> days = dayRepo.findByMesocycleId(mesocycleId);
+        return dayMapper.toPayloadList(days);
     }
 }

@@ -1,5 +1,6 @@
 package com.noslen.training_tracker.dto.muscle_group;
 
+import com.noslen.training_tracker.dto.muscle_group.response.ProgressionResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
