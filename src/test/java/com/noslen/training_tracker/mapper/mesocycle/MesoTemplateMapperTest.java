@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.mesocycle;
 
-import com.noslen.training_tracker.dto.mesocycle.MesoTemplatePayload;
+import com.noslen.training_tracker.dto.mesocycle.MesoTemplateResponse;
 import com.noslen.training_tracker.model.mesocycle.MesoTemplate;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class MesoTemplateMapperTest {
 
     private MesoTemplateMapper mapper;
-    private MesoTemplatePayload samplePayload;
+    private MesoTemplateResponse samplePayload;
     private MesoTemplate sampleEntity;
     private Instant now;
 
@@ -22,7 +22,7 @@ class MesoTemplateMapperTest {
         mapper = new MesoTemplateMapper();
         now = Instant.now();
 
-        samplePayload = new MesoTemplatePayload(
+        samplePayload = new MesoTemplateResponse(
                 1L,
                 "test-key",
                 "Test Template",
@@ -94,7 +94,7 @@ class MesoTemplateMapperTest {
     @Test
     void toEntity_WithNullRelationshipIds_ShouldHandleGracefully() {
         // Given
-        MesoTemplatePayload payloadWithNullIds = new MesoTemplatePayload(
+        MesoTemplateResponse payloadWithNullIds = new MesoTemplateResponse(
                 1L, "test-key", "Test Template", "strength", "male", 100L,
                 null, null, null, now, now, null, 4
         );
@@ -115,7 +115,7 @@ class MesoTemplateMapperTest {
     @Test
     void toEntity_WithNullFields_ShouldHandleGracefully() {
         // Given
-        MesoTemplatePayload payloadWithNulls = new MesoTemplatePayload(
+        MesoTemplateResponse payloadWithNulls = new MesoTemplateResponse(
                 null, null, null, null, null, null, null, null, null, null, null, null, null
         );
 
@@ -139,7 +139,7 @@ class MesoTemplateMapperTest {
     @Test
     void toPayload_WithValidEntity_ShouldReturnPayload() {
         // When
-        MesoTemplatePayload result = mapper.toPayload(sampleEntity);
+        MesoTemplateResponse result = mapper.toPayload(sampleEntity);
 
         // Then
         assertNotNull(result);
@@ -163,7 +163,7 @@ class MesoTemplateMapperTest {
     @Test
     void toPayload_WithNullEntity_ShouldReturnNull() {
         // When
-        MesoTemplatePayload result = mapper.toPayload(null);
+        MesoTemplateResponse result = mapper.toPayload(null);
 
         // Then
         assertNull(result);
@@ -189,7 +189,7 @@ class MesoTemplateMapperTest {
                 .build();
 
         // When
-        MesoTemplatePayload result = mapper.toPayload(entityWithNullRelationships);
+        MesoTemplateResponse result = mapper.toPayload(entityWithNullRelationships);
 
         // Then
         assertNotNull(result);
@@ -210,7 +210,7 @@ class MesoTemplateMapperTest {
                 .name("Old Name")
                 .build();
 
-        MesoTemplatePayload updatePayload = new MesoTemplatePayload(
+        MesoTemplateResponse updatePayload = new MesoTemplateResponse(
                 1L, "new-key", "New Name", "strength", "male", 100L,
                 null, null, null, now, now, null, 4
         );
@@ -259,7 +259,7 @@ class MesoTemplateMapperTest {
                 .deletedAt(null)
                 .build();
 
-        MesoTemplatePayload updatePayload = new MesoTemplatePayload(
+        MesoTemplateResponse updatePayload = new MesoTemplateResponse(
                 1L, "new-key", "New Name", "strength", "male", 100L,
                 2L, 3L, 4L, now.minusSeconds(3600), now, null, 4
         );
@@ -333,7 +333,7 @@ class MesoTemplateMapperTest {
                 .deletedAt(null)
                 .build();
 
-        MesoTemplatePayload updatePayload = new MesoTemplatePayload(
+        MesoTemplateResponse updatePayload = new MesoTemplateResponse(
                 1L, null, "New Name", null, null, null,
                 null, null, null, now.minusSeconds(3600), now, null, null
         );
@@ -377,7 +377,7 @@ class MesoTemplateMapperTest {
                 .build();
 
         Instant deletionTime = now.minusSeconds(300);
-        MesoTemplatePayload updatePayload = new MesoTemplatePayload(
+        MesoTemplateResponse updatePayload = new MesoTemplateResponse(
                 1L, "test-key", "Test Template", "strength", "male", 100L,
                 null, null, null, now.minusSeconds(3600), now, deletionTime, 4
         );

@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.service.mesocycle;
 
-import com.noslen.training_tracker.dto.mesocycle.MesoTemplatePayload;
+import com.noslen.training_tracker.dto.mesocycle.MesoTemplateResponse;
 import com.noslen.training_tracker.mapper.mesocycle.MesoTemplateMapper;
 import com.noslen.training_tracker.model.mesocycle.MesoTemplate;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
@@ -31,7 +31,7 @@ class MesoTemplateServiceTest {
     @InjectMocks
     private MesoTemplateServiceImpl mesoTemplateService;
 
-    private MesoTemplatePayload samplePayload;
+    private MesoTemplateResponse samplePayload;
     private MesoTemplate sampleEntity;
     private Instant now;
 
@@ -40,7 +40,7 @@ class MesoTemplateServiceTest {
         MockitoAnnotations.openMocks(this);
         now = Instant.now();
 
-        samplePayload = new MesoTemplatePayload(
+        samplePayload = new MesoTemplateResponse(
                 1L, "test-key", "Test Template", "strength", "male", 100L,
                 2L, 3L, 4L, now, now, null, 4
         );
@@ -79,7 +79,7 @@ class MesoTemplateServiceTest {
         when(mesoTemplateMapper.toPayload(sampleEntity)).thenReturn(samplePayload);
 
         // When
-        MesoTemplatePayload result = mesoTemplateService.createMesoTemplate(samplePayload);
+        MesoTemplateResponse result = mesoTemplateService.createMesoTemplate(samplePayload);
 
         // Then
         assertNotNull(result);
@@ -99,7 +99,7 @@ class MesoTemplateServiceTest {
         when(mesoTemplateMapper.toPayload(sampleEntity)).thenReturn(samplePayload);
 
         // When
-        MesoTemplatePayload result = mesoTemplateService.getMesoTemplate(1L);
+        MesoTemplateResponse result = mesoTemplateService.getMesoTemplate(1L);
 
         // Then
         assertNotNull(result);
@@ -133,7 +133,7 @@ class MesoTemplateServiceTest {
         when(mesoTemplateMapper.toPayload(sampleEntity)).thenReturn(samplePayload);
 
         // When
-        List<MesoTemplatePayload> result = mesoTemplateService.getMesoTemplatesByUserId(100L);
+        List<MesoTemplateResponse> result = mesoTemplateService.getMesoTemplatesByUserId(100L);
 
         // Then
         assertNotNull(result);
@@ -160,7 +160,7 @@ class MesoTemplateServiceTest {
                 .deletedAt(null)
                 .build();
 
-        MesoTemplatePayload updatedPayload = new MesoTemplatePayload(
+        MesoTemplateResponse updatedPayload = new MesoTemplateResponse(
                 1L, "updated-key", "Updated Template", "strength", "male", 100L,
                 null, null, null, now, now, null, 4
         );
@@ -171,7 +171,7 @@ class MesoTemplateServiceTest {
         when(mesoTemplateMapper.toPayload(updatedEntity)).thenReturn(updatedPayload);
 
         // When
-        MesoTemplatePayload result = mesoTemplateService.updateMesoTemplate(1L, samplePayload);
+        MesoTemplateResponse result = mesoTemplateService.updateMesoTemplate(1L, samplePayload);
 
         // Then
         assertNotNull(result);
@@ -240,7 +240,7 @@ class MesoTemplateServiceTest {
         when(mesoTemplateMapper.toPayload(sampleEntity)).thenReturn(samplePayload);
 
         // When
-        List<MesoTemplatePayload> result = mesoTemplateService.getAllMesoTemplates();
+        List<MesoTemplateResponse> result = mesoTemplateService.getAllMesoTemplates();
 
         // Then
         assertNotNull(result);
@@ -257,7 +257,7 @@ class MesoTemplateServiceTest {
         when(mesoTemplateRepo.findAll()).thenReturn(Arrays.asList());
 
         // When
-        List<MesoTemplatePayload> result = mesoTemplateService.getAllMesoTemplates();
+        List<MesoTemplateResponse> result = mesoTemplateService.getAllMesoTemplates();
 
         // Then
         assertNotNull(result);
@@ -276,7 +276,7 @@ class MesoTemplateServiceTest {
         when(mesoTemplateMapper.toPayload(sampleEntity)).thenReturn(samplePayload);
 
         // When
-        List<MesoTemplatePayload> result = mesoTemplateService.getAllActiveMesoTemplates();
+        List<MesoTemplateResponse> result = mesoTemplateService.getAllActiveMesoTemplates();
 
         // Then
         assertNotNull(result);
@@ -293,7 +293,7 @@ class MesoTemplateServiceTest {
         when(mesoTemplateRepo.findByDeletedAtIsNull()).thenReturn(Arrays.asList());
 
         // When
-        List<MesoTemplatePayload> result = mesoTemplateService.getAllActiveMesoTemplates();
+        List<MesoTemplateResponse> result = mesoTemplateService.getAllActiveMesoTemplates();
 
         // Then
         assertNotNull(result);

@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.service.mesocycle;
 
-import com.noslen.training_tracker.dto.mesocycle.MesoNotePayload;
+import com.noslen.training_tracker.dto.mesocycle.MesoNoteResponse;
 
 import java.util.List;
 
@@ -12,22 +12,22 @@ public interface MesoNoteService {
     /**
      * Create a new MesoNote
      */
-    MesoNotePayload createMesoNote(MesoNotePayload mesoNotePayload);
+    MesoNoteResponse createMesoNote(MesoNoteResponse mesoNoteResponse);
 
     /**
      * Get MesoNote by ID
      */
-    MesoNotePayload getMesoNote(Long id);
+    MesoNoteResponse getMesoNote(Long id);
 
     /**
      * Get all MesoNotes for a specific mesocycle
      */
-    List<MesoNotePayload> getMesoNotesByMesoId(Long mesoId);
+    List<MesoNoteResponse> getMesoNotesByMesoId(Long mesoId);
 
     /**
      * Update an existing MesoNote
      */
-    MesoNotePayload updateMesoNote(Long id, MesoNotePayload mesoNotePayload);
+    MesoNoteResponse updateMesoNote(Long id, MesoNoteResponse mesoNoteResponse);
 
     /**
      * Delete a MesoNote
@@ -37,5 +37,5 @@ public interface MesoNoteService {
     /**
      * Get all MesoNotes
      */
-    List<MesoNotePayload> getAllMesoNotes();
+    List<MesoNoteResponse> getAllMesoNotes();
 }

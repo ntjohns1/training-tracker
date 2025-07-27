@@ -1,7 +1,7 @@
 package com.noslen.training_tracker.service.mesocycle;
 
-import com.noslen.training_tracker.dto.mesocycle.MesoNotePayload;
-import com.noslen.training_tracker.dto.mesocycle.MesocyclePayload;
+import com.noslen.training_tracker.dto.mesocycle.MesoNoteResponse;
+import com.noslen.training_tracker.dto.mesocycle.MesocycleResponse;
 import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.enums.Unit;
 import com.noslen.training_tracker.mapper.mesocycle.MesocycleMapper;
@@ -35,7 +35,7 @@ class MesocycleServiceTest {
     @InjectMocks
     private MesocycleServiceImpl mesocycleService;
 
-    private MesocyclePayload samplePayload;
+    private MesocycleResponse samplePayload;
     private Mesocycle sampleEntity;
     private Instant now;
 
@@ -44,11 +44,11 @@ class MesocycleServiceTest {
         MockitoAnnotations.openMocks(this);
         now = Instant.now();
 
-        MesoNotePayload notePayload = new MesoNotePayload(
+        MesoNoteResponse notePayload = new MesoNoteResponse(
                 1L, 10L, 20L, now, now, "Test note"
         );
 
-        samplePayload = new MesocyclePayload(
+        samplePayload = new MesocycleResponse(
                 1L, "test-key", 100L, "Test Mesocycle", 28, "lbs",
                 2L, 3L, 5L, now, now, null, null,
                 null, null, null, null, null, null, null, null, null, null, null,
@@ -93,7 +93,7 @@ class MesocycleServiceTest {
         when(mesocycleMapper.toPayload(sampleEntity)).thenReturn(samplePayload);
 
         // When
-        MesocyclePayload result = mesocycleService.createMesocycle(samplePayload);
+        MesocycleResponse result = mesocycleService.createMesocycle(samplePayload);
 
         // Then
         assertNotNull(result);
@@ -113,7 +113,7 @@ class MesocycleServiceTest {
         when(mesocycleMapper.toPayload(sampleEntity)).thenReturn(samplePayload);
 
         // When
-        MesocyclePayload result = mesocycleService.getMesocycle(1L);
+        MesocycleResponse result = mesocycleService.getMesocycle(1L);
 
         // Then
         assertNotNull(result);
@@ -147,7 +147,7 @@ class MesocycleServiceTest {
         when(mesocycleMapper.toPayload(sampleEntity)).thenReturn(samplePayload);
 
         // When
-        List<MesocyclePayload> result = mesocycleService.getMesocyclesByUserId(100L);
+        List<MesocycleResponse> result = mesocycleService.getMesocyclesByUserId(100L);
 
         // Then
         assertNotNull(result);
@@ -173,7 +173,7 @@ class MesocycleServiceTest {
                 .deletedAt(null)
                 .build();
 
-        MesocyclePayload updatedPayload = new MesocyclePayload(
+        MesocycleResponse updatedPayload = new MesocycleResponse(
                 1L, "updated-key", 100L, "Updated Mesocycle", 28, "lbs",
                 null, null, null, now, now, null, null,
                 null, null, null, null, null, null, null, null, null, null, null,
@@ -186,7 +186,7 @@ class MesocycleServiceTest {
         when(mesocycleMapper.toPayload(updatedEntity)).thenReturn(updatedPayload);
 
         // When
-        MesocyclePayload result = mesocycleService.updateMesocycle(1L, samplePayload);
+        MesocycleResponse result = mesocycleService.updateMesocycle(1L, samplePayload);
 
         // Then
         assertNotNull(result);
@@ -255,7 +255,7 @@ class MesocycleServiceTest {
         when(mesocycleMapper.toPayload(sampleEntity)).thenReturn(samplePayload);
 
         // When
-        List<MesocyclePayload> result = mesocycleService.getAllMesocycles();
+        List<MesocycleResponse> result = mesocycleService.getAllMesocycles();
 
         // Then
         assertNotNull(result);
@@ -272,7 +272,7 @@ class MesocycleServiceTest {
         when(mesocycleRepo.findAll()).thenReturn(Arrays.asList());
 
         // When
-        List<MesocyclePayload> result = mesocycleService.getAllMesocycles();
+        List<MesocycleResponse> result = mesocycleService.getAllMesocycles();
 
         // Then
         assertNotNull(result);
@@ -291,7 +291,7 @@ class MesocycleServiceTest {
         when(mesocycleMapper.toPayload(sampleEntity)).thenReturn(samplePayload);
 
         // When
-        List<MesocyclePayload> result = mesocycleService.getAllActiveMesocycles();
+        List<MesocycleResponse> result = mesocycleService.getAllActiveMesocycles();
 
         // Then
         assertNotNull(result);
@@ -308,7 +308,7 @@ class MesocycleServiceTest {
         when(mesocycleRepo.findByDeletedAtIsNull()).thenReturn(Arrays.asList());
 
         // When
-        List<MesocyclePayload> result = mesocycleService.getAllActiveMesocycles();
+        List<MesocycleResponse> result = mesocycleService.getAllActiveMesocycles();
 
         // Then
         assertNotNull(result);
@@ -327,7 +327,7 @@ class MesocycleServiceTest {
         when(mesocycleMapper.toPayload(sampleEntity)).thenReturn(samplePayload);
 
         // When
-        List<MesocyclePayload> result = mesocycleService.getActiveMesocyclesByUserId(100L);
+        List<MesocycleResponse> result = mesocycleService.getActiveMesocyclesByUserId(100L);
 
         // Then
         assertNotNull(result);
@@ -344,7 +344,7 @@ class MesocycleServiceTest {
         when(mesocycleRepo.findByUserIdAndDeletedAtIsNull(100L)).thenReturn(Arrays.asList());
 
         // When
-        List<MesocyclePayload> result = mesocycleService.getActiveMesocyclesByUserId(100L);
+        List<MesocycleResponse> result = mesocycleService.getActiveMesocyclesByUserId(100L);
 
         // Then
         assertNotNull(result);
@@ -365,7 +365,7 @@ class MesocycleServiceTest {
                 .finishedAt(now)
                 .build();
 
-        MesocyclePayload finishedPayload = new MesocyclePayload(
+        MesocycleResponse finishedPayload = new MesocycleResponse(
                 1L, "test-key", 100L, "Test Mesocycle", 28, "days",
                 null, null, null, now, now, now, null,
                 null, null, null, null, null, null, null, null, null, null, null,
@@ -377,7 +377,7 @@ class MesocycleServiceTest {
         when(mesocycleMapper.toPayload(finishedEntity)).thenReturn(finishedPayload);
 
         // When
-        MesocyclePayload result = mesocycleService.finishMesocycle(1L);
+        MesocycleResponse result = mesocycleService.finishMesocycle(1L);
 
         // Then
         assertNotNull(result);

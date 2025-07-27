@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.mesocycle;
 
-import com.noslen.training_tracker.dto.mesocycle.MesoTemplatePayload;
+import com.noslen.training_tracker.dto.mesocycle.MesoTemplateResponse;
 import com.noslen.training_tracker.model.mesocycle.MesoTemplate;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 import org.springframework.stereotype.Component;
@@ -8,15 +8,15 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 
 /**
- * POJO Mapper for converting between MesoTemplate entity and MesoTemplatePayload DTO
+ * POJO Mapper for converting between MesoTemplate entity and MesoTemplateResponse DTO
  */
 @Component
 public class MesoTemplateMapper {
 
     /**
-     * Converts MesoTemplatePayload to MesoTemplate entity
+     * Converts MesoTemplateResponse to MesoTemplate entity
      */
-    public MesoTemplate toEntity(MesoTemplatePayload payload) {
+    public MesoTemplate toEntity(MesoTemplateResponse payload) {
         if (payload == null) {
             return null;
         }
@@ -50,9 +50,9 @@ public class MesoTemplateMapper {
     }
 
     /**
-     * Converts MesoTemplate entity to MesoTemplatePayload
+     * Converts MesoTemplate entity to MesoTemplateResponse
      */
-    public MesoTemplatePayload toPayload(MesoTemplate entity) {
+    public MesoTemplateResponse toPayload(MesoTemplate entity) {
         if (entity == null) {
             return null;
         }
@@ -72,7 +72,7 @@ public class MesoTemplateMapper {
             prevTemplateId = entity.getPrevTemplate().getId();
         }
 
-        return new MesoTemplatePayload(
+        return new MesoTemplateResponse(
                 entity.getId(),
                 entity.getTemplateKey(), // Note: entity uses templateKey, DTO uses key
                 entity.getName(),
@@ -90,11 +90,11 @@ public class MesoTemplateMapper {
     }
 
     /**
-     * Updates an existing MesoTemplate entity with data from MesoTemplatePayload
+     * Updates an existing MesoTemplate entity with data from MesoTemplateResponse
      * Note: MesoTemplate is immutable, so this method is a no-op.
      * Use mergeEntity() instead to create a new entity with updated values.
      */
-    public void updateEntity(MesoTemplate existing, MesoTemplatePayload payload) {
+    public void updateEntity(MesoTemplate existing, MesoTemplateResponse payload) {
         // MesoTemplate is immutable - no mutable fields to update
         // Use mergeEntity() to create a new entity with updated values
     }
@@ -103,7 +103,7 @@ public class MesoTemplateMapper {
      * Creates a new MesoTemplate entity by merging existing entity with payload data
      * This method handles immutable fields by creating a new entity instance
      */
-    public MesoTemplate mergeEntity(MesoTemplate existing, MesoTemplatePayload payload) {
+    public MesoTemplate mergeEntity(MesoTemplate existing, MesoTemplateResponse payload) {
         if (existing == null || payload == null) {
             return null;
         }

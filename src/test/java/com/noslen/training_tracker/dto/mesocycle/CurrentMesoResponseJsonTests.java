@@ -28,15 +28,15 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JsonTest
-public class CurrentMesoPayloadJsonTests {
+public class CurrentMesoResponseJsonTests {
 
         @Autowired
-        private JacksonTester<CurrentMesoPayload> json;
+        private JacksonTester<CurrentMesoResponse> json;
 
         private List<Week> weeks;
-        private Set<MesoNotePayload> notes;
+        private Set<MesoNoteResponse> notes;
         private Map<Long, ProgressionResponse> progressions;
-        private CurrentMesoPayload currentMesoPayload;
+        private CurrentMesoResponse currentMesoResponse;
         private ClassPathResource resource;
 
         @BeforeEach
@@ -45,7 +45,7 @@ public class CurrentMesoPayloadJsonTests {
                 notes = new HashSet<>();
                 progressions = new HashMap<>();
 
-                MesoNotePayload note = new MesoNotePayload(
+                MesoNoteResponse note = new MesoNoteResponse(
                                 13571L,
                                 790173L,
                                 1634147L,
@@ -106,7 +106,7 @@ public class CurrentMesoPayloadJsonTests {
 
         @Test
         void testSerialize() throws IOException {
-                currentMesoPayload = new CurrentMesoPayload(
+                currentMesoResponse = new CurrentMesoResponse(
                                 790173L,
                                 "wzzidovd6137",
                                 1518614L,
@@ -139,40 +139,40 @@ public class CurrentMesoPayloadJsonTests {
 
                 resource = new ClassPathResource("example/current_meso.json");
 
-                assertThat(json.write(currentMesoPayload)).extractingJsonPathNumberValue("$.id").isEqualTo(790173);
-                assertThat(json.write(currentMesoPayload)).extractingJsonPathStringValue("$.key")
+                assertThat(json.write(currentMesoResponse)).extractingJsonPathNumberValue("$.id").isEqualTo(790173);
+                assertThat(json.write(currentMesoResponse)).extractingJsonPathStringValue("$.key")
                                 .isEqualTo("wzzidovd6137");
-                assertThat(json.write(currentMesoPayload)).extractingJsonPathNumberValue("$.userId").isEqualTo(1518614);
-                assertThat(json.write(currentMesoPayload)).extractingJsonPathStringValue("$.name").isEqualTo("2025 P6");
+                assertThat(json.write(currentMesoResponse)).extractingJsonPathNumberValue("$.userId").isEqualTo(1518614);
+                assertThat(json.write(currentMesoResponse)).extractingJsonPathStringValue("$.name").isEqualTo("2025 P6");
 
-                assertThat(json.write(currentMesoPayload)).hasJsonPathArrayValue("$.weeks");
+                assertThat(json.write(currentMesoResponse)).hasJsonPathArrayValue("$.weeks");
 
-                assertThat(json.write(currentMesoPayload)).hasJsonPathArrayValue("$.weeks[0].days");
-                assertThat(json.write(currentMesoPayload)).extractingJsonPathNumberValue("$.weeks[0].days[0].id")
+                assertThat(json.write(currentMesoResponse)).hasJsonPathArrayValue("$.weeks[0].days");
+                assertThat(json.write(currentMesoResponse)).extractingJsonPathNumberValue("$.weeks[0].days[0].id")
                                 .isEqualTo(19749536);
 
-                assertThat(json.write(currentMesoPayload)).hasJsonPathArrayValue("$.weeks[0].days[0].exercises");
-                assertThat(json.write(currentMesoPayload))
+                assertThat(json.write(currentMesoResponse)).hasJsonPathArrayValue("$.weeks[0].days[0].exercises");
+                assertThat(json.write(currentMesoResponse))
                                 .extractingJsonPathNumberValue("$.weeks[0].days[0].exercises[0].id")
                                 .isEqualTo(121219664);
 
-                assertThat(json.write(currentMesoPayload)).hasJsonPathArrayValue("$.notes");
-                assertThat(json.write(currentMesoPayload)).extractingJsonPathNumberValue("$.notes[0].id")
+                assertThat(json.write(currentMesoResponse)).hasJsonPathArrayValue("$.notes");
+                assertThat(json.write(currentMesoResponse)).extractingJsonPathNumberValue("$.notes[0].id")
                                 .isEqualTo(13571);
 
-                assertThat(json.write(currentMesoPayload)).extractingJsonPathStringValue("$.status").isEqualTo("ready");
-                assertThat(json.write(currentMesoPayload)).extractingJsonPathStringValue("$.generatedFrom")
+                assertThat(json.write(currentMesoResponse)).extractingJsonPathStringValue("$.status").isEqualTo("ready");
+                assertThat(json.write(currentMesoResponse)).extractingJsonPathStringValue("$.generatedFrom")
                                 .isEqualTo("Thor Workout");
 
-                assertThat(json.write(currentMesoPayload)).hasJsonPath("$.progressions");
-                assertThat(json.write(currentMesoPayload)).extractingJsonPathNumberValue("$.progressions['1'].id")
+                assertThat(json.write(currentMesoResponse)).hasJsonPath("$.progressions");
+                assertThat(json.write(currentMesoResponse)).extractingJsonPathNumberValue("$.progressions['1'].id")
                                 .isEqualTo(6159088);
         }
 
         @Test
         void testDeserialize() throws IOException {
                 resource = new ClassPathResource("example/current_meso.json");
-                CurrentMesoPayload mesocycle = json.readObject(resource.getFile());
+                CurrentMesoResponse mesocycle = json.readObject(resource.getFile());
 
                 assertThat(mesocycle.id()).isEqualTo(790173L);
                 assertThat(mesocycle.key()).isEqualTo("wzzidovd6137");

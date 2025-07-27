@@ -2,7 +2,7 @@ package com.noslen.training_tracker.dto.mesocycle;
 
 import java.time.Instant;
 
-public record MesoNotePayload(
+public record MesoNoteResponse(
         Long id,
         Long mesoId,
         Long noteId,

@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.service.mesocycle;
 
-import com.noslen.training_tracker.dto.mesocycle.MesoTemplatePayload;
+import com.noslen.training_tracker.dto.mesocycle.MesoTemplateResponse;
 
 import java.util.List;
 
@@ -12,22 +12,22 @@ public interface MesoTemplateService {
     /**
      * Create a new MesoTemplate
      */
-    MesoTemplatePayload createMesoTemplate(MesoTemplatePayload mesoTemplatePayload);
+    MesoTemplateResponse createMesoTemplate(MesoTemplateResponse mesoTemplateResponse);
 
     /**
      * Get MesoTemplate by ID
      */
-    MesoTemplatePayload getMesoTemplate(Long id);
+    MesoTemplateResponse getMesoTemplate(Long id);
 
     /**
      * Get all MesoTemplates for a specific user
      */
-    List<MesoTemplatePayload> getMesoTemplatesByUserId(Long userId);
+    List<MesoTemplateResponse> getMesoTemplatesByUserId(Long userId);
 
     /**
      * Update an existing MesoTemplate
      */
-    MesoTemplatePayload updateMesoTemplate(Long id, MesoTemplatePayload mesoTemplatePayload);
+    MesoTemplateResponse updateMesoTemplate(Long id, MesoTemplateResponse mesoTemplateResponse);
 
     /**
      * Delete a MesoTemplate (soft delete by setting deletedAt)
@@ -37,10 +37,10 @@ public interface MesoTemplateService {
     /**
      * Get all MesoTemplates
      */
-    List<MesoTemplatePayload> getAllMesoTemplates();
+    List<MesoTemplateResponse> getAllMesoTemplates();
 
     /**
      * Get all active MesoTemplates (not deleted)
      */
-    List<MesoTemplatePayload> getAllActiveMesoTemplates();
+    List<MesoTemplateResponse> getAllActiveMesoTemplates();
 }

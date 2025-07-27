@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public record CurrentMesoPayload(
+public record CurrentMesoResponse(
         Long id,
         String key,
         Long userId,
@@ -33,7 +33,7 @@ public record CurrentMesoPayload(
         Instant lastWorkoutSkippedAt,
         Instant lastWorkoutPartialedAt,
         List<Week> weeks,
-        Set<MesoNotePayload> notes,
+        Set<MesoNoteResponse> notes,
         String status,
         String generatedFrom,
         Map<Long, ProgressionResponse> progressions) {

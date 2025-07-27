@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.mesocycle;
 
-import com.noslen.training_tracker.dto.mesocycle.MesocyclePayload;
+import com.noslen.training_tracker.dto.mesocycle.MesocycleResponse;
 import com.noslen.training_tracker.enums.Unit;
 import com.noslen.training_tracker.model.mesocycle.MesoTemplate;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
- * Mapper for converting between Mesocycle entities and MesocyclePayload DTOs
+ * Mapper for converting between Mesocycle entities and MesocycleResponse DTOs
  */
 @Component
 public class MesocycleMapper {
@@ -24,9 +24,9 @@ public class MesocycleMapper {
     }
 
     /**
-     * Converts MesocyclePayload DTO to Mesocycle entity
+     * Converts MesocycleResponse DTO to Mesocycle entity
      */
-    public Mesocycle toEntity(MesocyclePayload payload) {
+    public Mesocycle toEntity(MesocycleResponse payload) {
         if (payload == null) {
             return null;
         }
@@ -70,14 +70,14 @@ public class MesocycleMapper {
     }
 
     /**
-     * Converts Mesocycle entity to MesocyclePayload DTO
+     * Converts Mesocycle entity to MesocycleResponse DTO
      */
-    public MesocyclePayload toPayload(Mesocycle entity) {
+    public MesocycleResponse toPayload(Mesocycle entity) {
         if (entity == null) {
             return null;
         }
 
-        return new MesocyclePayload(
+        return new MesocycleResponse(
                 entity.getId(),
                 entity.getMesocycleKey(),
                 entity.getUserId(),
@@ -111,20 +111,20 @@ public class MesocycleMapper {
     }
 
     /**
-     * Updates mutable fields of an existing Mesocycle entity with values from MesocyclePayload.
+     * Updates mutable fields of an existing Mesocycle entity with values from MesocycleResponse.
      * Since Mesocycle is immutable (uses @Builder), this method is a no-op.
      * Use mergeEntity() instead for creating updated entities.
      */
-    public void updateEntity(Mesocycle existingEntity, MesocyclePayload payload) {
+    public void updateEntity(Mesocycle existingEntity, MesocycleResponse payload) {
         // No-op since Mesocycle is immutable
         // Use mergeEntity() to create a new entity with updated values
     }
 
     /**
-     * Creates a new Mesocycle entity by merging an existing entity with values from MesocyclePayload.
+     * Creates a new Mesocycle entity by merging an existing entity with values from MesocycleResponse.
      * This is used for updates since the entity is immutable.
      */
-    public Mesocycle mergeEntity(Mesocycle existingEntity, MesocyclePayload payload) {
+    public Mesocycle mergeEntity(Mesocycle existingEntity, MesocycleResponse payload) {
         if (existingEntity == null || payload == null) {
             return null;
         }

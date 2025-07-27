@@ -3,7 +3,7 @@ package com.noslen.training_tracker.dto.mesocycle;
 import java.time.Instant;
 import java.util.List;
 
-public record MesocyclePayload(
+public record MesocycleResponse(
         Long id,
         String key,
         Long userId,
@@ -29,5 +29,5 @@ public record MesocyclePayload(
         Instant lastWorkoutSkippedAt,
         Instant lastWorkoutPartialedAt,
         Integer weeks,
-        List<MesoNotePayload> notes) {
+        List<MesoNoteResponse> notes) {
 }

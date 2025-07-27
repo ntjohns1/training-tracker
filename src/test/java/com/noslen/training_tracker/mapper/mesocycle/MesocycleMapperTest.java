@@ -1,7 +1,7 @@
 package com.noslen.training_tracker.mapper.mesocycle;
 
-import com.noslen.training_tracker.dto.mesocycle.MesoNotePayload;
-import com.noslen.training_tracker.dto.mesocycle.MesocyclePayload;
+import com.noslen.training_tracker.dto.mesocycle.MesoNoteResponse;
+import com.noslen.training_tracker.dto.mesocycle.MesocycleResponse;
 import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.enums.Unit;
 import com.noslen.training_tracker.model.mesocycle.MesoNote;
@@ -30,7 +30,7 @@ class MesocycleMapperTest {
     @InjectMocks
     private MesocycleMapper mapper;
 
-    private MesocyclePayload samplePayload;
+    private MesocycleResponse samplePayload;
     private Mesocycle sampleEntity;
     private Instant now;
 
@@ -40,11 +40,11 @@ class MesocycleMapperTest {
         now = Instant.now();
 
         // Sample nested note payload
-        MesoNotePayload notePayload = new MesoNotePayload(
+        MesoNoteResponse notePayload = new MesoNoteResponse(
                 1L, 10L, 20L, now, now, "Test note content"
         );
 
-        samplePayload = new MesocyclePayload(
+        samplePayload = new MesocycleResponse(
                 1L,
                 "test-key",
                 100L,
@@ -110,7 +110,7 @@ class MesocycleMapperTest {
     void toEntity_WithValidPayload_ShouldReturnEntity() {
         // Given
         MesoNote mockNote = createMesoNote(1L);
-        when(mesoNoteMapper.toEntity(any(MesoNotePayload.class))).thenReturn(mockNote);
+        when(mesoNoteMapper.toEntity(any(MesoNoteResponse.class))).thenReturn(mockNote);
 
         // When
         Mesocycle result = mapper.toEntity(samplePayload);
@@ -138,7 +138,7 @@ class MesocycleMapperTest {
         // Verify notes mapping
         assertNotNull(result.getNotes());
         assertEquals(1, result.getNotes().size());
-        verify(mesoNoteMapper).toEntity(any(MesoNotePayload.class));
+        verify(mesoNoteMapper).toEntity(any(MesoNoteResponse.class));
     }
 
     @Test
@@ -154,7 +154,7 @@ class MesocycleMapperTest {
     @Test
     void toEntity_WithNullRelationshipIds_ShouldHandleGracefully() {
         // Given
-        MesocyclePayload payloadWithNullIds = new MesocyclePayload(
+        MesocycleResponse payloadWithNullIds = new MesocycleResponse(
                 1L, "test-key", 100L, "Test Mesocycle", 28, "lbs",
                 null, null, 5L, now, now, null, null,
                 null, null, null, null, null, null, null, null, null, null, null,
@@ -177,7 +177,7 @@ class MesocycleMapperTest {
     @Test
     void toEntity_WithNullFields_ShouldHandleGracefully() {
         // Given
-        MesocyclePayload payloadWithNulls = new MesocyclePayload(
+        MesocycleResponse payloadWithNulls = new MesocycleResponse(
                 null, null, null, null, null, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null,
                 null, null
@@ -202,13 +202,13 @@ class MesocycleMapperTest {
     @Test
     void toPayload_WithValidEntity_ShouldReturnPayload() {
         // Given
-        MesoNotePayload mockNotePayload = new MesoNotePayload(
+        MesoNoteResponse mockNotePayload = new MesoNoteResponse(
                 1L, 10L, 20L, now, now, "Test note"
         );
         when(mesoNoteMapper.toPayload(any(MesoNote.class))).thenReturn(mockNotePayload);
 
         // When
-        MesocyclePayload result = mapper.toPayload(sampleEntity);
+        MesocycleResponse result = mapper.toPayload(sampleEntity);
 
         // Then
         assertNotNull(result);
@@ -240,7 +240,7 @@ class MesocycleMapperTest {
     @Test
     void toPayload_WithNullEntity_ShouldReturnNull() {
         // When
-        MesocyclePayload result = mapper.toPayload(null);
+        MesocycleResponse result = mapper.toPayload(null);
 
         // Then
         assertNull(result);
@@ -266,7 +266,7 @@ class MesocycleMapperTest {
                 .build();
 
         // When
-        MesocyclePayload result = mapper.toPayload(entityWithNullRelationships);
+        MesocycleResponse result = mapper.toPayload(entityWithNullRelationships);
 
         // Then
         assertNotNull(result);
@@ -290,7 +290,7 @@ class MesocycleMapperTest {
                 .name("Old Name")
                 .build();
 
-        MesocyclePayload updatePayload = new MesocyclePayload(
+        MesocycleResponse updatePayload = new MesocycleResponse(
                 1L, "new-key", 100L, "New Name", 28, "lbs",
                 null, null, null, now, now, null, null,
                 null, null, null, null, null, null, null, null, null, null, null,
@@ -349,10 +349,10 @@ class MesocycleMapperTest {
                 .progressions(Collections.emptyMap())
                 .build();
 
-        MesoNotePayload notePayload = new MesoNotePayload(
+        MesoNoteResponse notePayload = new MesoNoteResponse(
                 2L, 1L, 30L, now, now, "Updated note"
         );
-        MesocyclePayload updatePayload = new MesocyclePayload(
+        MesocycleResponse updatePayload = new MesocycleResponse(
                 1L, "new-key", 100L, "New Name", 28, "lbs",
                 2L, 3L, 5L, now.minusSeconds(3600), now, null, null,
                 null, null, null, null, null, null, null, null, null, null, null,
@@ -443,7 +443,7 @@ class MesocycleMapperTest {
                 .generatedFrom("manual")
                 .build();
 
-        MesocyclePayload updatePayload = new MesocyclePayload(
+        MesocycleResponse updatePayload = new MesocycleResponse(
                 1L, null, null, "New Name", null, null,
                 null, null, null, now.minusSeconds(3600), now, null, null,
                 null, null, null, null, null, null, null, null, null, null, null,
@@ -488,7 +488,7 @@ class MesocycleMapperTest {
                 .build();
 
         // When
-        MesocyclePayload result = mapper.toPayload(entityWithWeeks);
+        MesocycleResponse result = mapper.toPayload(entityWithWeeks);
 
         // Then
         assertNotNull(result);

@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.service.mesocycle;
 
-import com.noslen.training_tracker.dto.mesocycle.MesocyclePayload;
+import com.noslen.training_tracker.dto.mesocycle.MesocycleResponse;
 import com.noslen.training_tracker.mapper.mesocycle.MesocycleMapper;
 import com.noslen.training_tracker.mapper.mesocycle.MesoNoteMapper;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,9 +30,9 @@ public class MesocycleServiceImpl implements MesocycleService {
     }
 
     @Override
-    public MesocyclePayload createMesocycle(MesocyclePayload mesocyclePayload) {
+    public MesocycleResponse createMesocycle(MesocycleResponse mesocycleResponse) {
         // Convert payload to entity using mapper, then enhance with timestamps
-        Mesocycle baseMesocycle = mesocycleMapper.toEntity(mesocyclePayload);
+        Mesocycle baseMesocycle = mesocycleMapper.toEntity(mesocycleResponse);
         
         // Set timestamps and initialize fields for new mesocycle
         Instant now = Instant.now();
@@ -78,7 +77,7 @@ public class MesocycleServiceImpl implements MesocycleService {
 
     @Override
     @Transactional(readOnly = true)
-    public MesocyclePayload getMesocycle(Long id) {
+    public MesocycleResponse getMesocycle(Long id) {
         Mesocycle mesocycle = mesocycleRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Mesocycle not found with id: " + id));
         
@@ -87,7 +86,7 @@ public class MesocycleServiceImpl implements MesocycleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<MesocyclePayload> getMesocyclesByUserId(Long userId) {
+    public List<MesocycleResponse> getMesocyclesByUserId(Long userId) {
         List<Mesocycle> mesocycles = mesocycleRepo.findByUserId(userId);
         
         return mesocycles.stream()
@@ -96,13 +95,14 @@ public class MesocycleServiceImpl implements MesocycleService {
     }
 
     @Override
-    public MesocyclePayload updateMesocycle(Long id, MesocyclePayload mesocyclePayload) {
+    public MesocycleResponse updateMesocycle(Long id, MesocycleResponse mesocycleResponse) {
         // Find existing entity
         Mesocycle existingMesocycle = mesocycleRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Mesocycle not found with id: " + id));
 
         // Since Mesocycle is immutable, create a new entity with updated values
-        Mesocycle updatedMesocycle = mesocycleMapper.mergeEntity(existingMesocycle, mesocyclePayload);
+        Mesocycle updatedMesocycle = mesocycleMapper.mergeEntity(existingMesocycle,
+                                                                 mesocycleResponse);
         
         // Save the updated entity
         Mesocycle savedMesocycle = mesocycleRepo.save(updatedMesocycle);
@@ -155,7 +155,7 @@ public class MesocycleServiceImpl implements MesocycleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<MesocyclePayload> getAllMesocycles() {
+    public List<MesocycleResponse> getAllMesocycles() {
         List<Mesocycle> mesocycles = mesocycleRepo.findAll();
         
         return mesocycles.stream()
@@ -165,7 +165,7 @@ public class MesocycleServiceImpl implements MesocycleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<MesocyclePayload> getAllActiveMesocycles() {
+    public List<MesocycleResponse> getAllActiveMesocycles() {
         List<Mesocycle> activeMesocycles = mesocycleRepo.findByDeletedAtIsNull();
         
         return activeMesocycles.stream()
@@ -175,7 +175,7 @@ public class MesocycleServiceImpl implements MesocycleService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<MesocyclePayload> getActiveMesocyclesByUserId(Long userId) {
+    public List<MesocycleResponse> getActiveMesocyclesByUserId(Long userId) {
         List<Mesocycle> activeMesocycles = mesocycleRepo.findByUserIdAndDeletedAtIsNull(userId);
         
         return activeMesocycles.stream()
@@ -184,7 +184,7 @@ public class MesocycleServiceImpl implements MesocycleService {
     }
 
     @Override
-    public MesocyclePayload finishMesocycle(Long id) {
+    public MesocycleResponse finishMesocycle(Long id) {
         // Find existing entity
         Mesocycle existingMesocycle = mesocycleRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Mesocycle not found with id: " + id));

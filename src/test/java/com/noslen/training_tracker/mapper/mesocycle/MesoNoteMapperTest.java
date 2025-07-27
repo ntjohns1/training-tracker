@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.mesocycle;
 
-import com.noslen.training_tracker.dto.mesocycle.MesoNotePayload;
+import com.noslen.training_tracker.dto.mesocycle.MesoNoteResponse;
 import com.noslen.training_tracker.model.mesocycle.MesoNote;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class MesoNoteMapperTest {
 
     private MesoNoteMapper mapper;
-    private MesoNotePayload samplePayload;
+    private MesoNoteResponse samplePayload;
     private MesoNote sampleEntity;
     private Instant now;
 
@@ -22,7 +22,7 @@ class MesoNoteMapperTest {
         mapper = new MesoNoteMapper();
         now = Instant.now();
 
-        samplePayload = new MesoNotePayload(
+        samplePayload = new MesoNoteResponse(
                 1L,
                 10L,
                 20L,
@@ -70,7 +70,7 @@ class MesoNoteMapperTest {
     @Test
     void toEntity_WithNullMesoId_ShouldHandleGracefully() {
         // Given
-        MesoNotePayload payloadWithNullMesoId = new MesoNotePayload(
+        MesoNoteResponse payloadWithNullMesoId = new MesoNoteResponse(
                 1L, null, 20L, now, now, "Test note"
         );
 
@@ -88,7 +88,7 @@ class MesoNoteMapperTest {
     @Test
     void toEntity_WithNullFields_ShouldHandleGracefully() {
         // Given
-        MesoNotePayload payloadWithNulls = new MesoNotePayload(
+        MesoNoteResponse payloadWithNulls = new MesoNoteResponse(
                 null, null, null, null, null, null
         );
 
@@ -108,7 +108,7 @@ class MesoNoteMapperTest {
     @Test
     void toPayload_WithValidEntity_ShouldReturnPayload() {
         // When
-        MesoNotePayload result = mapper.toPayload(sampleEntity);
+        MesoNoteResponse result = mapper.toPayload(sampleEntity);
 
         // Then
         assertNotNull(result);
@@ -123,7 +123,7 @@ class MesoNoteMapperTest {
     @Test
     void toPayload_WithNullEntity_ShouldReturnNull() {
         // When
-        MesoNotePayload result = mapper.toPayload(null);
+        MesoNoteResponse result = mapper.toPayload(null);
 
         // Then
         assertNull(result);
@@ -141,7 +141,7 @@ class MesoNoteMapperTest {
         entityWithNullMesocycle.setUpdatedAt(now);
 
         // When
-        MesoNotePayload result = mapper.toPayload(entityWithNullMesocycle);
+        MesoNoteResponse result = mapper.toPayload(entityWithNullMesocycle);
 
         // Then
         assertNotNull(result);
@@ -160,7 +160,7 @@ class MesoNoteMapperTest {
         existingEntity.setId(1L);
         existingEntity.setText("Old text");
 
-        MesoNotePayload updatePayload = new MesoNotePayload(
+        MesoNoteResponse updatePayload = new MesoNoteResponse(
                 1L, 10L, 20L, now, now, "New text"
         );
 
@@ -200,7 +200,7 @@ class MesoNoteMapperTest {
         existingEntity.setCreatedAt(now.minusSeconds(3600));
         existingEntity.setUpdatedAt(now.minusSeconds(1800));
 
-        MesoNotePayload updatePayload = new MesoNotePayload(
+        MesoNoteResponse updatePayload = new MesoNoteResponse(
                 1L, 10L, 20L, now.minusSeconds(3600), now, "New text"
         );
 
@@ -255,7 +255,7 @@ class MesoNoteMapperTest {
         existingEntity.setText("Old text");
         existingEntity.setCreatedAt(now.minusSeconds(3600));
 
-        MesoNotePayload updatePayload = new MesoNotePayload(
+        MesoNoteResponse updatePayload = new MesoNoteResponse(
                 1L, null, 20L, now.minusSeconds(3600), now, "New text"
         );
 
@@ -286,7 +286,7 @@ class MesoNoteMapperTest {
         existingEntity.setText("Old text");
         existingEntity.setCreatedAt(now.minusSeconds(3600));
 
-        MesoNotePayload updatePayload = new MesoNotePayload(
+        MesoNoteResponse updatePayload = new MesoNoteResponse(
                 1L, 10L, null, now.minusSeconds(3600), now, null
         );
 
