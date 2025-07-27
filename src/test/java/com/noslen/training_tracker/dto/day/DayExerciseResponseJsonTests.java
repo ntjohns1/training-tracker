@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JsonTest
-public class DayExercisePayloadJsonTests {
+public class DayExerciseResponseJsonTests {
     @Autowired
     private JacksonTester<DayExercisePayload> json;
 

@@ -10,13 +10,13 @@ import static org.mockito.Mockito.when;
 import java.time.Instant;
 import java.util.Optional;
 
+import com.noslen.training_tracker.dto.exercise.ExerciseNoteResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.noslen.training_tracker.dto.exercise.ExerciseNotePayload;
 import com.noslen.training_tracker.mapper.exercise.ExerciseNoteMapper;
 import com.noslen.training_tracker.model.exercise.ExerciseNote;
 import com.noslen.training_tracker.repository.exercise.ExerciseNoteRepo;
@@ -33,7 +33,7 @@ public class ExerciseNoteServiceTests {
     private ExerciseNoteServiceImpl service;
 
     private ExerciseNote testEntity;
-    private ExerciseNotePayload testPayload;
+    private ExerciseNoteResponse testPayload;
     private Instant testTime;
 
     @BeforeEach
@@ -49,7 +49,7 @@ public class ExerciseNoteServiceTests {
         testEntity.setUpdatedAt(testTime);
         testEntity.setText("Test note");
                 
-        testPayload = new ExerciseNotePayload(
+        testPayload = new ExerciseNoteResponse(
                 1L, 4L, 2L, 3L, 5L, testTime, testTime, "Test note"
         );
     }
@@ -62,7 +62,7 @@ public class ExerciseNoteServiceTests {
         when(mapper.toPayload(testEntity)).thenReturn(testPayload);
 
         // When
-        ExerciseNotePayload result = service.createExerciseNote(testPayload);
+        ExerciseNoteResponse result = service.createExerciseNote(testPayload);
         
         // Then
         assertEquals(testPayload, result);
@@ -75,7 +75,7 @@ public class ExerciseNoteServiceTests {
     void testUpdateExerciseNote() {
         // Given
         Long id = 1L;
-        ExerciseNotePayload updatePayload = new ExerciseNotePayload(
+        ExerciseNoteResponse updatePayload = new ExerciseNoteResponse(
                 0L, 0L, 0L, 0L, 0L, null, testTime.plusSeconds(60), "Updated Exercise Note"
         );
         
@@ -84,7 +84,7 @@ public class ExerciseNoteServiceTests {
         when(mapper.toPayload(testEntity)).thenReturn(testPayload);
 
         // When
-        ExerciseNotePayload result = service.updateExerciseNote(id, updatePayload);
+        ExerciseNoteResponse result = service.updateExerciseNote(id, updatePayload);
 
         // Then
         assertEquals(testPayload, result);
@@ -128,7 +128,7 @@ public class ExerciseNoteServiceTests {
         when(mapper.toPayload(testEntity)).thenReturn(testPayload);
 
         // When
-        ExerciseNotePayload result = service.getExerciseNote(id);
+        ExerciseNoteResponse result = service.getExerciseNote(id);
         
         // Then
         assertEquals(testPayload, result);

@@ -3,7 +3,7 @@ package com.noslen.training_tracker.dto.exercise;
 import java.time.Instant;
 import java.util.List;
 
-public record ExercisePayload(
+public record ExerciseResponse(
         Long id,
         String name,
         Long muscleGroupId,
@@ -14,5 +14,5 @@ public record ExercisePayload(
         Instant updatedAt,
         Instant deletedAt,
         String mgSubType,
-        List<ExerciseNotePayload> notes) {
+        List<ExerciseNoteResponse> notes) {
 }

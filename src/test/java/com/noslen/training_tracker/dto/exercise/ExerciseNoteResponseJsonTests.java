@@ -12,13 +12,13 @@ import java.time.Instant;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JsonTest
-public class ExerciseNotePayloadJsonTests {
+public class ExerciseNoteResponseJsonTests {
     @Autowired
-    private JacksonTester<ExerciseNotePayload> json;
+    private JacksonTester<ExerciseNoteResponse> json;
 
     @Test
     void testSerialize() throws IOException {
-        ExerciseNotePayload exerciseNotePayload = new ExerciseNotePayload(
+        ExerciseNoteResponse exerciseNoteResponse = new ExerciseNoteResponse(
                 1248357L,
                 191L,
                 1518614L,
@@ -29,20 +29,20 @@ public class ExerciseNotePayloadJsonTests {
                 "Big chest all the way through");
 
         ClassPathResource resource = new ClassPathResource("example/exercise_note.json");
-        assertThat(json.write(exerciseNotePayload)).isEqualToJson(resource);
+        assertThat(json.write(exerciseNoteResponse)).isEqualToJson(resource);
     }
 
     @Test
     void testDeserialize() throws IOException {
         ClassPathResource resource = new ClassPathResource("example/exercise_note.json");
-        ExerciseNotePayload exerciseNotePayload = json.readObject(resource.getFile());
-        assertThat(exerciseNotePayload.id()).isEqualTo(1248357L);
-        assertThat(exerciseNotePayload.exerciseId()).isEqualTo(191L);
-        assertThat(exerciseNotePayload.userId()).isEqualTo(1518614L);
-        assertThat(exerciseNotePayload.noteId()).isEqualTo(1304638L);
-        assertThat(exerciseNotePayload.dayExerciseId()).isEqualTo(121219737L);
-        assertThat(exerciseNotePayload.createdAt()).isEqualTo(Instant.parse("2025-02-09T18:07:46.567Z"));
-        assertThat(exerciseNotePayload.updatedAt()).isEqualTo(Instant.parse("2025-06-29T18:39:37.789Z"));
-        assertThat(exerciseNotePayload.text()).isEqualTo("Big chest all the way through");
+        ExerciseNoteResponse exerciseNoteResponse = json.readObject(resource.getFile());
+        assertThat(exerciseNoteResponse.id()).isEqualTo(1248357L);
+        assertThat(exerciseNoteResponse.exerciseId()).isEqualTo(191L);
+        assertThat(exerciseNoteResponse.userId()).isEqualTo(1518614L);
+        assertThat(exerciseNoteResponse.noteId()).isEqualTo(1304638L);
+        assertThat(exerciseNoteResponse.dayExerciseId()).isEqualTo(121219737L);
+        assertThat(exerciseNoteResponse.createdAt()).isEqualTo(Instant.parse("2025-02-09T18:07:46.567Z"));
+        assertThat(exerciseNoteResponse.updatedAt()).isEqualTo(Instant.parse("2025-06-29T18:39:37.789Z"));
+        assertThat(exerciseNoteResponse.text()).isEqualTo("Big chest all the way through");
     }
 }

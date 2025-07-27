@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.exercise;
 
-import com.noslen.training_tracker.dto.exercise.ExerciseNotePayload;
+import com.noslen.training_tracker.dto.exercise.ExerciseNoteResponse;
 import com.noslen.training_tracker.model.exercise.ExerciseNote;
 import org.springframework.stereotype.Component;
 
@@ -11,9 +11,9 @@ import java.util.stream.Collectors;
 public class ExerciseNoteMapper {
 
     /**
-     * Convert ExerciseNotePayload to ExerciseNote entity
+     * Convert ExerciseNoteResponse to ExerciseNote entity
      */
-    public ExerciseNote toEntity(ExerciseNotePayload payload) {
+    public ExerciseNote toEntity(ExerciseNoteResponse payload) {
         if (payload == null) {
             return null;
         }
@@ -31,14 +31,14 @@ public class ExerciseNoteMapper {
     }
 
     /**
-     * Convert ExerciseNote entity to ExerciseNotePayload
+     * Convert ExerciseNote entity to ExerciseNoteResponse
      */
-    public ExerciseNotePayload toPayload(ExerciseNote entity) {
+    public ExerciseNoteResponse toPayload(ExerciseNote entity) {
         if (entity == null) {
             return null;
         }
 
-        return new ExerciseNotePayload(
+        return new ExerciseNoteResponse(
                 entity.getId(),
                 entity.getExerciseId(), // Uses the @JsonProperty method
                 entity.getUserId(),
@@ -51,10 +51,10 @@ public class ExerciseNoteMapper {
     }
 
     /**
-     * Update existing ExerciseNote entity with data from ExerciseNotePayload
+     * Update existing ExerciseNote entity with data from ExerciseNoteResponse
      * Only updates mutable fields that have setters
      */
-    public void updateEntity(ExerciseNote existing, ExerciseNotePayload payload) {
+    public void updateEntity(ExerciseNote existing, ExerciseNoteResponse payload) {
         if (existing == null || payload == null) {
             return;
         }
@@ -72,7 +72,7 @@ public class ExerciseNoteMapper {
      * Create a new ExerciseNote entity by merging existing entity with payload data
      * This handles immutable fields by creating a new entity
      */
-    public ExerciseNote mergeEntity(ExerciseNote existing, ExerciseNotePayload payload) {
+    public ExerciseNote mergeEntity(ExerciseNote existing, ExerciseNoteResponse payload) {
         if (payload == null) {
             return existing;
         }
@@ -96,7 +96,7 @@ public class ExerciseNoteMapper {
     /**
      * Convert list of ExerciseNote entities to list of ExerciseNotePayloads
      */
-    public List<ExerciseNotePayload> toPayloadList(List<ExerciseNote> entities) {
+    public List<ExerciseNoteResponse> toPayloadList(List<ExerciseNote> entities) {
         if (entities == null) {
             return null;
         }

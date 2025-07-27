@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.exercise;
 
-import com.noslen.training_tracker.dto.exercise.ExercisePayload;
+import com.noslen.training_tracker.dto.exercise.ExerciseResponse;
 import com.noslen.training_tracker.enums.ExerciseType;
 import com.noslen.training_tracker.enums.MgSubType;
 import com.noslen.training_tracker.model.exercise.Exercise;
@@ -20,9 +20,9 @@ public class ExerciseMapper {
     }
 
     /**
-     * Convert ExercisePayload to Exercise entity
+     * Convert ExerciseResponse to Exercise entity
      */
-    public Exercise toEntity(ExercisePayload payload) {
+    public Exercise toEntity(ExerciseResponse payload) {
         if (payload == null) {
             return null;
         }
@@ -51,14 +51,14 @@ public class ExerciseMapper {
     }
 
     /**
-     * Convert Exercise entity to ExercisePayload
+     * Convert Exercise entity to ExerciseResponse
      */
-    public ExercisePayload toPayload(Exercise entity) {
+    public ExerciseResponse toPayload(Exercise entity) {
         if (entity == null) {
             return null;
         }
 
-        return new ExercisePayload(
+        return new ExerciseResponse(
                 entity.getId(),
                 entity.getName(),
                 entity.getMuscleGroupId(),
@@ -75,10 +75,10 @@ public class ExerciseMapper {
     }
 
     /**
-     * Update existing Exercise entity with data from ExercisePayload
+     * Update existing Exercise entity with data from ExerciseResponse
      * Only updates mutable fields that have setters
      */
-    public void updateEntity(Exercise existing, ExercisePayload payload) {
+    public void updateEntity(Exercise existing, ExerciseResponse payload) {
         if (existing == null || payload == null) {
             return;
         }
@@ -125,7 +125,7 @@ public class ExerciseMapper {
      * Create a new Exercise entity by merging existing entity with payload data
      * This handles immutable fields by creating a new entity
      */
-    public Exercise mergeEntity(Exercise existing, ExercisePayload payload) {
+    public Exercise mergeEntity(Exercise existing, ExerciseResponse payload) {
         if (payload == null) {
             return existing;
         }
@@ -164,7 +164,7 @@ public class ExerciseMapper {
     /**
      * Convert list of Exercise entities to list of ExercisePayloads
      */
-    public List<ExercisePayload> toPayloadList(List<Exercise> entities) {
+    public List<ExerciseResponse> toPayloadList(List<Exercise> entities) {
         if (entities == null) {
             return null;
         }

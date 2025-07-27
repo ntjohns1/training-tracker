@@ -1,7 +1,7 @@
 package com.noslen.training_tracker.mapper.exercise;
 
-import com.noslen.training_tracker.dto.exercise.ExercisePayload;
-import com.noslen.training_tracker.dto.exercise.ExerciseNotePayload;
+import com.noslen.training_tracker.dto.exercise.ExerciseNoteResponse;
+import com.noslen.training_tracker.dto.exercise.ExerciseResponse;
 import com.noslen.training_tracker.enums.ExerciseType;
 import com.noslen.training_tracker.enums.MgSubType;
 import com.noslen.training_tracker.model.exercise.Exercise;
@@ -32,17 +32,17 @@ class ExerciseMapperTest {
     @InjectMocks
     private ExerciseMapper exerciseMapper;
 
-    private ExercisePayload testPayload;
+    private ExerciseResponse testPayload;
     private Exercise testEntity;
     private Instant testTime;
-    private ExerciseNotePayload testNotePayload;
+    private ExerciseNoteResponse testNotePayload;
     private ExerciseNote testNoteEntity;
 
     @BeforeEach
     void setUp() {
         testTime = Instant.now();
         
-        testNotePayload = new ExerciseNotePayload(
+        testNotePayload = new ExerciseNoteResponse(
                 1L, 2L, 3L, 4L, 5L, testTime, testTime, "Test note"
         );
         
@@ -54,7 +54,7 @@ class ExerciseMapperTest {
         testNoteEntity.setUpdatedAt(testTime);
         testNoteEntity.setText("Test note");
 
-        testPayload = new ExercisePayload(
+        testPayload = new ExerciseResponse(
                 1L, "Test Exercise", 2L, "youtube123", "barbell", 3L,
                 testTime, testTime, null, "vertical",
                 Collections.singletonList(testNotePayload)
@@ -77,7 +77,7 @@ class ExerciseMapperTest {
     @Test
     void toEntity_WithValidPayload_ShouldMapCorrectly() {
         // Given
-        when(exerciseNoteMapper.toEntity(any(ExerciseNotePayload.class))).thenReturn(testNoteEntity);
+        when(exerciseNoteMapper.toEntity(any(ExerciseNoteResponse.class))).thenReturn(testNoteEntity);
 
         // When
         Exercise result = exerciseMapper.toEntity(testPayload);
@@ -109,7 +109,7 @@ class ExerciseMapperTest {
     @Test
     void toEntity_WithNullNotes_ShouldHandleGracefully() {
         // Given
-        ExercisePayload payloadWithoutNotes = new ExercisePayload(
+        ExerciseResponse payloadWithoutNotes = new ExerciseResponse(
                 1L, "Test Exercise", 2L, "youtube123", "barbell", 3L,
                 testTime, testTime, null, "non-heavy-axial", null
         );
@@ -128,7 +128,7 @@ class ExerciseMapperTest {
         when(exerciseNoteMapper.toPayloadList(anyList())).thenReturn(Collections.singletonList(testNotePayload));
 
         // When
-        ExercisePayload result = exerciseMapper.toPayload(testEntity);
+        ExerciseResponse result = exerciseMapper.toPayload(testEntity);
 
         // Then
         assertThat(result).isNotNull();
@@ -148,7 +148,7 @@ class ExerciseMapperTest {
     @Test
     void toPayload_WithNullEntity_ShouldReturnNull() {
         // When
-        ExercisePayload result = exerciseMapper.toPayload(null);
+        ExerciseResponse result = exerciseMapper.toPayload(null);
 
         // Then
         assertThat(result).isNull();
@@ -168,7 +168,7 @@ class ExerciseMapperTest {
         existing.setUpdatedAt(testTime);
         existing.setMgSubType(MgSubType.HORIZONTAL);
 
-        ExercisePayload updatePayload = new ExercisePayload(
+        ExerciseResponse updatePayload = new ExerciseResponse(
                 0L, "Updated Exercise", 4L, "updated456", "barbell", 5L,
                 null, testTime.plusSeconds(60), testTime.plusSeconds(120), "horizontal", null
         );
@@ -212,7 +212,7 @@ class ExerciseMapperTest {
         existing.setUpdatedAt(testTime);
         existing.setMgSubType(MgSubType.HORIZONTAL);
 
-        ExercisePayload updatePayload = new ExercisePayload(
+        ExerciseResponse updatePayload = new ExerciseResponse(
                 0L, null, 0L, null, null, 0L,
                 null, null, null, null, null
         );
@@ -245,7 +245,7 @@ class ExerciseMapperTest {
         existing.setUpdatedAt(testTime);
         existing.setMgSubType(MgSubType.HORIZONTAL);
 
-        ExercisePayload updatePayload = new ExercisePayload(
+        ExerciseResponse updatePayload = new ExerciseResponse(
                 0L, "Updated Exercise", 4L, "updated456", "dumbbell", 5L,
                 null, testTime.plusSeconds(60), null, "non-heavy-axial", null
         );
@@ -280,7 +280,7 @@ class ExerciseMapperTest {
         existing.setUpdatedAt(testTime);
         existing.setMgSubType(MgSubType.HORIZONTAL);
 
-        ExercisePayload updatePayload = new ExercisePayload(
+        ExerciseResponse updatePayload = new ExerciseResponse(
                 0L, null, 0L, null, null, 0L,
                 null, null, null, null, null
         );
@@ -332,7 +332,7 @@ class ExerciseMapperTest {
         when(exerciseNoteMapper.toPayloadList(anyList())).thenReturn(Collections.singletonList(testNotePayload));
 
         // When
-        List<ExercisePayload> result = exerciseMapper.toPayloadList(entities);
+        List<ExerciseResponse> result = exerciseMapper.toPayloadList(entities);
 
         // Then
         assertThat(result).hasSize(2);
@@ -343,7 +343,7 @@ class ExerciseMapperTest {
     @Test
     void toPayloadList_WithNullList_ShouldReturnNull() {
         // When
-        List<ExercisePayload> result = exerciseMapper.toPayloadList(null);
+        List<ExerciseResponse> result = exerciseMapper.toPayloadList(null);
 
         // Then
         assertThat(result).isNull();
@@ -352,7 +352,7 @@ class ExerciseMapperTest {
     @Test
     void toPayloadList_WithEmptyList_ShouldReturnEmptyList() {
         // When
-        List<ExercisePayload> result = exerciseMapper.toPayloadList(Collections.emptyList());
+        List<ExerciseResponse> result = exerciseMapper.toPayloadList(Collections.emptyList());
 
         // Then
         assertThat(result).isEmpty();
@@ -365,7 +365,7 @@ class ExerciseMapperTest {
         when(exerciseNoteMapper.toPayloadList(anyList())).thenReturn(Collections.singletonList(testNotePayload));
 
         // When
-        List<ExercisePayload> result = exerciseMapper.toPayloadList(entitiesWithNull);
+        List<ExerciseResponse> result = exerciseMapper.toPayloadList(entitiesWithNull);
 
         // Then
         assertThat(result).hasSize(3);

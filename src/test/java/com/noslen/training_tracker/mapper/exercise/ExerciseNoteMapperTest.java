@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.exercise;
 
-import com.noslen.training_tracker.dto.exercise.ExerciseNotePayload;
+import com.noslen.training_tracker.dto.exercise.ExerciseNoteResponse;
 import com.noslen.training_tracker.model.exercise.ExerciseNote;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ class ExerciseNoteMapperTest {
     @InjectMocks
     private ExerciseNoteMapper exerciseNoteMapper;
 
-    private ExerciseNotePayload testPayload;
+    private ExerciseNoteResponse testPayload;
     private ExerciseNote testEntity;
     private Instant testTime;
 
@@ -29,7 +29,7 @@ class ExerciseNoteMapperTest {
     void setUp() {
         testTime = Instant.now();
         
-        testPayload = new ExerciseNotePayload(
+        testPayload = new ExerciseNoteResponse(
                 1L, 2L, 3L, 4L, 5L, testTime, testTime, "Test note text"
         );
 
@@ -72,7 +72,7 @@ class ExerciseNoteMapperTest {
     @Test
     void toPayload_WithValidEntity_ShouldMapCorrectly() {
         // When
-        ExerciseNotePayload result = exerciseNoteMapper.toPayload(testEntity);
+        ExerciseNoteResponse result = exerciseNoteMapper.toPayload(testEntity);
 
         // Then
         assertThat(result).isNotNull();
@@ -89,7 +89,7 @@ class ExerciseNoteMapperTest {
     @Test
     void toPayload_WithNullEntity_ShouldReturnNull() {
         // When
-        ExerciseNotePayload result = exerciseNoteMapper.toPayload(null);
+        ExerciseNoteResponse result = exerciseNoteMapper.toPayload(null);
 
         // Then
         assertThat(result).isNull();
@@ -106,7 +106,7 @@ class ExerciseNoteMapperTest {
         existing.setUpdatedAt(testTime);
         existing.setText("Original text");
 
-        ExerciseNotePayload updatePayload = new ExerciseNotePayload(
+        ExerciseNoteResponse updatePayload = new ExerciseNoteResponse(
                 0L, 0L, 0L, 0L, 0L, null, testTime.plusSeconds(60), "Updated text"
         );
 
@@ -142,7 +142,7 @@ class ExerciseNoteMapperTest {
         existing.setUpdatedAt(testTime);
         existing.setText("Original text");
 
-        ExerciseNotePayload updatePayload = new ExerciseNotePayload(
+        ExerciseNoteResponse updatePayload = new ExerciseNoteResponse(
                 0L, 0L, 0L, 0L, 0L, null, null, null
         );
 
@@ -165,7 +165,7 @@ class ExerciseNoteMapperTest {
         existing.setUpdatedAt(testTime);
         existing.setText("Original text");
 
-        ExerciseNotePayload updatePayload = new ExerciseNotePayload(
+        ExerciseNoteResponse updatePayload = new ExerciseNoteResponse(
                 0L, 0L, 5L, 6L, 0L, null, testTime.plusSeconds(60), "Updated text"
         );
 
@@ -193,7 +193,7 @@ class ExerciseNoteMapperTest {
         existing.setUpdatedAt(testTime);
         existing.setText("Original text");
 
-        ExerciseNotePayload updatePayload = new ExerciseNotePayload(
+        ExerciseNoteResponse updatePayload = new ExerciseNoteResponse(
                 0L, 0L, 0L, 0L, 0L, null, null, null
         );
 
@@ -238,7 +238,7 @@ class ExerciseNoteMapperTest {
         List<ExerciseNote> entities = Arrays.asList(testEntity, testEntity);
 
         // When
-        List<ExerciseNotePayload> result = exerciseNoteMapper.toPayloadList(entities);
+        List<ExerciseNoteResponse> result = exerciseNoteMapper.toPayloadList(entities);
 
         // Then
         assertThat(result).hasSize(2);
@@ -249,7 +249,7 @@ class ExerciseNoteMapperTest {
     @Test
     void toPayloadList_WithNullList_ShouldReturnNull() {
         // When
-        List<ExerciseNotePayload> result = exerciseNoteMapper.toPayloadList(null);
+        List<ExerciseNoteResponse> result = exerciseNoteMapper.toPayloadList(null);
 
         // Then
         assertThat(result).isNull();
@@ -258,7 +258,7 @@ class ExerciseNoteMapperTest {
     @Test
     void toPayloadList_WithEmptyList_ShouldReturnEmptyList() {
         // When
-        List<ExerciseNotePayload> result = exerciseNoteMapper.toPayloadList(Collections.emptyList());
+        List<ExerciseNoteResponse> result = exerciseNoteMapper.toPayloadList(Collections.emptyList());
 
         // Then
         assertThat(result).isEmpty();
@@ -270,7 +270,7 @@ class ExerciseNoteMapperTest {
         List<ExerciseNote> entitiesWithNull = Arrays.asList(testEntity, null, testEntity);
 
         // When
-        List<ExerciseNotePayload> result = exerciseNoteMapper.toPayloadList(entitiesWithNull);
+        List<ExerciseNoteResponse> result = exerciseNoteMapper.toPayloadList(entitiesWithNull);
 
         // Then
         assertThat(result).hasSize(3);
