@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.day;
 
-import com.noslen.training_tracker.dto.day.DayNotePayload;
+import com.noslen.training_tracker.dto.day.DayNoteResponse;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.day.DayNote;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class DayNoteMapperTest {
 
     private DayNoteMapper mapper;
-    private DayNotePayload samplePayload;
+    private DayNoteResponse samplePayload;
     private DayNote sampleEntity;
     private Instant now;
     private Day day = Day.builder().id(1L).build();
@@ -25,7 +25,7 @@ class DayNoteMapperTest {
         mapper = new DayNoteMapper();
         now = Instant.now();
 
-        samplePayload = new DayNotePayload(
+        samplePayload = new DayNoteResponse(
                 1L,
                 10L,
                 20L,
@@ -75,7 +75,7 @@ class DayNoteMapperTest {
     @Test
     void toEntity_WithNullFields_ShouldHandleGracefully() {
         // Given
-        DayNotePayload payloadWithNulls = new DayNotePayload(
+        DayNoteResponse payloadWithNulls = new DayNoteResponse(
                 null, null, null, null, null, null, null
         );
 
@@ -96,7 +96,7 @@ class DayNoteMapperTest {
     @Test
     void toEntity_WithFalsePinned_ShouldHandleCorrectly() {
         // Given
-        DayNotePayload payloadWithFalsePinned = new DayNotePayload(
+        DayNoteResponse payloadWithFalsePinned = new DayNoteResponse(
                 1L, 10L, 20L, false, now, now, "Test note"
         );
 
@@ -111,7 +111,7 @@ class DayNoteMapperTest {
     @Test
     void toPayload_WithValidEntity_ShouldReturnPayload() {
         // When
-        DayNotePayload result = mapper.toPayload(sampleEntity);
+        DayNoteResponse result = mapper.toPayload(sampleEntity);
 
         // Then
         assertNotNull(result);
@@ -127,7 +127,7 @@ class DayNoteMapperTest {
     @Test
     void toPayload_WithNullEntity_ShouldReturnNull() {
         // When
-        DayNotePayload result = mapper.toPayload(null);
+        DayNoteResponse result = mapper.toPayload(null);
 
         // Then
         assertNull(result);
@@ -146,7 +146,7 @@ class DayNoteMapperTest {
         entityWithRelationships.setUpdatedAt(now);
 
         // When
-        DayNotePayload result = mapper.toPayload(entityWithRelationships);
+        DayNoteResponse result = mapper.toPayload(entityWithRelationships);
 
         // Then
         assertNotNull(result);
@@ -168,7 +168,7 @@ class DayNoteMapperTest {
         entityWithNullRelationships.setUpdatedAt(now);
 
         // When
-        DayNotePayload result = mapper.toPayload(entityWithNullRelationships);
+        DayNoteResponse result = mapper.toPayload(entityWithNullRelationships);
 
         // Then
         assertNotNull(result);
@@ -191,7 +191,7 @@ class DayNoteMapperTest {
         existingEntity.setCreatedAt(now.minusSeconds(3600));
         existingEntity.setUpdatedAt(now.minusSeconds(1800));
 
-        DayNotePayload updatePayload = new DayNotePayload(
+        DayNoteResponse updatePayload = new DayNoteResponse(
                 1L, 15L, 25L, true, now.minusSeconds(3600), now, "Updated note content"
         );
 
@@ -237,7 +237,7 @@ class DayNoteMapperTest {
         existingEntity.setPinned(false);
         existingEntity.setCreatedAt(now.minusSeconds(3600)); // Added createdAt timestamp
 
-        DayNotePayload payloadWithNullIds = new DayNotePayload(
+        DayNoteResponse payloadWithNullIds = new DayNoteResponse(
                 1L, null, null, true, now, now, "New text"
         );
 
@@ -265,7 +265,7 @@ class DayNoteMapperTest {
         existingEntity.setCreatedAt(now.minusSeconds(3600));
         existingEntity.setUpdatedAt(now.minusSeconds(1800));
 
-        DayNotePayload updatePayload = new DayNotePayload(
+        DayNoteResponse updatePayload = new DayNoteResponse(
                 1L, 15L, 25L, true, now.minusSeconds(3600), now, "Updated note content"
         );
 
@@ -322,7 +322,7 @@ class DayNoteMapperTest {
         existingEntity.setPinned(false);
         existingEntity.setCreatedAt(now.minusSeconds(3600)); // Added createdAt timestamp
 
-        DayNotePayload payloadWithNullIds = new DayNotePayload(
+        DayNoteResponse payloadWithNullIds = new DayNoteResponse(
                 1L, null, null, true, now.minusSeconds(3600), now, "New text"
         );
 
@@ -346,7 +346,7 @@ class DayNoteMapperTest {
         DayNote existingEntity = new DayNote();
         existingEntity.setText("Old text");
 
-        DayNotePayload payloadWithEmptyText = new DayNotePayload(
+        DayNoteResponse payloadWithEmptyText = new DayNoteResponse(
                 1L, 10L, 20L, false, now, now, ""
         );
 

@@ -3,7 +3,7 @@ package com.noslen.training_tracker.dto.day;
 import java.time.Instant;
 import java.util.List;
 
-public record DayPayload(
+public record DayResponse(
         Long id,
         Long mesoId,
         Long week,
@@ -15,8 +15,8 @@ public record DayPayload(
         String unit,
         Instant finishedAt,
         String label,
-        List<DayNotePayload> notes,
-        List<DayExercisePayload> exercises,
-        List<DayMuscleGroupPayload> muscleGroups,
+        List<DayNoteResponse> notes,
+        List<DayExerciseResponse> exercises,
+        List<DayMuscleGroupResponse> muscleGroups,
         String status) {
 }

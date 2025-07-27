@@ -1,16 +1,13 @@
 package com.noslen.training_tracker.dto.mesocycle;
 
+import com.noslen.training_tracker.dto.day.*;
 import com.noslen.training_tracker.dto.muscle_group.ProgressionResponse;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.core.io.ClassPathResource;
 
-import com.noslen.training_tracker.dto.day.DayExercisePayload;
-import com.noslen.training_tracker.dto.day.DayMuscleGroupPayload;
-import com.noslen.training_tracker.dto.day.DayNotePayload;
-import com.noslen.training_tracker.dto.day.DayPayload;
-import com.noslen.training_tracker.dto.day.ExerciseSetPayload;
+import com.noslen.training_tracker.dto.day.ExerciseSetResponse;
 import com.noslen.training_tracker.enums.MgProgressionType;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -60,10 +57,10 @@ public class CurrentMesoResponseJsonTests {
                                 MgProgressionType.REGULAR);
                 progressions.put(1L, progression1);
 
-                List<ExerciseSetPayload> sets = new ArrayList<>();
+                List<ExerciseSetResponse> sets = new ArrayList<>();
 
-                List<DayExercisePayload> exercises = new ArrayList<>();
-                DayExercisePayload exercise = new DayExercisePayload(
+                List<DayExerciseResponse> exercises = new ArrayList<>();
+                DayExerciseResponse exercise = new DayExerciseResponse(
                                 121219664L,
                                 19749536L,
                                 51L,
@@ -77,10 +74,10 @@ public class CurrentMesoResponseJsonTests {
                                 "complete");
                 exercises.add(exercise);
 
-                List<DayNotePayload> dayNotes = new ArrayList<>();
-                List<DayMuscleGroupPayload> muscleGroups = new ArrayList<>();
+                List<DayNoteResponse> dayNotes = new ArrayList<>();
+                List<DayMuscleGroupResponse> muscleGroups = new ArrayList<>();
 
-                DayPayload day = new DayPayload(
+                DayResponse day = new DayResponse(
                                 19749536L,
                                 790173L,
                                 0L,
@@ -97,7 +94,7 @@ public class CurrentMesoResponseJsonTests {
                                 muscleGroups,
                                 "complete");
 
-                List<DayPayload> daysList = new ArrayList<>();
+                List<DayResponse> daysList = new ArrayList<>();
                 daysList.add(day);
 
                 Week week = new Week(daysList);
@@ -189,7 +186,7 @@ public class CurrentMesoResponseJsonTests {
                 Week firstWeek = mesocycle.weeks().get(0);
                 assertThat(firstWeek.days()).isNotEmpty();
 
-                DayPayload firstDay = firstWeek.days().get(0);
+                DayResponse firstDay = firstWeek.days().get(0);
                 assertThat(firstDay.id()).isEqualTo(19749536L);
                 assertThat(firstDay.exercises()).isNotEmpty();
 

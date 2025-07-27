@@ -4,10 +4,10 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
+import com.noslen.training_tracker.dto.day.DayMuscleGroupResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.noslen.training_tracker.dto.day.DayMuscleGroupPayload;
 import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.mapper.day.DayMuscleGroupMapper;
 import com.noslen.training_tracker.model.day.Day;
@@ -36,7 +36,7 @@ public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
 
     @Override
     @Transactional
-    public DayMuscleGroupPayload createDayMuscleGroup(Long dayId, Long muscleGroupId) {
+    public DayMuscleGroupResponse createDayMuscleGroup(Long dayId, Long muscleGroupId) {
         if (dayId == null || muscleGroupId == null) {
             throw new IllegalArgumentException("Day ID and Muscle Group ID cannot be null");
         }
@@ -67,12 +67,12 @@ public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
 
     @Override
     @Transactional
-    public DayMuscleGroupPayload updateDayMuscleGroup(Long id, DayMuscleGroupPayload dayMuscleGroupPayload) {
+    public DayMuscleGroupResponse updateDayMuscleGroup(Long id, DayMuscleGroupResponse dayMuscleGroupResponse) {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
-        if (dayMuscleGroupPayload == null) {
-            throw new IllegalArgumentException("DayMuscleGroupPayload cannot be null");
+        if (dayMuscleGroupResponse == null) {
+            throw new IllegalArgumentException("DayMuscleGroupResponse cannot be null");
         }
 
         // Find existing entity
@@ -84,16 +84,17 @@ public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
         DayMuscleGroup existingDayMuscleGroup = existingOpt.get();
         
         // Update entity with payload data using merge since entity is mostly immutable
-        DayMuscleGroup updatedDayMuscleGroup = mapper.mergeEntity(existingDayMuscleGroup, dayMuscleGroupPayload);
+        DayMuscleGroup updatedDayMuscleGroup = mapper.mergeEntity(existingDayMuscleGroup,
+                                                                  dayMuscleGroupResponse);
         updatedDayMuscleGroup = DayMuscleGroup.builder()
                 .id(existingDayMuscleGroup.getId())
                 .day(existingDayMuscleGroup.getDay())
                 .muscleGroup(existingDayMuscleGroup.getMuscleGroup())
-                .pump(dayMuscleGroupPayload.pump() != null ? dayMuscleGroupPayload.pump() : existingDayMuscleGroup.getPump())
-                .soreness(dayMuscleGroupPayload.soreness() != null ? dayMuscleGroupPayload.soreness() : existingDayMuscleGroup.getSoreness())
-                .workload(dayMuscleGroupPayload.workload() != null ? dayMuscleGroupPayload.workload() : existingDayMuscleGroup.getWorkload())
-                .recommendedSets(dayMuscleGroupPayload.recommendedSets() != null ? dayMuscleGroupPayload.recommendedSets() : existingDayMuscleGroup.getRecommendedSets())
-                .status(dayMuscleGroupPayload.status() != null ? EnumConverter.<Status>stringToEnum(Status.class, dayMuscleGroupPayload.status()) : existingDayMuscleGroup.getStatus())
+                .pump(dayMuscleGroupResponse.pump() != null ? dayMuscleGroupResponse.pump() : existingDayMuscleGroup.getPump())
+                .soreness(dayMuscleGroupResponse.soreness() != null ? dayMuscleGroupResponse.soreness() : existingDayMuscleGroup.getSoreness())
+                .workload(dayMuscleGroupResponse.workload() != null ? dayMuscleGroupResponse.workload() : existingDayMuscleGroup.getWorkload())
+                .recommendedSets(dayMuscleGroupResponse.recommendedSets() != null ? dayMuscleGroupResponse.recommendedSets() : existingDayMuscleGroup.getRecommendedSets())
+                .status(dayMuscleGroupResponse.status() != null ? EnumConverter.<Status>stringToEnum(Status.class, dayMuscleGroupResponse.status()) : existingDayMuscleGroup.getStatus())
                 .createdAt(existingDayMuscleGroup.getCreatedAt())
                 .updatedAt(Instant.now())
                 .build();
@@ -119,7 +120,7 @@ public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
 
     @Override
     @Transactional(readOnly = true)
-    public DayMuscleGroupPayload getDayMuscleGroup(Long id) {
+    public DayMuscleGroupResponse getDayMuscleGroup(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
@@ -134,7 +135,7 @@ public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<DayMuscleGroupPayload> getDayMuscleGroupsByDayId(Long dayId) {
+    public List<DayMuscleGroupResponse> getDayMuscleGroupsByDayId(Long dayId) {
         if (dayId == null) {
             throw new IllegalArgumentException("Day ID cannot be null");
         }

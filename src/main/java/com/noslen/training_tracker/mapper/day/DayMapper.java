@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.day;
 
-import com.noslen.training_tracker.dto.day.DayPayload;
+import com.noslen.training_tracker.dto.day.DayResponse;
 import com.noslen.training_tracker.enums.Unit;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.util.EnumConverter;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * POJO Mapper for converting between Day entity and DayPayload DTO.
+ * POJO Mapper for converting between Day entity and DayResponse DTO.
  * Handles manual mapping logic including nested relationships and supports immutable model fields.
  */
 @Component
@@ -29,14 +29,14 @@ public class DayMapper {
     }
 
     /**
-     * Converts DayPayload DTO to Day entity.
+     * Converts DayResponse DTO to Day entity.
      * Note: Mesocycle relationship and nested collections are not set by this mapper 
      * and should be handled by the service layer.
      *
-     * @param payload the DayPayload to convert
+     * @param payload the DayResponse to convert
      * @return the converted Day entity, or null if payload is null
      */
-    public Day toEntity(DayPayload payload) {
+    public Day toEntity(DayResponse payload) {
         if (payload == null) {
             return null;
         }
@@ -58,17 +58,17 @@ public class DayMapper {
     }
 
     /**
-     * Converts Day entity to DayPayload DTO including nested collections.
+     * Converts Day entity to DayResponse DTO including nested collections.
      *
      * @param entity the Day entity to convert
-     * @return the converted DayPayload DTO, or null if entity is null
+     * @return the converted DayResponse DTO, or null if entity is null
      */
-    public DayPayload toPayload(Day entity) {
+    public DayResponse toPayload(Day entity) {
         if (entity == null) {
             return null;
         }
 
-        return new DayPayload(
+        return new DayResponse(
                 entity.getId(),
                 entity.getMesoId(), // Uses the derived property from entity
                 entity.getWeek() != null ? entity.getWeek().longValue() : null, // Convert Integer to Long
@@ -88,13 +88,13 @@ public class DayMapper {
     }
 
     /**
-     * Updates mutable fields of an existing Day entity from DayPayload.
+     * Updates mutable fields of an existing Day entity from DayResponse.
      * Only updates fields that can be modified after creation.
      *
      * @param entity  the existing Day entity to update
-     * @param payload the DayPayload containing update data
+     * @param payload the DayResponse containing update data
      */
-    public void updateEntity(Day entity, DayPayload payload) {
+    public void updateEntity(Day entity, DayResponse payload) {
         if (entity == null || payload == null) {
             return;
         }
@@ -113,10 +113,10 @@ public class DayMapper {
      * Used when immutable fields need to be changed.
      *
      * @param existing the existing Day entity
-     * @param payload  the DayPayload containing update data
+     * @param payload  the DayResponse containing update data
      * @return a new Day entity with merged data
      */
-    public Day mergeEntity(Day existing, DayPayload payload) {
+    public Day mergeEntity(Day existing, DayResponse payload) {
         if (existing == null) {
             return toEntity(payload);
         }
@@ -143,12 +143,12 @@ public class DayMapper {
     }
 
     /**
-     * Converts a list of Day entities to a list of DayPayload DTOs.
+     * Converts a list of Day entities to a list of DayResponse DTOs.
      *
      * @param entities the list of Day entities to convert
-     * @return the converted list of DayPayload DTOs, or null if input is null
+     * @return the converted list of DayResponse DTOs, or null if input is null
      */
-    public List<DayPayload> toPayloadList(List<Day> entities) {
+    public List<DayResponse> toPayloadList(List<Day> entities) {
         if (entities == null) {
             return null;
         }
@@ -159,12 +159,12 @@ public class DayMapper {
     }
 
     /**
-     * Converts a list of DayPayload DTOs to a list of Day entities.
+     * Converts a list of DayResponse DTOs to a list of Day entities.
      *
-     * @param payloads the list of DayPayload DTOs to convert
+     * @param payloads the list of DayResponse DTOs to convert
      * @return the converted list of Day entities, or null if input is null
      */
-    public List<Day> toEntityList(List<DayPayload> payloads) {
+    public List<Day> toEntityList(List<DayResponse> payloads) {
         if (payloads == null) {
             return null;
         }

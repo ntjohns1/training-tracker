@@ -2,7 +2,7 @@ package com.noslen.training_tracker.dto.day;
 
 import java.time.Instant;
 
-public record DayMuscleGroupPayload(
+public record DayMuscleGroupResponse(
         Long id,
         Long dayId,
         Long muscleGroupId,

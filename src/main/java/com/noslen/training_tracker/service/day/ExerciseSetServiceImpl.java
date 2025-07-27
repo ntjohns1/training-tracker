@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.noslen.training_tracker.dto.day.ExerciseSetPayload;
+import com.noslen.training_tracker.dto.day.ExerciseSetResponse;
 import com.noslen.training_tracker.mapper.day.ExerciseSetMapper;
 import com.noslen.training_tracker.model.day.ExerciseSet;
 import com.noslen.training_tracker.repository.day.ExerciseSetRepo;
@@ -24,13 +24,13 @@ public class ExerciseSetServiceImpl implements ExerciseSetService {
 
     @Override
     @Transactional
-    public ExerciseSetPayload createExerciseSet(ExerciseSetPayload exerciseSetPayload) {
-        if (exerciseSetPayload == null) {
-            throw new IllegalArgumentException("ExerciseSetPayload cannot be null");
+    public ExerciseSetResponse createExerciseSet(ExerciseSetResponse exerciseSetResponse) {
+        if (exerciseSetResponse == null) {
+            throw new IllegalArgumentException("ExerciseSetResponse cannot be null");
         }
 
         // Convert payload to entity
-        ExerciseSet exerciseSet = mapper.toEntity(exerciseSetPayload);
+        ExerciseSet exerciseSet = mapper.toEntity(exerciseSetResponse);
         
         // Set creation timestamp
         exerciseSet.setCreatedAt(Instant.now());
@@ -42,12 +42,12 @@ public class ExerciseSetServiceImpl implements ExerciseSetService {
 
     @Override
     @Transactional
-    public ExerciseSetPayload updateExerciseSet(Long id, ExerciseSetPayload exerciseSetPayload) {
+    public ExerciseSetResponse updateExerciseSet(Long id, ExerciseSetResponse exerciseSetResponse) {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
-        if (exerciseSetPayload == null) {
-            throw new IllegalArgumentException("ExerciseSetPayload cannot be null");
+        if (exerciseSetResponse == null) {
+            throw new IllegalArgumentException("ExerciseSetResponse cannot be null");
         }
 
         Optional<ExerciseSet> exerciseSetOptional = repo.findById(id);
@@ -58,7 +58,8 @@ public class ExerciseSetServiceImpl implements ExerciseSetService {
         ExerciseSet existingExerciseSet = exerciseSetOptional.get();
         
         // Update entity with payload data
-        mapper.updateEntity(existingExerciseSet, exerciseSetPayload);
+        mapper.updateEntity(existingExerciseSet,
+                            exerciseSetResponse);
         
         // Save and return as DTO
         ExerciseSet updatedExerciseSet = repo.save(existingExerciseSet);
@@ -67,7 +68,7 @@ public class ExerciseSetServiceImpl implements ExerciseSetService {
 
     @Override
     @Transactional(readOnly = true)
-    public ExerciseSetPayload getExerciseSet(Long id) {
+    public ExerciseSetResponse getExerciseSet(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
@@ -96,7 +97,7 @@ public class ExerciseSetServiceImpl implements ExerciseSetService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ExerciseSetPayload> getExerciseSetsByDayExerciseId(Long dayExerciseId) {
+    public List<ExerciseSetResponse> getExerciseSetsByDayExerciseId(Long dayExerciseId) {
         if (dayExerciseId == null) {
             throw new IllegalArgumentException("DayExercise ID cannot be null");
         }

@@ -1,9 +1,9 @@
 package com.noslen.training_tracker.mapper.day;
 
-import com.noslen.training_tracker.dto.day.DayExercisePayload;
-import com.noslen.training_tracker.dto.day.DayMuscleGroupPayload;
-import com.noslen.training_tracker.dto.day.DayNotePayload;
-import com.noslen.training_tracker.dto.day.DayPayload;
+import com.noslen.training_tracker.dto.day.DayExerciseResponse;
+import com.noslen.training_tracker.dto.day.DayMuscleGroupResponse;
+import com.noslen.training_tracker.dto.day.DayNoteResponse;
+import com.noslen.training_tracker.dto.day.DayResponse;
 import com.noslen.training_tracker.enums.ExerciseType;
 import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.enums.Unit;
@@ -48,7 +48,7 @@ class DayMapperTest {
     @InjectMocks
     private DayMapper dayMapper;
 
-    private DayPayload samplePayload;
+    private DayResponse samplePayload;
     private Day sampleEntity;
     private Instant now;
 
@@ -58,11 +58,11 @@ class DayMapperTest {
         now = Instant.now();
 
         // Sample nested payloads
-        DayNotePayload notePayload = new DayNotePayload(1L, 1L, 1L, true, now, now, "Test note");
-        DayExercisePayload exercisePayload = new DayExercisePayload(1L, 1L, 1L, 1, 0, now, now, null, 1L, Collections.emptyList(), "active");
-        DayMuscleGroupPayload muscleGroupPayload = new DayMuscleGroupPayload(1L, 1L, 1L, 0, 0, 0, now, now, 3, "active");
+        DayNoteResponse notePayload = new DayNoteResponse(1L, 1L, 1L, true, now, now, "Test note");
+        DayExerciseResponse exercisePayload = new DayExerciseResponse(1L, 1L, 1L, 1, 0, now, now, null, 1L, Collections.emptyList(), "active");
+        DayMuscleGroupResponse muscleGroupPayload = new DayMuscleGroupResponse(1L, 1L, 1L, 0, 0, 0, now, now, 3, "active");
 
-        samplePayload = new DayPayload(
+        samplePayload = new DayResponse(
                 1L,
                 1L,
                 1L,
@@ -149,9 +149,9 @@ class DayMapperTest {
         DayExercise exerciseEntity = DayExercise.builder().id(1L).build();
         DayMuscleGroup muscleGroupEntity = DayMuscleGroup.builder().id(1L).build();
 
-        when(dayNoteMapper.toEntity(any(DayNotePayload.class))).thenReturn(noteEntity);
-        when(dayExerciseMapper.toEntity(any(DayExercisePayload.class))).thenReturn(exerciseEntity);
-        when(dayMuscleGroupMapper.toEntity(any(DayMuscleGroupPayload.class))).thenReturn(muscleGroupEntity);
+        when(dayNoteMapper.toEntity(any(DayNoteResponse.class))).thenReturn(noteEntity);
+        when(dayExerciseMapper.toEntity(any(DayExerciseResponse.class))).thenReturn(exerciseEntity);
+        when(dayMuscleGroupMapper.toEntity(any(DayMuscleGroupResponse.class))).thenReturn(muscleGroupEntity);
 
         // When
         Day result = dayMapper.toEntity(samplePayload);
@@ -190,7 +190,7 @@ class DayMapperTest {
     @Test
     void toEntity_WithEmptyCollections_ShouldHandleGracefully() {
         // Given
-        DayPayload payloadWithEmptyCollections = new DayPayload(
+        DayResponse payloadWithEmptyCollections = new DayResponse(
                 1L, 1L, 1L, 1L, now, now, 70, now, "kgs", now,
                 "Test", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),"active"
         );
@@ -208,7 +208,7 @@ class DayMapperTest {
     @Test
     void toEntity_WithNullCollections_ShouldHandleGracefully() {
         // Given
-        DayPayload payloadWithNullCollections = new DayPayload(
+        DayResponse payloadWithNullCollections = new DayResponse(
                 1L, 1L, 1L, 1L, now, now, 70, now, "kgs", now,
                 "Test", null, null, null,"active"
         );
@@ -226,16 +226,16 @@ class DayMapperTest {
     @Test
     void toPayload_WithValidEntity_ShouldReturnPayload() {
         // Given
-        DayNotePayload notePayload = new DayNotePayload(1L, 1L, 1L, true, now, now, "Test");
-        DayExercisePayload exercisePayload = new DayExercisePayload(1L, 1L, 1L, 1, 0, now, now, null, 1L, Collections.emptyList(), "active");
-        DayMuscleGroupPayload muscleGroupPayload = new DayMuscleGroupPayload(1L, 1L, 1L, 2,2,2, now, now, 2,"active");
+        DayNoteResponse notePayload = new DayNoteResponse(1L, 1L, 1L, true, now, now, "Test");
+        DayExerciseResponse exercisePayload = new DayExerciseResponse(1L, 1L, 1L, 1, 0, now, now, null, 1L, Collections.emptyList(), "active");
+        DayMuscleGroupResponse muscleGroupPayload = new DayMuscleGroupResponse(1L, 1L, 1L, 2, 2, 2, now, now, 2, "active");
 
         when(dayNoteMapper.toPayload(any(DayNote.class))).thenReturn(notePayload);
         when(dayExerciseMapper.toPayload(any(DayExercise.class))).thenReturn(exercisePayload);
         when(dayMuscleGroupMapper.toPayload(any(DayMuscleGroup.class))).thenReturn(muscleGroupPayload);
 
         // When
-        DayPayload result = dayMapper.toPayload(sampleEntity);
+        DayResponse result = dayMapper.toPayload(sampleEntity);
 
         // Then
         assertNotNull(result);
@@ -264,7 +264,7 @@ class DayMapperTest {
     @Test
     void toPayload_WithNullEntity_ShouldReturnNull() {
         // When
-        DayPayload result = dayMapper.toPayload(null);
+        DayResponse result = dayMapper.toPayload(null);
 
         // Then
         assertNull(result);
@@ -291,7 +291,7 @@ class DayMapperTest {
                 .build();
 
         // When
-        DayPayload result = dayMapper.toPayload(entityWithEmptyCollections);
+        DayResponse result = dayMapper.toPayload(entityWithEmptyCollections);
 
         // Then
         assertNotNull(result);
@@ -320,7 +320,7 @@ class DayMapperTest {
                 .build();
 
         // When
-        DayPayload result = dayMapper.toPayload(entityWithNullCollections);
+        DayResponse result = dayMapper.toPayload(entityWithNullCollections);
 
         // Then
         assertNotNull(result);
@@ -346,7 +346,7 @@ class DayMapperTest {
                 .updatedAt(now.minusSeconds(3600))
                 .build();
 
-        DayPayload updatePayload = new DayPayload(
+        DayResponse updatePayload = new DayResponse(
                 1L, 2L, 2L, 2L, now, now, 70, now, "kgs", now, "New Label", 
                 Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "active"
         );
@@ -395,7 +395,7 @@ class DayMapperTest {
                 .createdAt(now.minusSeconds(7200))
                 .build();
 
-        DayPayload updatePayload = new DayPayload(
+        DayResponse updatePayload = new DayResponse(
                 1L, 2L, 2L, 2L, now, now, 70, now, "kgs", now, "New Label", 
                 Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "active"
         );

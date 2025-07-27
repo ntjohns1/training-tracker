@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.day;
 
-import com.noslen.training_tracker.dto.day.ExerciseSetPayload;
+import com.noslen.training_tracker.dto.day.ExerciseSetResponse;
 import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.enums.Unit;
 import com.noslen.training_tracker.model.day.DayExercise;
@@ -16,9 +16,9 @@ import java.util.stream.Collectors;
 public class ExerciseSetMapper {
 
     /**
-     * Converts ExerciseSetPayload to ExerciseSet entity
+     * Converts ExerciseSetResponse to ExerciseSet entity
      */
-    public ExerciseSet toEntity(ExerciseSetPayload payload) {
+    public ExerciseSet toEntity(ExerciseSetResponse payload) {
         if (payload == null) {
             return null;
         }
@@ -42,9 +42,9 @@ public class ExerciseSetMapper {
     }
 
     /**
-     * Converts ExerciseSetPayload to ExerciseSet entity with DayExercise reference
+     * Converts ExerciseSetResponse to ExerciseSet entity with DayExercise reference
      */
-    public ExerciseSet toEntity(ExerciseSetPayload payload, DayExercise dayExercise) {
+    public ExerciseSet toEntity(ExerciseSetResponse payload, DayExercise dayExercise) {
         ExerciseSet entity = toEntity(payload);
         if (entity != null && dayExercise != null) {
             entity.setDayExercise(dayExercise);
@@ -53,14 +53,14 @@ public class ExerciseSetMapper {
     }
 
     /**
-     * Converts ExerciseSet entity to ExerciseSetPayload
+     * Converts ExerciseSet entity to ExerciseSetResponse
      */
-    public ExerciseSetPayload toPayload(ExerciseSet entity) {
+    public ExerciseSetResponse toPayload(ExerciseSet entity) {
         if (entity == null) {
             return null;
         }
 
-        return new ExerciseSetPayload(
+        return new ExerciseSetResponse(
                 entity.getId(),
                 entity.getDayExerciseId(),
                 entity.getPosition(),
@@ -80,10 +80,10 @@ public class ExerciseSetMapper {
     }
 
     /**
-     * Updates an existing ExerciseSet entity with data from ExerciseSetPayload
+     * Updates an existing ExerciseSet entity with data from ExerciseSetResponse
      * Note: Since ExerciseSet has limited mutable fields, this method only updates those with setters
      */
-    public void updateEntity(ExerciseSet existing, ExerciseSetPayload payload) {
+    public void updateEntity(ExerciseSet existing, ExerciseSetResponse payload) {
         if (existing == null || payload == null) {
             return;
         }
@@ -107,7 +107,7 @@ public class ExerciseSetMapper {
      * Creates a new ExerciseSet entity by merging existing entity with payload data
      * This is useful when you need to update immutable fields
      */
-    public ExerciseSet mergeEntity(ExerciseSet existing, ExerciseSetPayload payload) {
+    public ExerciseSet mergeEntity(ExerciseSet existing, ExerciseSetResponse payload) {
         if (existing == null) {
             return toEntity(payload);
         }
@@ -137,7 +137,7 @@ public class ExerciseSetMapper {
     /**
      * Converts a list of ExerciseSet entities to ExerciseSetPayloads
      */
-    public List<ExerciseSetPayload> toPayloadList(List<ExerciseSet> entities) {
+    public List<ExerciseSetResponse> toPayloadList(List<ExerciseSet> entities) {
         if (entities == null) {
             return null;
         }

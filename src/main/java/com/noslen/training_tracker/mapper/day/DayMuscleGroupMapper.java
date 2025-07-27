@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.day;
 
-import com.noslen.training_tracker.dto.day.DayMuscleGroupPayload;
+import com.noslen.training_tracker.dto.day.DayMuscleGroupResponse;
 import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.model.day.DayMuscleGroup;
 import com.noslen.training_tracker.util.EnumConverter;
@@ -11,20 +11,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * POJO Mapper for converting between DayMuscleGroup entity and DayMuscleGroupPayload DTO.
+ * POJO Mapper for converting between DayMuscleGroup entity and DayMuscleGroupResponse DTO.
  * Handles manual mapping logic and supports immutable model fields.
  */
 @Component
 public class DayMuscleGroupMapper {
 
     /**
-     * Converts DayMuscleGroupPayload DTO to DayMuscleGroup entity.
+     * Converts DayMuscleGroupResponse DTO to DayMuscleGroup entity.
      * Note: Day and MuscleGroup relationships are not set by this mapper and should be handled by the service layer.
      *
-     * @param payload the DayMuscleGroupPayload to convert
+     * @param payload the DayMuscleGroupResponse to convert
      * @return the converted DayMuscleGroup entity, or null if payload is null
      */
-    public DayMuscleGroup toEntity(DayMuscleGroupPayload payload) {
+    public DayMuscleGroup toEntity(DayMuscleGroupResponse payload) {
         if (payload == null) {
             return null;
         }
@@ -42,17 +42,17 @@ public class DayMuscleGroupMapper {
     }
 
     /**
-     * Converts DayMuscleGroup entity to DayMuscleGroupPayload DTO.
+     * Converts DayMuscleGroup entity to DayMuscleGroupResponse DTO.
      *
      * @param entity the DayMuscleGroup entity to convert
-     * @return the converted DayMuscleGroupPayload DTO, or null if entity is null
+     * @return the converted DayMuscleGroupResponse DTO, or null if entity is null
      */
-    public DayMuscleGroupPayload toPayload(DayMuscleGroup entity) {
+    public DayMuscleGroupResponse toPayload(DayMuscleGroup entity) {
         if (entity == null) {
             return null;
         }
 
-        return new DayMuscleGroupPayload(
+        return new DayMuscleGroupResponse(
                 entity.getId(),
                 entity.getDayId(), // Uses the derived property from entity
                 entity.getMuscleGroupId(), // Uses the derived property from entity
@@ -67,13 +67,13 @@ public class DayMuscleGroupMapper {
     }
 
     /**
-     * Updates mutable fields of an existing DayMuscleGroup entity from DayMuscleGroupPayload.
+     * Updates mutable fields of an existing DayMuscleGroup entity from DayMuscleGroupResponse.
      * Only updates fields that can be modified after creation.
      *
      * @param entity  the existing DayMuscleGroup entity to update
-     * @param payload the DayMuscleGroupPayload containing update data
+     * @param payload the DayMuscleGroupResponse containing update data
      */
-    public void updateEntity(DayMuscleGroup entity, DayMuscleGroupPayload payload) {
+    public void updateEntity(DayMuscleGroup entity, DayMuscleGroupResponse payload) {
         if (entity == null || payload == null) {
             return;
         }
@@ -89,10 +89,10 @@ public class DayMuscleGroupMapper {
      * Used when immutable fields need to be changed.
      *
      * @param existing the existing DayMuscleGroup entity
-     * @param payload  the DayMuscleGroupPayload containing update data
+     * @param payload  the DayMuscleGroupResponse containing update data
      * @return a new DayMuscleGroup entity with merged data
      */
-    public DayMuscleGroup mergeEntity(DayMuscleGroup existing, DayMuscleGroupPayload payload) {
+    public DayMuscleGroup mergeEntity(DayMuscleGroup existing, DayMuscleGroupResponse payload) {
         if (existing == null) {
             return toEntity(payload);
         }
@@ -115,12 +115,12 @@ public class DayMuscleGroupMapper {
     }
 
     /**
-     * Converts a list of DayMuscleGroup entities to a list of DayMuscleGroupPayload DTOs.
+     * Converts a list of DayMuscleGroup entities to a list of DayMuscleGroupResponse DTOs.
      *
      * @param entities the list of DayMuscleGroup entities to convert
-     * @return the converted list of DayMuscleGroupPayload DTOs, or null if input is null
+     * @return the converted list of DayMuscleGroupResponse DTOs, or null if input is null
      */
-    public List<DayMuscleGroupPayload> toPayloadList(List<DayMuscleGroup> entities) {
+    public List<DayMuscleGroupResponse> toPayloadList(List<DayMuscleGroup> entities) {
         if (entities == null) {
             return null;
         }
@@ -131,12 +131,12 @@ public class DayMuscleGroupMapper {
     }
 
     /**
-     * Converts a list of DayMuscleGroupPayload DTOs to a list of DayMuscleGroup entities.
+     * Converts a list of DayMuscleGroupResponse DTOs to a list of DayMuscleGroup entities.
      *
-     * @param payloads the list of DayMuscleGroupPayload DTOs to convert
+     * @param payloads the list of DayMuscleGroupResponse DTOs to convert
      * @return the converted list of DayMuscleGroup entities, or null if input is null
      */
-    public List<DayMuscleGroup> toEntityList(List<DayMuscleGroupPayload> payloads) {
+    public List<DayMuscleGroup> toEntityList(List<DayMuscleGroupResponse> payloads) {
         if (payloads == null) {
             return null;
         }

@@ -1,13 +1,11 @@
 package com.noslen.training_tracker.mapper.day;
 
-import com.noslen.training_tracker.dto.day.DayExercisePayload;
-import com.noslen.training_tracker.dto.day.ExerciseSetPayload;
+import com.noslen.training_tracker.dto.day.DayExerciseResponse;
+import com.noslen.training_tracker.dto.day.ExerciseSetResponse;
 import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.enums.SetType;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.model.day.ExerciseSet;
-import com.noslen.training_tracker.model.day.DayMuscleGroup;
-import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.exercise.Exercise;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -35,9 +33,9 @@ class DayExerciseMapperTest {
     @InjectMocks
     private DayExerciseMapper dayExerciseMapper;
 
-    private DayExercisePayload testPayload;
+    private DayExerciseResponse testPayload;
     private DayExercise testEntity;
-    private ExerciseSetPayload testSetPayload;
+    private ExerciseSetResponse testSetPayload;
     private ExerciseSet testSetEntity;
     private Instant testTime;
 
@@ -45,7 +43,7 @@ class DayExerciseMapperTest {
     void setUp() {
         testTime = Instant.now();
         
-        testSetPayload = new ExerciseSetPayload(
+        testSetPayload = new ExerciseSetResponse(
                 1L, 1L, 1, "regular", 100.0f, 105.0f, 95.0f, 110.0f,
                 10, 12, 80.0f, "kg", testTime, testTime, "complete"
         );
@@ -66,7 +64,7 @@ class DayExerciseMapperTest {
         testSetEntity.setFinishedAt(testTime);
         testSetEntity.setStatus(Status.COMPLETE);
 
-        testPayload = new DayExercisePayload(
+        testPayload = new DayExerciseResponse(
                 1L, 2L, 3L, 1, 2, testTime, testTime, 4L, 5L,
                 List.of(testSetPayload), "ready"
         );
@@ -92,7 +90,7 @@ class DayExerciseMapperTest {
     @Test
     void toEntity_WithValidPayload_ShouldMapCorrectly() {
         // Given
-        when(exerciseSetMapper.toEntity(any(ExerciseSetPayload.class))).thenReturn(testSetEntity);
+        when(exerciseSetMapper.toEntity(any(ExerciseSetResponse.class))).thenReturn(testSetEntity);
 
         // When
         DayExercise result = dayExerciseMapper.toEntity(testPayload);
@@ -124,7 +122,7 @@ class DayExerciseMapperTest {
     @Test
     void toEntity_WithNullCreatedAt_ShouldSetCurrentTime() {
         // Given
-        DayExercisePayload payloadWithNullCreatedAt = new DayExercisePayload(
+        DayExerciseResponse payloadWithNullCreatedAt = new DayExerciseResponse(
                 1L, 2L, 3L, 1, 2, null, testTime, 4L, 5L,
                 Collections.emptyList(), "ready"
         );
@@ -144,7 +142,7 @@ class DayExerciseMapperTest {
         when(exerciseSetMapper.toPayload(any(ExerciseSet.class))).thenReturn(testSetPayload);
 
         // When
-        DayExercisePayload result = dayExerciseMapper.toPayload(testEntity);
+        DayExerciseResponse result = dayExerciseMapper.toPayload(testEntity);
 
         // Then
         assertThat(result).isNotNull();
@@ -164,7 +162,7 @@ class DayExerciseMapperTest {
     @Test
     void toPayload_WithNullEntity_ShouldReturnNull() {
         // When
-        DayExercisePayload result = dayExerciseMapper.toPayload(null);
+        DayExerciseResponse result = dayExerciseMapper.toPayload(null);
 
         // Then
         assertThat(result).isNull();
@@ -184,7 +182,7 @@ class DayExerciseMapperTest {
                 .build();
 
         // When
-        DayExercisePayload result = dayExerciseMapper.toPayload(entityWithNullSets);
+        DayExerciseResponse result = dayExerciseMapper.toPayload(entityWithNullSets);
 
         // Then
         assertThat(result).isNotNull();
@@ -203,7 +201,7 @@ class DayExerciseMapperTest {
                 .status(Status.READY)
                 .build();
 
-        DayExercisePayload updatePayload = new DayExercisePayload(
+        DayExerciseResponse updatePayload = new DayExerciseResponse(
                 null, 10L, 11L, 5, 3, null, null, null, 12L,
                 null, "ready"
         );
@@ -242,7 +240,7 @@ class DayExerciseMapperTest {
                 .status(Status.READY)
                 .build();
 
-        DayExercisePayload updatePayload = new DayExercisePayload(
+        DayExerciseResponse updatePayload = new DayExerciseResponse(
                 null, 10L, 11L, 5, 3, null, null, null, 12L,
                 null, "ready"
         );
@@ -289,7 +287,7 @@ class DayExerciseMapperTest {
         List<DayExercise> entities = Arrays.asList(testEntity, testEntity);
 
         // When
-        List<DayExercisePayload> result = dayExerciseMapper.toPayloadList(entities);
+        List<DayExerciseResponse> result = dayExerciseMapper.toPayloadList(entities);
 
         // Then
         assertThat(result).hasSize(2);
@@ -300,7 +298,7 @@ class DayExerciseMapperTest {
     @Test
     void toPayloadList_WithNullList_ShouldReturnNull() {
         // When
-        List<DayExercisePayload> result = dayExerciseMapper.toPayloadList(null);
+        List<DayExerciseResponse> result = dayExerciseMapper.toPayloadList(null);
 
         // Then
         assertThat(result).isNull();
@@ -309,7 +307,7 @@ class DayExerciseMapperTest {
     @Test
     void toPayloadList_WithEmptyList_ShouldReturnEmptyList() {
         // When
-        List<DayExercisePayload> result = dayExerciseMapper.toPayloadList(Collections.emptyList());
+        List<DayExerciseResponse> result = dayExerciseMapper.toPayloadList(Collections.emptyList());
 
         // Then
         assertThat(result).isEmpty();

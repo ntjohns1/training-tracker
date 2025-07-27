@@ -4,10 +4,10 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
+import com.noslen.training_tracker.dto.day.DayResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.noslen.training_tracker.dto.day.DayPayload;
 import com.noslen.training_tracker.mapper.day.DayMapper;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
@@ -29,19 +29,19 @@ public class DayServiceImpl implements DayService {
 
     @Override
     @Transactional
-    public DayPayload createDay(DayPayload dayPayload) {
-        if (dayPayload == null) {
-            throw new IllegalArgumentException("DayPayload cannot be null");
+    public DayResponse createDay(DayResponse dayResponse) {
+        if (dayResponse == null) {
+            throw new IllegalArgumentException("DayResponse cannot be null");
         }
 
         // Convert payload to entity
-        Day day = mapper.toEntity(dayPayload);
+        Day day = mapper.toEntity(dayResponse);
         
         // Handle mesocycle relationship if mesoId is provided
-        if (dayPayload.mesoId() != null) {
-            Optional<Mesocycle> mesocycleOpt = mesocycleRepo.findById(dayPayload.mesoId());
+        if (dayResponse.mesoId() != null) {
+            Optional<Mesocycle> mesocycleOpt = mesocycleRepo.findById(dayResponse.mesoId());
             if (mesocycleOpt.isEmpty()) {
-                throw new RuntimeException("Mesocycle not found with id: " + dayPayload.mesoId());
+                throw new RuntimeException("Mesocycle not found with id: " + dayResponse.mesoId());
             }
             // Rebuild entity with mesocycle relationship
             day = Day.builder()
@@ -70,12 +70,12 @@ public class DayServiceImpl implements DayService {
 
     @Override
     @Transactional
-    public DayPayload updateDay(Long id, DayPayload dayPayload) {
+    public DayResponse updateDay(Long id, DayResponse dayResponse) {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
-        if (dayPayload == null) {
-            throw new IllegalArgumentException("DayPayload cannot be null");
+        if (dayResponse == null) {
+            throw new IllegalArgumentException("DayResponse cannot be null");
         }
 
         // Find existing entity
@@ -87,7 +87,8 @@ public class DayServiceImpl implements DayService {
         Day existingDay = existingOpt.get();
         
         // Update entity with payload data using merge since most fields are immutable
-        Day updatedDay = mapper.mergeEntity(existingDay, dayPayload);
+        Day updatedDay = mapper.mergeEntity(existingDay,
+                                            dayResponse);
         updatedDay.setUpdatedAt(Instant.now());
         
         // Save and return as DTO
@@ -97,7 +98,7 @@ public class DayServiceImpl implements DayService {
 
     @Override
     @Transactional(readOnly = true)
-    public DayPayload getDay(Long id) {
+    public DayResponse getDay(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
@@ -126,7 +127,7 @@ public class DayServiceImpl implements DayService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<DayPayload> getDaysByMesocycleId(Long mesocycleId) {
+    public List<DayResponse> getDaysByMesocycleId(Long mesocycleId) {
         if (mesocycleId == null) {
             throw new IllegalArgumentException("Mesocycle ID cannot be null");
         }

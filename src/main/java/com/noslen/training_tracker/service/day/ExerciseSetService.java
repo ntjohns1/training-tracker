@@ -2,12 +2,12 @@ package com.noslen.training_tracker.service.day;
 
 import java.util.List;
 
-import com.noslen.training_tracker.dto.day.ExerciseSetPayload;
+import com.noslen.training_tracker.dto.day.ExerciseSetResponse;
 
 public interface ExerciseSetService {
-    ExerciseSetPayload createExerciseSet(ExerciseSetPayload exerciseSetPayload);
-    ExerciseSetPayload updateExerciseSet(Long id, ExerciseSetPayload exerciseSetPayload);
-    ExerciseSetPayload getExerciseSet(Long id);
+    ExerciseSetResponse createExerciseSet(ExerciseSetResponse exerciseSetResponse);
+    ExerciseSetResponse updateExerciseSet(Long id, ExerciseSetResponse exerciseSetResponse);
+    ExerciseSetResponse getExerciseSet(Long id);
     void deleteExerciseSet(Long id);
-    List<ExerciseSetPayload> getExerciseSetsByDayExerciseId(Long dayExerciseId);
+    List<ExerciseSetResponse> getExerciseSetsByDayExerciseId(Long dayExerciseId);
 }

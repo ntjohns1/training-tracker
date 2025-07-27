@@ -4,10 +4,10 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
+import com.noslen.training_tracker.dto.day.DayNoteResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.noslen.training_tracker.dto.day.DayNotePayload;
 import com.noslen.training_tracker.mapper.day.DayNoteMapper;
 import com.noslen.training_tracker.model.day.DayNote;
 import com.noslen.training_tracker.repository.day.DayNoteRepo;
@@ -25,13 +25,13 @@ public class DayNoteServiceImpl implements DayNoteService {
 
     @Override
     @Transactional
-    public DayNotePayload createDayNote(DayNotePayload dayNotePayload) {
-        if (dayNotePayload == null) {
-            throw new IllegalArgumentException("DayNotePayload cannot be null");
+    public DayNoteResponse createDayNote(DayNoteResponse dayNoteResponse) {
+        if (dayNoteResponse == null) {
+            throw new IllegalArgumentException("DayNoteResponse cannot be null");
         }
 
         // Convert payload to entity
-        DayNote dayNote = mapper.toEntity(dayNotePayload);
+        DayNote dayNote = mapper.toEntity(dayNoteResponse);
         
         // Set timestamps
         dayNote.setCreatedAt(Instant.now());
@@ -44,12 +44,12 @@ public class DayNoteServiceImpl implements DayNoteService {
 
     @Override
     @Transactional
-    public DayNotePayload updateDayNote(Long id, DayNotePayload dayNotePayload) {
+    public DayNoteResponse updateDayNote(Long id, DayNoteResponse dayNoteResponse) {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
-        if (dayNotePayload == null) {
-            throw new IllegalArgumentException("DayNotePayload cannot be null");
+        if (dayNoteResponse == null) {
+            throw new IllegalArgumentException("DayNoteResponse cannot be null");
         }
 
         Optional<DayNote> dayNoteOptional = repo.findById(id);
@@ -60,7 +60,8 @@ public class DayNoteServiceImpl implements DayNoteService {
         DayNote existingDayNote = dayNoteOptional.get();
         
         // Update entity with payload data
-        mapper.updateEntity(existingDayNote, dayNotePayload);
+        mapper.updateEntity(existingDayNote,
+                            dayNoteResponse);
         existingDayNote.setUpdatedAt(Instant.now());
         
         // Save and return as DTO
@@ -70,7 +71,7 @@ public class DayNoteServiceImpl implements DayNoteService {
 
     @Override
     @Transactional(readOnly = true)
-    public DayNotePayload getDayNote(Long id) {
+    public DayNoteResponse getDayNote(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
@@ -85,7 +86,7 @@ public class DayNoteServiceImpl implements DayNoteService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<DayNotePayload> getNotesByDayId(Long dayId) {
+    public List<DayNoteResponse> getNotesByDayId(Long dayId) {
         if (dayId == null) {
             throw new IllegalArgumentException("Day ID cannot be null");
         }

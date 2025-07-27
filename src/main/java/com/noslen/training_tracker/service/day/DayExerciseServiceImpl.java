@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.service.day;
 
-import com.noslen.training_tracker.dto.day.DayExercisePayload;
+import com.noslen.training_tracker.dto.day.DayExerciseResponse;
 import com.noslen.training_tracker.mapper.day.DayExerciseMapper;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.repository.day.DayExerciseRepo;
@@ -24,13 +24,13 @@ public class DayExerciseServiceImpl implements DayExerciseService {
     }
 
     @Override
-    public DayExercisePayload createDayExercise(DayExercisePayload dayExercisePayload) {
-        if (dayExercisePayload == null) {
-            throw new IllegalArgumentException("DayExercisePayload cannot be null");
+    public DayExerciseResponse createDayExercise(DayExerciseResponse dayExerciseResponse) {
+        if (dayExerciseResponse == null) {
+            throw new IllegalArgumentException("DayExerciseResponse cannot be null");
         }
 
         // Convert payload to entity
-        DayExercise dayExercise = mapper.toEntity(dayExercisePayload);
+        DayExercise dayExercise = mapper.toEntity(dayExerciseResponse);
         
         // Set creation timestamp if not already set
         if (dayExercise.getCreatedAt() == null) {
@@ -48,12 +48,12 @@ public class DayExerciseServiceImpl implements DayExerciseService {
     }
 
     @Override
-    public DayExercisePayload updateDayExercise(Long id, DayExercisePayload dayExercisePayload) {
+    public DayExerciseResponse updateDayExercise(Long id, DayExerciseResponse dayExerciseResponse) {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
-        if (dayExercisePayload == null) {
-            throw new IllegalArgumentException("DayExercisePayload cannot be null");
+        if (dayExerciseResponse == null) {
+            throw new IllegalArgumentException("DayExerciseResponse cannot be null");
         }
 
         Optional<DayExercise> existingOptional = repo.findById(id);
@@ -64,7 +64,8 @@ public class DayExerciseServiceImpl implements DayExerciseService {
         DayExercise existing = existingOptional.get();
         
         // Update entity with payload data using POJO mapper
-        mapper.updateEntity(existing, dayExercisePayload);
+        mapper.updateEntity(existing,
+                            dayExerciseResponse);
         
         // Ensure updated timestamp is set
         existing.setUpdatedAt(Instant.now());
@@ -91,7 +92,7 @@ public class DayExerciseServiceImpl implements DayExerciseService {
 
     @Override
     @Transactional(readOnly = true)
-    public DayExercisePayload getDayExercise(Long id) {
+    public DayExerciseResponse getDayExercise(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
@@ -106,7 +107,7 @@ public class DayExerciseServiceImpl implements DayExerciseService {
 
     @Override
     @Transactional(readOnly = true)
-    public DayExercisePayload getDayExercise(Long dayId, Long exerciseId) {
+    public DayExerciseResponse getDayExercise(Long dayId, Long exerciseId) {
         if (dayId == null) {
             throw new IllegalArgumentException("Day ID cannot be null");
         }
@@ -124,7 +125,7 @@ public class DayExerciseServiceImpl implements DayExerciseService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<DayExercisePayload> getDayExercisesByDayId(Long dayId) {
+    public List<DayExerciseResponse> getDayExercisesByDayId(Long dayId) {
         if (dayId == null) {
             throw new IllegalArgumentException("Day ID cannot be null");
         }

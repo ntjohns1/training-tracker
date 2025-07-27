@@ -1,7 +1,7 @@
 package com.noslen.training_tracker.mapper.day;
 
-import com.noslen.training_tracker.dto.day.DayExercisePayload;
-import com.noslen.training_tracker.dto.day.ExerciseSetPayload;
+import com.noslen.training_tracker.dto.day.DayExerciseResponse;
+import com.noslen.training_tracker.dto.day.ExerciseSetResponse;
 import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.model.day.ExerciseSet;
@@ -21,9 +21,9 @@ public class DayExerciseMapper {
     private ExerciseSetMapper exerciseSetMapper;
 
     /**
-     * Converts DayExercisePayload to DayExercise entity
+     * Converts DayExerciseResponse to DayExercise entity
      */
-    public DayExercise toEntity(DayExercisePayload payload) {
+    public DayExercise toEntity(DayExerciseResponse payload) {
         if (payload == null) {
             return null;
         }
@@ -71,21 +71,21 @@ public class DayExerciseMapper {
     }
 
     /**
-     * Converts DayExercise entity to DayExercisePayload
+     * Converts DayExercise entity to DayExerciseResponse
      */
-    public DayExercisePayload toPayload(DayExercise entity) {
+    public DayExerciseResponse toPayload(DayExercise entity) {
         if (entity == null) {
             return null;
         }
 
-        List<ExerciseSetPayload> setPayloads = null;
+        List<ExerciseSetResponse> setPayloads = null;
         if (entity.getSets() != null) {
             setPayloads = entity.getSets().stream()
                     .map(exerciseSetMapper::toPayload)
                     .collect(Collectors.toList());
         }
 
-        return new DayExercisePayload(
+        return new DayExerciseResponse(
                 entity.getId(),
                 entity.getDayId(),
                 entity.getExerciseId(),
@@ -101,10 +101,10 @@ public class DayExerciseMapper {
     }
 
     /**
-     * Updates an existing DayExercise entity with data from DayExercisePayload
+     * Updates an existing DayExercise entity with data from DayExerciseResponse
      * Note: Since DayExercise is mostly immutable, this method only updates the mutable fields
      */
-    public void updateEntity(DayExercise existing, DayExercisePayload payload) {
+    public void updateEntity(DayExercise existing, DayExerciseResponse payload) {
         if (existing == null || payload == null) {
             return;
         }
@@ -134,7 +134,7 @@ public class DayExerciseMapper {
      * Creates a new DayExercise entity by merging existing entity with payload data
      * This is useful when you need to update immutable fields
      */
-    public DayExercise mergeEntity(DayExercise existing, DayExercisePayload payload) {
+    public DayExercise mergeEntity(DayExercise existing, DayExerciseResponse payload) {
         if (existing == null) {
             return toEntity(payload);
         }
@@ -172,7 +172,7 @@ public class DayExerciseMapper {
     /**
      * Converts a list of DayExercise entities to DayExercisePayloads
      */
-    public List<DayExercisePayload> toPayloadList(List<DayExercise> entities) {
+    public List<DayExerciseResponse> toPayloadList(List<DayExercise> entities) {
         if (entities == null) {
             return null;
         }

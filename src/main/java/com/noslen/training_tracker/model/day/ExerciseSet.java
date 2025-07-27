@@ -68,7 +68,7 @@ public class ExerciseSet {
     private Status status;
 
     /**
-     * Convenience method to get the dayExercise ID from the DayExercisePayload object
+     * Convenience method to get the dayExercise ID from the DayExerciseResponse object
      * @return the ID of the associated dayExercise
      */
     public Long getDayExerciseId() {
