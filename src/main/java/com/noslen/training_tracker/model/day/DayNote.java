@@ -20,7 +20,6 @@ import java.util.Objects;
 @Table(name = "day_notes")
 @AllArgsConstructor
 @NoArgsConstructor
-//Todo: no @Builder, add setters, add validation
 public class DayNote {
 
     @Setter
