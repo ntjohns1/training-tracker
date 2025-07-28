@@ -69,3 +69,12 @@ Feature: Progression Service
     And the finished entity should be saved to the repository
     And the finishedAt timestamp should be set
     And a ProgressionResponse DTO should be returned
+
+    Scenario: Handle Calculate Progression
+      Given a progression exists in the system with ID 1
+      And a muscle group exists in the system with ID 1
+      When I call calculateProgression with ID 1
+      Then the service should find the existing entity
+      And the service should update target weights reps and sets for the following DayMuscleGroup with MuscleGroup ID 1
+      And the finished entity should be saved to the repository
+      And the finishedAt timestamp should be set

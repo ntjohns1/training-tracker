@@ -8,19 +8,10 @@ Feature: Day Factory
     And the system has access to DayMapper for DTO conversions
     And the system has access to MesocycleRepo for relationship handling
 
-  Scenario: Create new Day from Response DTO without mesocycle
-    Given I have a valid DayResponse DTO without a mesocycle ID
-    When I call createFromResponse with the DTO
-    Then a new Day entity should be created
-    And the entity should have proper timestamps set (createdAt and updatedAt)
-    And all fields from the DTO should be mapped correctly
-    And the mesocycle relationship should be null
-    And the entity should be ready for persistence
-
-  Scenario: Create new Day from Response DTO with mesocycle relationship
-    Given I have a valid DayResponse DTO with a mesocycle ID
+  Scenario: Create new Day from Request DTO
+    Given I have a valid DayRequest DTO with a mesocycle ID
     And the mesocycle exists in the database
-    When I call createFromResponse with the DTO
+    When I call createFromRequest with the DTO
     Then a new Day entity should be created
     And the entity should have proper timestamps set
     And the mesocycle relationship should be properly established
@@ -28,8 +19,8 @@ Feature: Day Factory
     And the entity should be ready for persistence
 
   Scenario: Handle mesocycle not found during Day creation
-    Given I have a DayResponse DTO with a non-existent mesocycle ID
-    When I call createFromResponse with the DTO
+    Given I have a DayRequest DTO with a non-existent mesocycle ID
+    When I call createFromRequest with the DTO
     Then a RuntimeException should be thrown
     And the exception message should indicate "Mesocycle not found with id: [id]"
     And no Day entity should be created
@@ -44,11 +35,11 @@ Feature: Day Factory
     And the mesocycle relationship should be preserved
     And the original entity should remain unmodified
 
-  Scenario: Handle null input gracefully in createFromResponse
-    Given I have a null DayResponse DTO
-    When I call createFromResponse with the null DTO
+  Scenario: Handle null input gracefully in createFromRequest
+    Given I have a null DayRequest DTO
+    When I call createFromRequest with the null DTO
     Then an IllegalArgumentException should be thrown
-    And the exception message should indicate "DayResponse cannot be null"
+    And the exception message should indicate "DayRequest cannot be null"
 
   Scenario: Handle null input gracefully in createForFinish
     Given I have a null existing Day entity
@@ -83,7 +74,6 @@ Feature: Day Factory
 
   Scenario: Handle complex Day entity with all fields populated
     Given I have a DayResponse DTO with all optional fields populated
-    Including bodyweight, bodyweightAt, unit, label, and mesocycle relationship
     When I call createFromResponse with the complete DTO
     Then a new Day entity should be created with all fields mapped
     And timestamps should be set to current time

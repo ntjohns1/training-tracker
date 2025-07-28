@@ -14,8 +14,10 @@ Feature: Mesocycle Factory
     And the entity should have proper timestamps set (createdAt and updatedAt)
     And all fields from the DTO should be mapped correctly
     And the Day entities should be mapped correctly
-    And the Exercise entities should be mapped correctly
-    And the ExerciseSet entities should be mapped correctly
+    And the DayExercise entities should be mapped correctly
+    And the ExerciseSet entities for the first Week should be mapped
+    And the DayMuscleGroup entities should be mapped correctly
+    And the Progression entities should be mapped correctly
     And the entity should be ready for persistence
 
   Scenario: Create new Mesocycle with all optional fields
@@ -25,6 +27,19 @@ Feature: Mesocycle Factory
     And timestamps should be set to current time
     And optional fields like sourceTemplate and sourceMeso should be preserved
     And the entity should maintain data integrity
+
+  Scenario: Create new Mesocycle from Template
+    Given I have a MesocycleResponse DTO with a template ID
+    When I call createFromResponse with the DTO
+    Then a new Mesocycle entity should be created based on the template
+    And the entity should have proper timestamps set (createdAt and updatedAt)
+    And all fields from the template should be mapped correctly
+    And the Day entities should be mapped correctly
+    And the DayExercise entities should be mapped correctly
+    And the ExerciseSet entities for the first Week should be mapped
+    And the DayMuscleGroup entities should be mapped correctly
+    And the Progression entities should be mapped correctly
+    And the entity should be ready for persistence
 
   Scenario: Create Mesocycle for soft delete operation
     Given I have an existing Mesocycle entity
