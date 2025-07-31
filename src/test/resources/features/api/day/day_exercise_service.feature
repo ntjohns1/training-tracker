@@ -50,6 +50,7 @@ Feature: Day Exercise Service
     When I call deleteDayExercise with ID 1
     Then the service should verify the entity exists
     And the entity should be deleted from the repository
+    And the corresponding ExerciseSet entities should be deleted
     And no response should be returned
 
   Scenario: Retrieve day exercises by day ID
@@ -60,26 +61,26 @@ Feature: Day Exercise Service
     And a list of DayExerciseResponse DTOs should be returned
     And only day exercises belonging to the specified day should be included
 
-    Scenario: Complete a day exercise
-      Given a day exercise exists in the system with ID 1
-      And the day exercise is not completed
-      And all ExerciseSets are completed or skipped for the day exercise
-      When I call completeDayExercise with ID 1
-      Then the service should retrieve the entity from the repository
-      And the response should be returned successfully
-      And the corresponding DayMuscleGroup entity should be updated
+  Scenario: Complete a day exercise
+    Given a day exercise exists in the system with ID 1
+    And the day exercise is not completed
+    And all ExerciseSets are completed or skipped for the day exercise
+    When I call completeDayExercise with ID 1
+    Then the service should retrieve the entity from the repository
+    And the response should be returned successfully
+    And the corresponding DayMuscleGroup entity should be updated
 
-      Scenario: Handle day exercise not found during completion
-        Given no day exercise exists with ID 999
-        When I call completeDayExercise with ID 999
-        Then a RuntimeException should be thrown
-        And the exception message should indicate "Day exercise not found with id: 999"
-        And no completion should be performed
+  Scenario: Handle day exercise not found during completion
+    Given no day exercise exists with ID 999
+    When I call completeDayExercise with ID 999
+    Then a RuntimeException should be thrown
+    And the exception message should indicate "Day exercise not found with id: 999"
+    And no completion should be performed
 
-        Scenario: Retrieve day exercises by exercise ID
-          Given multiple day exercises exist for exercise ID 1
-          When I call getDayExercisesByExerciseId with exercise ID 1
-          Then the service should retrieve entities for that exercise from the repository
-          And each entity should be converted to DayExerciseResponse DTO
-          And a list of DayExerciseResponse DTOs should be returned
-          And only day exercises belonging to the specified exercise should be included
+  Scenario: Retrieve day exercises by exercise ID
+    Given multiple day exercises exist for exercise ID 1
+    When I call getDayExercisesByExerciseId with exercise ID 1
+    Then the service should retrieve entities for that exercise from the repository
+    And each entity should be converted to DayExerciseResponse DTO
+    And a list of DayExerciseResponse DTOs should be returned
+    And only day exercises belonging to the specified exercise should be included

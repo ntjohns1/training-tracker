@@ -4,11 +4,10 @@ Feature: Day Service
   So that I can create, read, update, and delete days with proper mesocycle relationships
 
   Background:
-    Given the DayService is configured with simplified architecture
+    Given the DayService is configured with dependencies
     And the service uses DayFactory for entity creation
     And the service uses DayRepo for data persistence
     And the service uses DayMapper for DTO conversions
-    And no redundant orchestration or CRUD service layers exist
 
   Scenario: Create a new day successfully
     Given I have a valid DayRequest DTO with mesocycle ID
@@ -59,11 +58,28 @@ Feature: Day Service
     And the exception message should indicate "Day not found with id: 999"
     And no update should be performed
 
+
+  Scenario: Handle CompleteDayRequest during update
+    Given a day exists in the system with ID 1
+    And I have updated day data in a CompleteDayRequest DTO
+    When I call updateDay with ID 1 and the updated DTO
+    Then the service should find the existing entity
+    And the entity should be updated using the mapper's merge functionality
+    And the entity should be marked as completed
+    And the updatedAt timestamp should be set to current time
+    And the updated entity should be saved to the repository
+    And a DayResponse DTO should be returned with updated data
+
   Scenario: Delete a day
     Given a day exists in the system with ID 1
     When I call deleteDay with ID 1
     Then the service should verify the entity exists
     And the entity should be deleted from the repository
+    And the mesocycle relationship should be removed
+    And the corresponding DayMuscleGroup entities should be deleted
+    And the corresponding DayExercise entities should be deleted
+    And the corresponding ExerciseSet entities should be deleted
+    And the corresponding DayNote entities should be deleted
     And no response should be returned
 
   Scenario: Handle day not found during deletion

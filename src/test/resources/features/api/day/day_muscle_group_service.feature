@@ -55,14 +55,11 @@ Feature: Day Muscle Group Service
     And the response should contain the day muscle group data
     And the response should be returned successfully
 
-  Scenario: Handle complete final day exercise for day muscle group
+  Scenario: Handle mark day muscle group as completed
     Given a day muscle group exists in the system with ID 1
     And the day muscle group is not completed
     And all DayExercises are completed or skipped for the day muscle group
-#            Dto for pump, pain soreness, and workload
-    And a completed DayMuscleGroupRequest DTO is provided with ID 1
     When I call completeDayMuscleGroup with ID 1
     Then the service should retrieve the entity from the repository
+    And the day muscle group should be marked as completed
     And the response should be returned successfully
-    And the corresponding DayMuscleGroup entity should be updated
-    And the corresponding Progression entity should be updated
