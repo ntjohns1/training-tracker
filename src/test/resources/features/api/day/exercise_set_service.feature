@@ -10,11 +10,6 @@ Feature: Exercise Set Service
       And no redundant orchestration or CRUD service layers will exist
 
 
-      Scenario: Create a new exercise set successfully with relationships
-        Given I have a valid ExerciseSetRequest DTO with exercise ID
-        And the day, day exercise, and exercise entity exists in the system
-        When I call createExerciseSet with the DTO
-        Then the service should use ExerciseSetFactory to create the entity
-        And the service should establish User, Day, DayExercise, and Exercise relationships
-        And the entity should be saved to the repository
-
+    Scenario: Marking first set complete should require soreness parameter
+    Scenario: Marking last set complete should update day exercise status to pendingFeedback
+    

@@ -40,6 +40,7 @@ public class DayMuscleGroup {
     
     @Column(name = "recommended_sets")
     private Integer recommendedSets;
+    
 
     @Setter
     @Enumerated(EnumType.STRING)
