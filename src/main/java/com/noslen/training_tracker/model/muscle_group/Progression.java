@@ -1,14 +1,13 @@
 package com.noslen.training_tracker.model.muscle_group;
 
 import com.noslen.training_tracker.enums.MgProgressionType;
-import com.noslen.training_tracker.model.day.DayMuscleGroup;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Collection;
+
 import java.util.Objects;
 
 @Getter
