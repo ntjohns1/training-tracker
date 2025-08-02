@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+
 import java.util.Objects;
 
 @Getter
@@ -31,6 +32,10 @@ public class Progression {
     @ManyToOne
     @JoinColumn(name = "mesocycle_id")
     private Mesocycle mesocycle;
+
+    // @Transient
+    // @OneToMany(mappedBy = "progression")
+    // private Collection<DayMuscleGroup> dayMuscleGroups;
 
     public long getMuscleGroupId() {
         return muscleGroup.getId();
