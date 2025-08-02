@@ -4,11 +4,12 @@ import java.time.Instant;
 import java.util.List;
 
 /**
- * Request DTO for updating a Day with complete nested structure.
- * Used for finishing day exercises and providing workout feedback.
- * Based on real API structure from finish_day_exercise and finish_day endpoints.
+ * Request DTO for finishing a complete workout day.
+ * This is the same structure as UpdateDayRequest but semantically represents
+ * the final completion of a workout day with all feedback provided.
+ * Status transitions from "pendingFeedback" to "pendingConfirmation".
  */
-public record UpdateDayRequest(
+public record FinishDayRequest(
         Long id,
         Long mesoId,
         Integer week,
@@ -20,16 +21,16 @@ public record UpdateDayRequest(
         String unit,
         Instant finishedAt,
         String label,
-        List<Object> notes,  // Simplified for now
-        List<DayExerciseUpdateRequest> exercises,
-        List<DayMuscleGroupUpdateRequest> muscleGroups,
+        List<Object> notes,
+        List<DayExerciseFinishRequest> exercises,
+        List<DayMuscleGroupFinishRequest> muscleGroups,
         String status
 ) {
     
     /**
-     * Nested DTO for updating day exercises within a day update.
+     * Nested DTO for day exercises in finish day request.
      */
-    public record DayExerciseUpdateRequest(
+    public record DayExerciseFinishRequest(
             Long id,
             Long dayId,
             Long exerciseId,
@@ -39,14 +40,14 @@ public record UpdateDayRequest(
             Instant updatedAt,
             Long sourceDayExerciseId,
             Long muscleGroupId,
-            List<ExerciseSetUpdateRequest> sets,
+            List<ExerciseSetFinishRequest> sets,
             String status
     ) {}
     
     /**
-     * Nested DTO for updating exercise sets within a day exercise update.
+     * Nested DTO for exercise sets in finish day request.
      */
-    public record ExerciseSetUpdateRequest(
+    public record ExerciseSetFinishRequest(
             Long id,
             Long dayExerciseId,
             Integer position,
@@ -65,9 +66,10 @@ public record UpdateDayRequest(
     ) {}
     
     /**
-     * Nested DTO for updating day muscle groups within a day update.
+     * Nested DTO for day muscle groups in finish day request.
+     * Contains final feedback: pump, soreness, workload.
      */
-    public record DayMuscleGroupUpdateRequest(
+    public record DayMuscleGroupFinishRequest(
             Long id,
             Long dayId,
             Long muscleGroupId,

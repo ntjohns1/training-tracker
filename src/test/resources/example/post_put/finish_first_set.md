@@ -1,3 +1,6 @@
+/api/training/sets/{id}
+
+PUT
 
 ```json
 {

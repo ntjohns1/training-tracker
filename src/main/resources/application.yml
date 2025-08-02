@@ -1,0 +1,22 @@
+# Conversion to YAML from Properties formar report
+# Warnings:
+# - The yaml file had comments which are lost in the refactoring!
+spring:
+  application:
+    name: training-tracker
+  jackson:
+    default-property-inclusion: always
+  datasource:
+    url: jdbc:mysql://localhost:3306/training_tracker
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://auth.nelsonjohns.com/realms/admin
