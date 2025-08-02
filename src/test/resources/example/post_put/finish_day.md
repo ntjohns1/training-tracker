@@ -1,4 +1,4 @@
-https://training.rpstrength.com/api/training/days/21195296?v=0.30.2
+/api/training/days/{id}
 
 PUT
 
@@ -159,3 +159,4 @@ PUT
   ],
   "status": "pendingConfirmation"
 }
+```
