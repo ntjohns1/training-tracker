@@ -19,6 +19,15 @@ spring:
         jwt:
           issuer-uri: https://auth.nelsonjohns.com/realms/admin
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  info:
+    env:
+      enabled: true
+
 logging:
   level:
     org.springframework.security: DEBUG

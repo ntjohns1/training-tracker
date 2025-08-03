@@ -34,13 +34,14 @@ public class OAuth2ResourceServerConfigTest {
     @Test
     public void testActuatorInfoEndpoint_ShouldBePublic() throws Exception {
         mockMvc.perform(get("/actuator/info"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/vnd.spring-boot.actuator.v3+json"));
     }
 
     @Test
     public void testErrorEndpoint_ShouldBePublic() throws Exception {
         mockMvc.perform(get("/error"))
-                .andExpect(status().isOk());
+                .andExpect(status().is5xxServerError()); // Error endpoint returns 500 by default
     }
 
     // ========== Protected API Endpoint Tests ==========

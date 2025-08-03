@@ -13,10 +13,10 @@ import com.noslen.training_tracker.mapper.day.DayMuscleGroupMapper;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.util.EnumConverter;
 import com.noslen.training_tracker.model.day.DayMuscleGroup;
-import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
+import com.noslen.training_tracker.model.progression.MuscleGroup;
 import com.noslen.training_tracker.repository.day.DayMuscleGroupRepo;
 import com.noslen.training_tracker.repository.day.DayRepo;
-import com.noslen.training_tracker.repository.muscle_group.MuscleGroupRepo;
+import com.noslen.training_tracker.repository.progression.MuscleGroupRepo;
 
 @Service
 public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {

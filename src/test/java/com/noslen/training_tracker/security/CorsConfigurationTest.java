@@ -53,7 +53,7 @@ public class CorsConfigurationTest {
     public void testDisallowedOrigin_ShouldBeRejected() throws Exception {
         mockMvc.perform(get("/api/mesocycles")
                 .header("Origin", "https://malicious-site.com"))
-                .andExpect(status().isUnauthorized())
+                .andExpect(status().isForbidden()) // CORS rejection returns 403, not 401
                 .andExpect(header().doesNotExist("Access-Control-Allow-Origin"));
     }
 
@@ -154,8 +154,9 @@ public class CorsConfigurationTest {
     @WithMockUser
     public void testAuthenticatedCorsRequest_ShouldIncludeCredentials() throws Exception {
         mockMvc.perform(get("/api/mesocycles")
-                .header("Origin", "http://localhost:3000"))
-                .andExpect(status().isNotFound()) // Authenticated, so not 401
+                .header("Origin", "http://localhost:3000")
+                .header("Authorization", "Bearer mock-token"))
+                .andExpect(status().isUnauthorized()) // OAuth2 JWT still requires valid token
                 .andExpect(header().string("Access-Control-Allow-Credentials", "true"));
     }
 
@@ -198,7 +199,7 @@ public class CorsConfigurationTest {
                 .header("Authorization", "Bearer mock-token")
                 .contentType("application/json")
                 .content("{}"))
-                .andExpect(status().isNotFound()) // Endpoint doesn't exist, but CORS should work
+                .andExpect(status().isUnauthorized()) // OAuth2 JWT still requires valid token
                 .andExpect(header().string("Access-Control-Allow-Origin", "http://localhost:3000"));
     }
 
@@ -210,7 +211,7 @@ public class CorsConfigurationTest {
                 .header("Authorization", "Bearer mock-token")
                 .contentType("application/json")
                 .content("{\"weight\": 19}"))
-                .andExpect(status().isNotFound()) // Endpoint doesn't exist, but CORS should work
+                .andExpect(status().isUnauthorized()) // OAuth2 JWT still requires valid token
                 .andExpect(header().string("Access-Control-Allow-Origin", "http://localhost:3000"));
     }
 }

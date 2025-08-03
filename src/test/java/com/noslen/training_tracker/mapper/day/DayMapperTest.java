@@ -11,7 +11,7 @@ import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.model.day.DayMuscleGroup;
 import com.noslen.training_tracker.model.day.DayNote;
-import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
+import com.noslen.training_tracker.model.progression.MuscleGroup;
 import com.noslen.training_tracker.enums.MgName;
 import com.noslen.training_tracker.enums.MgSubType;
 import com.noslen.training_tracker.model.exercise.Exercise;

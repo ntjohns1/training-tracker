@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.dto.mesocycle.response;
 
-import com.noslen.training_tracker.dto.muscle_group.response.ProgressionResponse;
+import com.noslen.training_tracker.dto.progression.response.ProgressionResponse;
 
 import java.time.Instant;
 import java.util.List;

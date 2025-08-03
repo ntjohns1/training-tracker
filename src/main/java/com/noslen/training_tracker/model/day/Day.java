@@ -82,6 +82,8 @@ public class Day {
         return mesocycle != null ? mesocycle.getId() : null;
     }
 
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
