@@ -4,7 +4,7 @@ import com.noslen.training_tracker.dto.day.response.DayMuscleGroupResponse;
 import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.day.DayMuscleGroup;
-import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
+import com.noslen.training_tracker.model.progression.MuscleGroup;
 import com.noslen.training_tracker.enums.MgName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

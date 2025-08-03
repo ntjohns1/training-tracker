@@ -1,0 +1,80 @@
+package com.noslen.training_tracker.model.progression;
+
+import com.noslen.training_tracker.enums.MgProgressionType;
+import com.noslen.training_tracker.model.mesocycle.Mesocycle;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+
+import java.util.Objects;
+
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "progressions")
+public class Progression {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "muscle_group_id")
+    private MuscleGroup muscleGroup;
+
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "mg_progression_type")
+    private MgProgressionType mgProgressionType;
+
+    @ManyToOne
+    @JoinColumn(name = "mesocycle_id")
+    private Mesocycle mesocycle;
+
+    // @Transient
+    // @OneToMany(mappedBy = "progression")
+    // private Collection<DayMuscleGroup> dayMuscleGroups;
+
+    public long getMuscleGroupId() {
+        return muscleGroup.getId();
+    }
+
+    public Progression setMuscleGroup(MuscleGroup muscleGroup) {
+        this.muscleGroup = muscleGroup;
+        return this;
+    }
+
+    public Progression setMgProgressionType(MgProgressionType mgProgressionType) {
+        this.mgProgressionType = mgProgressionType;
+        return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        Progression that = (Progression) o;
+
+        if (!Objects.equals(id,
+                            that.id))
+            return false;
+        if (!Objects.equals(muscleGroup,
+                            that.muscleGroup))
+            return false;
+        return Objects.equals(mgProgressionType,
+                              that.mgProgressionType);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (muscleGroup != null ? muscleGroup.hashCode() : 0);
+        result = 31 * result + (mgProgressionType != null ? mgProgressionType.hashCode() : 0);
+        return result;
+    }
+}
