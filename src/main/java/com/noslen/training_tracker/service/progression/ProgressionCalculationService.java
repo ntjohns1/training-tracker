@@ -8,7 +8,6 @@ import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 /**
  * Service responsible for calculating workout progressions based on user feedback
  * and RIR (Reps in Reserve) progression system.
- * 
  * Implements the progression algorithm as specified in progression_algorithm.md:
  * - Analyzes feedback from completed workouts (pump, soreness, workload, joint pain)
  * - Calculates recommended sets for next week's corresponding day

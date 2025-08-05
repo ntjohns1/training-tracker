@@ -8,14 +8,12 @@ import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 import com.noslen.training_tracker.model.progression.MuscleGroup;
 import com.noslen.training_tracker.repository.day.DayRepo;
 import com.noslen.training_tracker.repository.day.ExerciseSetRepo;
-import com.noslen.training_tracker.enums.SetType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -273,9 +271,6 @@ public class ProgressionCalculationServiceImpl implements ProgressionCalculation
         if (currentSets.isEmpty()) {
             return;
         }
-        
-        // Use the last set as reference for progression (typically the heaviest/most challenging)
-        ExerciseSet referenceSet = currentSets.get(currentSets.size() - 1);
         
         // Calculate progression for each set in next week
         List<ExerciseSet> nextWeekSets = nextWeekDayExercise.getSets();

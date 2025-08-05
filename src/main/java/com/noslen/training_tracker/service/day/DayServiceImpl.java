@@ -9,14 +9,11 @@ import com.noslen.training_tracker.factory.DayFactory;
 import com.noslen.training_tracker.mapper.day.DayMapper;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.repository.day.DayRepo;
-import com.noslen.training_tracker.security.RequireUserAccess;
+import com.noslen.training_tracker.repository.mesocycle.MesocycleRepo;
 import com.noslen.training_tracker.security.UserContext;
 import com.noslen.training_tracker.service.progression.ProgressionCalculationService;
-import com.noslen.training_tracker.enums.Status;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * Service implementation for Day operations.
@@ -30,13 +27,15 @@ public class DayServiceImpl implements DayService {
     private final DayFactory dayFactory;
     private final UserContext userContext;
     private final ProgressionCalculationService progressionCalculationService;
+    private final MesocycleRepo mesocycleRepo;
 
-    public DayServiceImpl(DayRepo dayRepo, DayMapper dayMapper, DayFactory dayFactory, UserContext userContext, ProgressionCalculationService progressionCalculationService) {
+    public DayServiceImpl(DayRepo dayRepo, DayMapper dayMapper, DayFactory dayFactory, UserContext userContext, ProgressionCalculationService progressionCalculationService, MesocycleRepo mesocycleRepo) {
         this.dayRepo = dayRepo;
         this.dayMapper = dayMapper;
         this.dayFactory = dayFactory;
         this.userContext = userContext;
         this.progressionCalculationService = progressionCalculationService;
+        this.mesocycleRepo = mesocycleRepo;
     }
 
     @Override
@@ -48,8 +47,10 @@ public class DayServiceImpl implements DayService {
 
         // Validate that the current user owns the mesocycle this day belongs to
         if (dayResponse.mesoId() != null) {
-            // This will be validated through the mesocycle ownership when the day is created
-            // For now, we'll rely on the factory to handle the relationship properly
+            // Fetch the mesocycle and validate ownership before creating the day
+            var mesocycle = mesocycleRepo.findById(dayResponse.mesoId())
+                    .orElseThrow(() -> new RuntimeException("Mesocycle not found with id: " + dayResponse.mesoId()));
+            userContext.validateUserAccess(mesocycle.getUserId());
         }
 
         // Use factory to create entity
@@ -137,13 +138,11 @@ public class DayServiceImpl implements DayService {
 
         // First validate that the current user owns the mesocycle
         // We need to check this before querying days to ensure data segregation
-        List<Day> days = dayRepo.findByMesocycleId(mesocycleId);
+        var mesocycle = mesocycleRepo.findById(mesocycleId)
+                .orElseThrow(() -> new RuntimeException("Mesocycle not found with id: " + mesocycleId));
+        userContext.validateUserAccess(mesocycle.getUserId());
         
-        // If days exist, validate ownership through the first day's mesocycle
-        // This ensures the mesocycle belongs to the current user
-        if (!days.isEmpty()) {
-            userContext.validateUserAccess(days.get(0).getMesocycle().getUserId());
-        }
+        List<Day> days = dayRepo.findByMesocycleId(mesocycleId);
         
         return dayMapper.toPayloadList(days);
     }
