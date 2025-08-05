@@ -5,6 +5,8 @@ import com.noslen.training_tracker.factory.MesocycleFactory;
 import com.noslen.training_tracker.mapper.mesocycle.MesocycleMapper;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 import com.noslen.training_tracker.repository.mesocycle.MesocycleRepo;
+import com.noslen.training_tracker.security.RequireUserAccess;
+import com.noslen.training_tracker.security.UserContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,11 +24,13 @@ public class MesocycleServiceImpl implements MesocycleService {
     private final MesocycleRepo mesocycleRepo;
     private final MesocycleMapper mesocycleMapper;
     private final MesocycleFactory mesocycleFactory;
+    private final UserContext userContext;
 
-    public MesocycleServiceImpl(MesocycleRepo mesocycleRepo, MesocycleMapper mesocycleMapper, MesocycleFactory mesocycleFactory) {
+    public MesocycleServiceImpl(MesocycleRepo mesocycleRepo, MesocycleMapper mesocycleMapper, MesocycleFactory mesocycleFactory, UserContext userContext) {
         this.mesocycleRepo = mesocycleRepo;
         this.mesocycleMapper = mesocycleMapper;
         this.mesocycleFactory = mesocycleFactory;
+        this.userContext = userContext;
     }
 
     @Override
@@ -44,14 +48,22 @@ public class MesocycleServiceImpl implements MesocycleService {
     @Override
     @Transactional(readOnly = true)
     public MesocycleResponse getMesocycle(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Mesocycle ID cannot be null");
+        }
+
         Mesocycle mesocycle = mesocycleRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Mesocycle not found with id: " + id));
+        
+        // Validate that the current user owns this mesocycle
+        userContext.validateUserAccess(mesocycle.getUserId());
         
         return mesocycleMapper.toPayload(mesocycle);
     }
 
     @Override
     @Transactional(readOnly = true)
+    @RequireUserAccess
     public List<MesocycleResponse> getMesocyclesByUserId(Long userId) {
         List<Mesocycle> mesocycles = mesocycleRepo.findByUserId(userId);
         
@@ -111,6 +123,7 @@ public class MesocycleServiceImpl implements MesocycleService {
 
     @Override
     @Transactional(readOnly = true)
+    @RequireUserAccess
     public List<MesocycleResponse> getActiveMesocyclesByUserId(Long userId) {
         List<Mesocycle> activeMesocycles = mesocycleRepo.findByUserIdAndDeletedAtIsNull(userId);
         
@@ -121,9 +134,16 @@ public class MesocycleServiceImpl implements MesocycleService {
 
     @Override
     public MesocycleResponse finishMesocycle(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Mesocycle ID cannot be null");
+        }
+
         // Find existing entity
         Mesocycle existingMesocycle = mesocycleRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Mesocycle not found with id: " + id));
+        
+        // Validate that the current user owns this mesocycle
+        userContext.validateUserAccess(existingMesocycle.getUserId());
         
         // Use factory to create finished entity
         Mesocycle finishedMesocycle = mesocycleFactory.createForFinish(existingMesocycle);

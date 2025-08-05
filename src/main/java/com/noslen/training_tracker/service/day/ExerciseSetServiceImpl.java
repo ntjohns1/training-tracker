@@ -1,25 +1,32 @@
 package com.noslen.training_tracker.service.day;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.noslen.training_tracker.dto.day.response.ExerciseSetResponse;
 import com.noslen.training_tracker.mapper.day.ExerciseSetMapper;
 import com.noslen.training_tracker.model.day.ExerciseSet;
 import com.noslen.training_tracker.repository.day.ExerciseSetRepo;
+import com.noslen.training_tracker.security.UserContext;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Service implementation for ExerciseSet operations.
+ * Includes user data segregation through UserContext validation.
+ */
 @Service
 public class ExerciseSetServiceImpl implements ExerciseSetService { 
+    
     private final ExerciseSetRepo repo;
     private final ExerciseSetMapper mapper;
+    private final UserContext userContext;
 
-    public ExerciseSetServiceImpl(ExerciseSetRepo repo, ExerciseSetMapper mapper) {
+    public ExerciseSetServiceImpl(ExerciseSetRepo repo, ExerciseSetMapper mapper, UserContext userContext) {
         this.repo = repo;
         this.mapper = mapper;
+        this.userContext = userContext;
     }
 
     @Override
@@ -32,12 +39,17 @@ public class ExerciseSetServiceImpl implements ExerciseSetService {
         // Convert payload to entity
         ExerciseSet exerciseSet = mapper.toEntity(exerciseSetResponse);
         
+        // Note: User access validation for create operations should be handled 
+        // at the controller level since exercise sets are typically created as part of workout progression
+        
         // Set creation timestamp
         exerciseSet.setCreatedAt(Instant.now());
         
-        // Save and return as DTO
-        ExerciseSet savedExerciseSet = repo.save(exerciseSet);
-        return mapper.toPayload(savedExerciseSet);
+        // Save entity
+        ExerciseSet savedEntity = repo.save(exerciseSet);
+
+        // Convert back to payload and return
+        return mapper.toPayload(savedEntity);
     }
 
     @Override
@@ -57,13 +69,17 @@ public class ExerciseSetServiceImpl implements ExerciseSetService {
 
         ExerciseSet existingExerciseSet = exerciseSetOptional.get();
         
-        // Update entity with payload data
-        mapper.updateEntity(existingExerciseSet,
-                            exerciseSetResponse);
+        // Validate that the current user owns the mesocycle this exercise set belongs to
+        userContext.validateUserAccess(existingExerciseSet.getDayExercise().getDay().getMesocycle().getUserId());
         
-        // Save and return as DTO
-        ExerciseSet updatedExerciseSet = repo.save(existingExerciseSet);
-        return mapper.toPayload(updatedExerciseSet);
+        // Update entity with payload data
+        mapper.updateEntity(existingExerciseSet, exerciseSetResponse);
+        
+        // Save updated entity
+        ExerciseSet savedEntity = repo.save(existingExerciseSet);
+
+        // Convert back to payload and return
+        return mapper.toPayload(savedEntity);
     }
 
     @Override
@@ -78,7 +94,12 @@ public class ExerciseSetServiceImpl implements ExerciseSetService {
             throw new RuntimeException("ExerciseSet not found with id: " + id);
         }
 
-        return mapper.toPayload(exerciseSetOptional.get());
+        ExerciseSet exerciseSet = exerciseSetOptional.get();
+        
+        // Validate that the current user owns the mesocycle this exercise set belongs to
+        userContext.validateUserAccess(exerciseSet.getDayExercise().getDay().getMesocycle().getUserId());
+        
+        return mapper.toPayload(exerciseSet);
     }
 
     @Override
@@ -88,10 +109,16 @@ public class ExerciseSetServiceImpl implements ExerciseSetService {
             throw new IllegalArgumentException("ID cannot be null");
         }
 
-        if (!repo.existsById(id)) {
+        Optional<ExerciseSet> exerciseSetOptional = repo.findById(id);
+        if (exerciseSetOptional.isEmpty()) {
             throw new RuntimeException("ExerciseSet not found with id: " + id);
         }
 
+        ExerciseSet exerciseSet = exerciseSetOptional.get();
+        
+        // Validate that the current user owns the mesocycle this exercise set belongs to
+        userContext.validateUserAccess(exerciseSet.getDayExercise().getDay().getMesocycle().getUserId());
+        
         repo.deleteById(id);
     }
 
@@ -99,10 +126,16 @@ public class ExerciseSetServiceImpl implements ExerciseSetService {
     @Transactional(readOnly = true)
     public List<ExerciseSetResponse> getExerciseSetsByDayExerciseId(Long dayExerciseId) {
         if (dayExerciseId == null) {
-            throw new IllegalArgumentException("DayExercise ID cannot be null");
+            throw new IllegalArgumentException("Day Exercise ID cannot be null");
         }
 
         List<ExerciseSet> exerciseSets = repo.findByDayExercise_Id(dayExerciseId);
+        
+        // Validate user access for the first exercise set (they should all belong to the same day exercise/mesocycle)
+        if (!exerciseSets.isEmpty()) {
+            userContext.validateUserAccess(exerciseSets.get(0).getDayExercise().getDay().getMesocycle().getUserId());
+        }
+        
         return mapper.toPayloadList(exerciseSets);
     }
 }

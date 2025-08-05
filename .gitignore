@@ -37,3 +37,4 @@ src/main/.DS_Store
 .DS_Store
 src/test/resources/example/muscleGroups.md
 .env
+docs/table.md

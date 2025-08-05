@@ -6,11 +6,16 @@ import com.noslen.training_tracker.model.progression.MuscleGroup;
 import com.noslen.training_tracker.model.progression.Progression;
 import com.noslen.training_tracker.repository.progression.MuscleGroupRepo;
 import com.noslen.training_tracker.repository.progression.ProgressionRepo;
+import com.noslen.training_tracker.security.UserContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+/**
+ * Service implementation for Progression operations.
+ * Includes user data segregation through UserContext validation.
+ */
 @Service
 @Transactional
 public class ProgressionServiceImpl implements ProgressionService {
@@ -18,11 +23,13 @@ public class ProgressionServiceImpl implements ProgressionService {
     private final ProgressionRepo repo;
     private final ProgressionMapper mapper;
     private final MuscleGroupRepo muscleGroupRepo;
+    private final UserContext userContext;
 
-    public ProgressionServiceImpl(ProgressionRepo progressionRepo, ProgressionMapper mapper, MuscleGroupRepo muscleGroupRepo) {
+    public ProgressionServiceImpl(ProgressionRepo progressionRepo, ProgressionMapper mapper, MuscleGroupRepo muscleGroupRepo, UserContext userContext) {
         this.repo = progressionRepo;
         this.mapper = mapper;
         this.muscleGroupRepo = muscleGroupRepo;
+        this.userContext = userContext;
     }
 
     @Override
@@ -45,6 +52,10 @@ public class ProgressionServiceImpl implements ProgressionService {
                 progression.getMgProgressionType(),
                 progression.getMesocycle()
         );
+
+        // Note: User access validation for create operations should be handled 
+        // at the controller level or through the mesocycle creation process
+        // since progressions are typically created as part of mesocycle creation
 
         // Save entity
         Progression savedEntity = repo.save(progression);
@@ -69,14 +80,14 @@ public class ProgressionServiceImpl implements ProgressionService {
 
         Progression existing = existingOptional.get();
         
-        // Update entity with payload data using mapper
-        Progression updatedProgression = mapper.updateEntity(existing,
-                                                             progressionResponse);
+        // Validate that the current user owns the mesocycle this progression belongs to
+        userContext.validateUserAccess(existing.getMesocycle().getUserId());
         
-        // Handle MuscleGroup change if muscleGroupId is different
-        if (progressionResponse.muscleGroupId() != 0 &&
-            progressionResponse.muscleGroupId() != existing.getMuscleGroup().getId()) {
-            
+        // Update entity with payload data using mapper
+        Progression updatedProgression = mapper.updateEntity(existing, progressionResponse);
+        
+        // If muscle group ID changed, update the MuscleGroup entity
+        if (!existing.getMuscleGroup().getId().equals(progressionResponse.muscleGroupId())) {
             MuscleGroup newMuscleGroup = muscleGroupRepo.findById(progressionResponse.muscleGroupId())
                     .orElseThrow(() -> new RuntimeException("MuscleGroup not found with id: " + progressionResponse.muscleGroupId()));
             
@@ -102,9 +113,15 @@ public class ProgressionServiceImpl implements ProgressionService {
             throw new IllegalArgumentException("Progression ID cannot be null");
         }
 
-        if (!repo.existsById(progressionId)) {
+        Optional<Progression> progressionOptional = repo.findById(progressionId);
+        if (progressionOptional.isEmpty()) {
             throw new RuntimeException("Progression not found with id: " + progressionId);
         }
+
+        Progression progression = progressionOptional.get();
+        
+        // Validate that the current user owns the mesocycle this progression belongs to
+        userContext.validateUserAccess(progression.getMesocycle().getUserId());
 
         repo.deleteById(progressionId);
     }
@@ -120,6 +137,10 @@ public class ProgressionServiceImpl implements ProgressionService {
         if (progression.isEmpty()) {
             throw new RuntimeException("Progression not found with id: " + progressionId);
         }
+
+        // Validate that the current user owns the mesocycle this progression belongs to
+        userContext.validateUserAccess(progression.get().getMesocycle().getUserId());
+
         return mapper.toPayload(progression.get());
     }
 }
