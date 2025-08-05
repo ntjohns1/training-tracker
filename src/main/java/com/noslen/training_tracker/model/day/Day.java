@@ -58,6 +58,7 @@ public class Day {
     
     private Unit unit;
     
+    @Setter
     @Column(name = "finished_at")
     private Instant finishedAt;
     

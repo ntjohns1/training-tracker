@@ -39,6 +39,7 @@ public class DayMuscleGroup {
     private Integer workload;
     
     @Column(name = "recommended_sets")
+    @Setter
     private Integer recommendedSets;
     
 

@@ -11,6 +11,8 @@ import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.repository.day.DayRepo;
 import com.noslen.training_tracker.security.RequireUserAccess;
 import com.noslen.training_tracker.security.UserContext;
+import com.noslen.training_tracker.service.progression.ProgressionCalculationService;
+import com.noslen.training_tracker.enums.Status;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,12 +29,14 @@ public class DayServiceImpl implements DayService {
     private final DayMapper dayMapper;
     private final DayFactory dayFactory;
     private final UserContext userContext;
+    private final ProgressionCalculationService progressionCalculationService;
 
-    public DayServiceImpl(DayRepo dayRepo, DayMapper dayMapper, DayFactory dayFactory, UserContext userContext) {
+    public DayServiceImpl(DayRepo dayRepo, DayMapper dayMapper, DayFactory dayFactory, UserContext userContext, ProgressionCalculationService progressionCalculationService) {
         this.dayRepo = dayRepo;
         this.dayMapper = dayMapper;
         this.dayFactory = dayFactory;
         this.userContext = userContext;
+        this.progressionCalculationService = progressionCalculationService;
     }
 
     @Override
@@ -142,5 +146,32 @@ public class DayServiceImpl implements DayService {
         }
         
         return dayMapper.toPayloadList(days);
+    }
+
+    @Override
+    @Transactional
+    public DayResponse completeDay(Long dayId) {
+        if (dayId == null) {
+            throw new IllegalArgumentException("Day ID cannot be null");
+        }
+
+        // Find existing day and validate ownership before completion
+        Day existingDay = dayRepo.findById(dayId)
+                .orElseThrow(() -> new RuntimeException("Day not found with id: " + dayId));
+        
+        // Validate that the current user owns the mesocycle this day belongs to
+        userContext.validateUserAccess(existingDay.getMesocycle().getUserId());
+
+        // Mark day as completed by setting finishedAt timestamp
+        existingDay.setFinishedAt(Instant.now());
+        
+        // Save updated entity
+        Day savedDay = dayRepo.save(existingDay);
+
+        // Trigger progression calculations
+        progressionCalculationService.calculateProgression(savedDay);
+        
+        // Return updated day response
+        return dayMapper.toPayload(savedDay);
     }
 }

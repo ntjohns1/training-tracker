@@ -11,5 +11,14 @@ public interface DayService {
     DayResponse getDay(Long id);
     void deleteDay(Long id);
     List<DayResponse> getDaysByMesocycleId(Long mesocycleId);
+    
+    /**
+     * Completes a day and triggers progression calculations for the next week.
+     * This method should be called when a user finishes their workout and provides feedback.
+     * 
+     * @param dayId The ID of the day being completed
+     * @return The updated DayResponse with completed status
+     */
+    DayResponse completeDay(Long dayId);
 
 }
