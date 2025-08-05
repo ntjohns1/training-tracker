@@ -6,11 +6,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doNothing;
 
 import java.time.Instant;
 import java.util.Optional;
 
 import com.noslen.training_tracker.dto.exercise.response.ExerciseNoteResponse;
+import com.noslen.training_tracker.security.UserContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -29,6 +31,9 @@ public class ExerciseNoteServiceTests {
     @Mock
     private ExerciseNoteMapper mapper;
 
+    @Mock
+    private UserContext userContext;
+
     @InjectMocks
     private ExerciseNoteServiceImpl service;
 
@@ -41,10 +46,30 @@ public class ExerciseNoteServiceTests {
         MockitoAnnotations.openMocks(this);
         testTime = Instant.now();
         
+        // Create proper entity relationships for security validation
+        com.noslen.training_tracker.model.mesocycle.Mesocycle mesocycle = 
+            com.noslen.training_tracker.model.mesocycle.Mesocycle.builder()
+                .id(10L)
+                .userId(100L)
+                .build();
+                
+        com.noslen.training_tracker.model.day.Day day = 
+            com.noslen.training_tracker.model.day.Day.builder()
+                .id(5L)
+                .mesocycle(mesocycle)
+                .build();
+                
+        com.noslen.training_tracker.model.day.DayExercise dayExercise = 
+            com.noslen.training_tracker.model.day.DayExercise.builder()
+                .id(3L)
+                .day(day)
+                .build();
+        
         testEntity = new ExerciseNote();
         testEntity.setId(1L);
         testEntity.setUserId(2L);
         testEntity.setNoteId(3L);
+        testEntity.setDayExercise(dayExercise);
         testEntity.setCreatedAt(testTime);
         testEntity.setUpdatedAt(testTime);
         testEntity.setText("Test note");
@@ -80,15 +105,17 @@ public class ExerciseNoteServiceTests {
         );
         
         when(repo.findById(id)).thenReturn(Optional.of(testEntity));
+        doNothing().when(userContext).validateUserAccess(100L);
         when(repo.save(any(ExerciseNote.class))).thenReturn(testEntity);
         when(mapper.toPayload(testEntity)).thenReturn(testPayload);
 
         // When
         ExerciseNoteResponse result = service.updateExerciseNote(id, updatePayload);
-
+        
         // Then
         assertEquals(testPayload, result);
         verify(repo, times(1)).findById(id);
+        verify(userContext, times(1)).validateUserAccess(100L);
         verify(mapper, times(1)).updateEntity(testEntity, updatePayload);
         verify(repo, times(1)).save(testEntity);
         verify(mapper, times(1)).toPayload(testEntity);
@@ -98,13 +125,15 @@ public class ExerciseNoteServiceTests {
     void testDeleteExerciseNote() {
         // Given
         Long id = 1L;
-        when(repo.existsById(id)).thenReturn(true);
+        when(repo.findById(id)).thenReturn(Optional.of(testEntity));
+        doNothing().when(userContext).validateUserAccess(100L);
 
         // When
         service.deleteExerciseNote(id);
         
         // Then
-        verify(repo, times(1)).existsById(id);
+        verify(repo, times(1)).findById(id);
+        verify(userContext, times(1)).validateUserAccess(100L);
         verify(repo, times(1)).deleteById(id);
     }
 
@@ -112,11 +141,11 @@ public class ExerciseNoteServiceTests {
     void testDeleteExerciseNote_NotFound_ShouldThrowException() {
         // Given
         Long id = 1L;
-        when(repo.existsById(id)).thenReturn(false);
+        when(repo.findById(id)).thenReturn(Optional.empty());
 
         // When/Then
         assertThrows(RuntimeException.class, () -> service.deleteExerciseNote(id));
-        verify(repo, times(1)).existsById(id);
+        verify(repo, times(1)).findById(id);
         verify(repo, times(0)).deleteById(id);
     }
 
@@ -125,6 +154,7 @@ public class ExerciseNoteServiceTests {
         // Given
         Long id = 1L;
         when(repo.findById(id)).thenReturn(Optional.of(testEntity));
+        doNothing().when(userContext).validateUserAccess(100L);
         when(mapper.toPayload(testEntity)).thenReturn(testPayload);
 
         // When
@@ -133,6 +163,7 @@ public class ExerciseNoteServiceTests {
         // Then
         assertEquals(testPayload, result);
         verify(repo, times(1)).findById(id);
+        verify(userContext, times(1)).validateUserAccess(100L);
         verify(mapper, times(1)).toPayload(testEntity);
     }
 

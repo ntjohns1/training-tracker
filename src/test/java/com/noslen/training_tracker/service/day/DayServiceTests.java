@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doNothing;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.Optional;
 
 import com.noslen.training_tracker.dto.day.response.DayResponse;
 import com.noslen.training_tracker.factory.DayFactory;
+import com.noslen.training_tracker.security.UserContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -35,6 +37,9 @@ public class DayServiceTests {
 
     @Mock
     private DayFactory dayFactory;
+
+    @Mock
+    private UserContext userContext;
 
     @InjectMocks
     private DayServiceImpl service;
@@ -73,17 +78,46 @@ public class DayServiceTests {
     void updateDay() {
         // Arrange
         Long id = 1L;
+        Mesocycle mesocycle = Mesocycle.builder()
+                .id(10L)
+                .userId(100L)
+                .build();
+                
         DayResponse payload = new DayResponse(id, 1L, 1L, 1L, Instant.now(), Instant.now(),
                                               77, Instant.now(), "kg", Instant.now(), "Updated Day 1", new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), "complete");
-        Day existingEntity = Day.builder().id(id).week(1).position(1).label("Day 1").build();
-        Day mergedEntity = Day.builder().id(id).week(1).position(1).label("Updated Day 1").bodyweight(77.0).build();
-        Day savedEntity = Day.builder().id(id).week(1).position(1).label("Updated Day 1").bodyweight(77.0).build();
+        
+        Day existingEntity = Day.builder()
+                .id(id)
+                .mesocycle(mesocycle)
+                .week(1)
+                .position(1)
+                .label("Day 1")
+                .build();
+                
+        Day mergedEntity = Day.builder()
+                .id(id)
+                .mesocycle(mesocycle)
+                .week(1)
+                .position(1)
+                .label("Updated Day 1")
+                .bodyweight(77.0)
+                .build();
+                
+        Day savedEntity = Day.builder()
+                .id(id)
+                .mesocycle(mesocycle)
+                .week(1)
+                .position(1)
+                .label("Updated Day 1")
+                .bodyweight(77.0)
+                .build();
+                
         DayResponse expectedPayload = new DayResponse(id, 1L, 1L, 1L, Instant.now(), Instant.now(),
                                                       77, Instant.now(), "kg", Instant.now(), "Updated Day 1", new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), "complete");
 
         when(dayRepo.findById(id)).thenReturn(Optional.of(existingEntity));
-        when(dayMapper.mergeEntity(existingEntity, payload)).thenReturn(mergedEntity);
-        when(dayRepo.save(mergedEntity)).thenReturn(savedEntity);
+        doNothing().when(userContext).validateUserAccess(100L);
+        when(dayRepo.save(any(Day.class))).thenReturn(savedEntity);
         when(dayMapper.toPayload(savedEntity)).thenReturn(expectedPayload);
 
         // Act
@@ -92,8 +126,8 @@ public class DayServiceTests {
         // Assert
         assertEquals(expectedPayload, result);
         verify(dayRepo, times(1)).findById(id);
-        verify(dayMapper, times(1)).mergeEntity(existingEntity, payload);
-        verify(dayRepo, times(1)).save(mergedEntity);
+        verify(userContext, times(1)).validateUserAccess(100L);
+        verify(dayRepo, times(1)).save(any(Day.class));
         verify(dayMapper, times(1)).toPayload(savedEntity);
     }
 
@@ -101,12 +135,25 @@ public class DayServiceTests {
     void getDay() {
         // Arrange
         Long id = 1L;
-        Day entity = Day.builder().id(id).week(1).position(1).label("Day 1").build();
+        Mesocycle mesocycle = Mesocycle.builder()
+                .id(10L)
+                .userId(100L)
+                .build();
+        
+        Day entity = Day.builder()
+                .id(id)
+                .mesocycle(mesocycle)
+                .week(1)
+                .position(1)
+                .label("Day 1")
+                .build();
+                
         DayResponse expectedPayload = new DayResponse(id, 1L, 1L, 1L, Instant.now(), Instant.now(),
                                                       75, Instant.now(), "kg", null, "Day 1", new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), "planned");
         
         when(dayRepo.findById(id)).thenReturn(Optional.of(entity));
         when(dayMapper.toPayload(entity)).thenReturn(expectedPayload);
+        doNothing().when(userContext).validateUserAccess(100L);
 
         // Act
         DayResponse result = service.getDay(id);
@@ -114,6 +161,7 @@ public class DayServiceTests {
         // Assert
         assertEquals(expectedPayload, result);
         verify(dayRepo, times(1)).findById(id);
+        verify(userContext, times(1)).validateUserAccess(100L);
         verify(dayMapper, times(1)).toPayload(entity);
     }
 
@@ -121,13 +169,28 @@ public class DayServiceTests {
     void deleteDay() {
         // Arrange
         Long id = 1L;
-        when(dayRepo.existsById(id)).thenReturn(true);
+        Mesocycle mesocycle = Mesocycle.builder()
+                .id(10L)
+                .userId(100L)
+                .build();
+                
+        Day entity = Day.builder()
+                .id(id)
+                .mesocycle(mesocycle)
+                .week(1)
+                .position(1)
+                .label("Day 1")
+                .build();
+                
+        when(dayRepo.findById(id)).thenReturn(Optional.of(entity));
+        doNothing().when(userContext).validateUserAccess(100L);
         
         // Act
         service.deleteDay(id);
         
         // Assert
-        verify(dayRepo, times(1)).existsById(id);
+        verify(dayRepo, times(1)).findById(id);
+        verify(userContext, times(1)).validateUserAccess(100L);
         verify(dayRepo, times(1)).deleteById(id);
     }
 
@@ -135,9 +198,26 @@ public class DayServiceTests {
     void getDaysByMesocycleId() {
         // Arrange
         Long mesocycleId = 1L;
+        Mesocycle mesocycle = Mesocycle.builder()
+                .id(mesocycleId)
+                .userId(100L)
+                .build();
+                
         List<Day> entities = new ArrayList<>();
-        entities.add(Day.builder().id(1L).week(1).position(1).label("Day 1").build());
-        entities.add(Day.builder().id(2L).week(1).position(2).label("Day 2").build());
+        entities.add(Day.builder()
+                .id(1L)
+                .mesocycle(mesocycle)
+                .week(1)
+                .position(1)
+                .label("Day 1")
+                .build());
+        entities.add(Day.builder()
+                .id(2L)
+                .mesocycle(mesocycle)
+                .week(1)
+                .position(2)
+                .label("Day 2")
+                .build());
         
         List<DayResponse> expectedPayloads = new ArrayList<>();
         expectedPayloads.add(new DayResponse(1L, mesocycleId, 1L, 1L, Instant.now(), Instant.now(),
@@ -147,6 +227,7 @@ public class DayServiceTests {
         
         when(dayRepo.findByMesocycleId(mesocycleId)).thenReturn(entities);
         when(dayMapper.toPayloadList(entities)).thenReturn(expectedPayloads);
+        doNothing().when(userContext).validateUserAccess(100L);
 
         // Act
         List<DayResponse> result = service.getDaysByMesocycleId(mesocycleId);
@@ -154,6 +235,7 @@ public class DayServiceTests {
         // Assert
         assertEquals(expectedPayloads, result);
         verify(dayRepo, times(1)).findByMesocycleId(mesocycleId);
+        verify(userContext, times(1)).validateUserAccess(100L);
         verify(dayMapper, times(1)).toPayloadList(entities);
     }
     

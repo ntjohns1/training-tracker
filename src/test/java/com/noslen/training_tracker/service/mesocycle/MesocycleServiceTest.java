@@ -9,6 +9,7 @@ import com.noslen.training_tracker.mapper.mesocycle.MesocycleMapper;
 import com.noslen.training_tracker.model.mesocycle.MesoTemplate;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 import com.noslen.training_tracker.repository.mesocycle.MesocycleRepo;
+import com.noslen.training_tracker.security.UserContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -35,6 +36,9 @@ class MesocycleServiceTest {
 
     @Mock
     private MesocycleFactory mesocycleFactory;
+
+    @Mock
+    private UserContext userContext;
 
     @InjectMocks
     private MesocycleServiceImpl mesocycleService;
@@ -121,6 +125,7 @@ class MesocycleServiceTest {
 
         when(mesocycleRepo.findById(any(Long.class))).thenReturn(Optional.of(sampleEntity));
         when(mesocycleMapper.toPayload(any(Mesocycle.class))).thenReturn(resultPayload);
+        doNothing().when(userContext).validateUserAccess(100L);
 
         // When
         MesocycleResponse result = mesocycleService.getMesocycle(1L);
@@ -130,6 +135,7 @@ class MesocycleServiceTest {
         assertEquals(samplePayload.name(), result.name());
 
         verify(mesocycleRepo).findById(any(Long.class));
+        verify(userContext).validateUserAccess(100L);
         verify(mesocycleMapper).toPayload(any(Mesocycle.class));
     }
 
@@ -306,6 +312,7 @@ class MesocycleServiceTest {
         when(mesocycleFactory.createForFinish(any(Mesocycle.class))).thenReturn(sampleEntity);
         when(mesocycleRepo.save(any(Mesocycle.class))).thenReturn(sampleEntity);
         when(mesocycleMapper.toPayload(any(Mesocycle.class))).thenReturn(finishedPayload);
+        doNothing().when(userContext).validateUserAccess(100L);
 
         // When
         MesocycleResponse result = mesocycleService.finishMesocycle(1L);
@@ -315,6 +322,7 @@ class MesocycleServiceTest {
         assertNotNull(result.finishedAt());
 
         verify(mesocycleRepo).findById(any(Long.class));
+        verify(userContext).validateUserAccess(100L);
         verify(mesocycleFactory).createForFinish(any(Mesocycle.class));
         verify(mesocycleRepo).save(any(Mesocycle.class));
         verify(mesocycleMapper).toPayload(any(Mesocycle.class));
