@@ -184,9 +184,13 @@ public class ProgressionCalculationServiceImpl implements ProgressionCalculation
         score += dmg.getSoreness() != null ? dmg.getSoreness() : 0;
         score += dmg.getWorkload() != null ? dmg.getWorkload() : 0;
         
-        // Aggregate joint pain from all DayExercises in this muscle group
+        // Aggregate joint pain from all DayExercises targeting the same MuscleGroup
+        // We need to compare the underlying MuscleGroup IDs, not DayMuscleGroup IDs
+        Long targetMuscleGroupId = dmg.getMuscleGroup().getId();
         int jointPainSum = dmg.getDay().getExercises().stream()
-                .filter(de -> de.getMuscleGroup().getId().equals(dmg.getId()))
+                .filter(de -> de.getMuscleGroup() != null && 
+                             de.getMuscleGroup().getMuscleGroup() != null &&
+                             de.getMuscleGroup().getMuscleGroup().getId().equals(targetMuscleGroupId))
                 .mapToInt(de -> de.getJointPain() != null ? de.getJointPain() : 0)
                 .sum();
         
