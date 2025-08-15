@@ -2,35 +2,27 @@ Progression Algorithm High Level Process Flow:
 
 Background:
 Each week of a Mesocycle progresses with RIR -= the field, Mesocycle.microRirs is an integer series where each integer represents the RIR for one week of the mesocycle:
-3210 for a 5 week Mesocycle would mean week 1: 3 RIR; week 2: 2 RIR; week 3: 1 RIR, week 4: 0 RIR; week 5: Deload
+32108 for a 5 week Mesocycle would mean week 1: 3 RIR; week 2: 2 RIR; week 3: 1 RIR, week 4: 0 RIR; week 5: 8 RIR (Deload)
 note that final week is always Deload
 
-1. user completes a workout and gives feedback
-2. Day status is set to "complete"
-3. workout:complete event triggers CalculateProgression (initially, use the CompleteDayRequest for non-event-driven impl)
-4. Calculate Progression:
-   - Day nextDay = look up the day in the corresponding position for the following week (nextDay.week == thisDay.week + 1 && nextDay.position == thisDay.position)
-   - For each DayMuscleGroup in nextDay:
-     - update recommendedSets using pump, soreness, workload, and joint pain.
-       - there will be some threshold number that we use to determine whether to add one set, keep it the same, or subtract one set by adding the feedback values and comparing them to said threshold
-       - the threshold and starting number of sets will differ depending on DayMuscleGroup.MuscleGroup (calves and biceps heal more quickly than hamstrings, for example)
-       - I need to work out the exact implementation details for each muscle group, and test scenarios for each one
-   - For Each DayExercise (sorted by DayMuscleGroup):
-     - Create ExerciseSets for each DayExercise using recommendedSets
-     - create new ExerciseSets:
-       - we take previous week's DayExercise.ExerciseSet.getWeight() and .getReps();
-       - using the values for weight and reps we set weightTarget, weightTargetMin, weightTargetMax, and repsTarget, 
-       - if exercise is bodyWeight, or repsTarget is in the higher range (11 - 15 repetitions) default to progress by adding one rep
-       - if repsTarget is in the lower range, the default is to progress by weight, but the user can progress by reps alternatively:
-         - weight target will be += .5 lb if < 21 lbs;
-         - weight target will be += 1 lb if < 71 lbs;
-         - weight target will be += 2.5 lb if < 141 lbs;
-         - weight target will be += 5 lb if >= 141 lbs;
-         - these are estimates, exact values can be determined as needed.
-       - frontend will handle converting the repsTarget if the user changes weight
-       - frontend will handle converting the weightTarget if the user changes reps
-       - we will use something like the Epley Formula to keep the targetReps within a certain range (if user starts with 6 reps, recommend 5 to 12; starts with 11 recommend 9 - 15) need to find out the exact figures 
 
+## Important note: Progression Entity Holds a List of DayMuscleGroups in chronological order
+## Setup:
+1. User creates Mesocycle - First half of first week (rounded up) is populated with default number of sets per muscle group (need field for default # of sets?), recommended sets is -1.
+2. User completes day - PUT Request updates Day to PendingConfirmation
+3. event is triggered: action:workoutComplete
+## Business logic:
+1. Triggering event provides DayId for PendingConfirmation day and meso key
+2. For Each DayMuscleGroup in completedDay:
+3. Look up Day by DayMuscleGroup.muscleGroup.id
+4. Call Progression service to sum Joint Pain, Pump, Soreness (if applicable), and Workload - Method: CalculateRecommendedSets takes in feedback Sum and returns int for recommended sets
+5. PUT - recommended sets for DayMuscleGroup on target day
+6. for each updatedDayMuscleGroup:
+7. Look up DayExercises by DayMuscleGroup - DayExerciseRepo: List<DayExercise> getDayExercisesByDayMuscleGroupId
+8. Divide recommended sets by count of DayExercises (first exercises in the order get the larger number when rounding)
+9. Call ProgressionService to calculate targets - separate algorithm, Method: float[] CalculateWeightTargets(float weight, int reps) 
+10. Call ExerciseSetService to create the ExerciseSets (using calculated targets)
+11. set update status for all entities
 
 Example 1:
 Week 1 : user does 5 pullups - (calculate as 3 RIR, recommend 6 reps next)
