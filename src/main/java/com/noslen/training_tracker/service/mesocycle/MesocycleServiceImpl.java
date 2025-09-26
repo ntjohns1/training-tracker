@@ -88,6 +88,8 @@ public class MesocycleServiceImpl implements MesocycleService {
         return mesocycleMapper.toPayload(savedMesocycle);
     }
 
+
+
     @Override
     public void deleteMesocycle(Long id) {
         // Find existing entity

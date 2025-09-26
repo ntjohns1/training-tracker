@@ -289,7 +289,7 @@ class DayMuscleGroupMapperTest {
         DayMuscleGroup existingEntity = DayMuscleGroup.builder().id(1L).build();
 
         // When
-        DayMuscleGroup result = mapper.mergeEntity(existingEntity, null);
+        DayMuscleGroup result = mapper.mergeEntity(existingEntity, (DayMuscleGroupResponse) null);
 
         // Then
         assertNotNull(result); // mergeEntity returns existing entity when payload is null

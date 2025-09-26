@@ -7,6 +7,7 @@ import com.noslen.training_tracker.enums.SetType;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.model.day.ExerciseSet;
 import com.noslen.training_tracker.model.exercise.Exercise;
+import com.noslen.training_tracker.model.progression.MuscleGroup;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -71,6 +72,8 @@ class DayExerciseMapperTest {
 
         Exercise exercise = new Exercise();
         exercise.setId(3L);
+        MuscleGroup muscleGroup = new MuscleGroup();
+        muscleGroup.setId(5L);
         
         testEntity = DayExercise.builder()
                 .id(1L)
@@ -81,7 +84,7 @@ class DayExerciseMapperTest {
                 .createdAt(testTime)
                 .updatedAt(testTime)
                 .sourceDayExerciseId(4L)
-                .muscleGroup(com.noslen.training_tracker.model.day.DayMuscleGroup.builder().id(5L).build())
+                .muscleGroup(muscleGroup)
                 .status(Status.READY)
                 .sets(List.of(testSetEntity))
                 .build();

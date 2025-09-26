@@ -2,6 +2,8 @@ package com.noslen.training_tracker.service.day;
 
 import java.util.List;
 
+import com.noslen.training_tracker.dto.day.request.CompleteDayRequest;
+import com.noslen.training_tracker.dto.day.request.FinishDayRequest;
 import com.noslen.training_tracker.dto.day.response.DayResponse;
 
 public interface DayService {
@@ -20,5 +22,14 @@ public interface DayService {
      * @return The updated DayResponse with completed status
      */
     DayResponse completeDay(Long dayId);
+
+    /**
+     * Programs the next day of the mesocycle based on the completed day.
+     * This method should be called when a user finishes their workout and provides feedback.
+     *
+     * @param finishDayRequest The completed day request with feedback
+     * @return void
+     */
+    void programNextDay(FinishDayRequest finishDayRequest);
 
 }

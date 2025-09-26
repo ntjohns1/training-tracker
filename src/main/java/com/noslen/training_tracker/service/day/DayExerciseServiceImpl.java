@@ -163,4 +163,16 @@ public class DayExerciseServiceImpl implements DayExerciseService {
 
         return mapper.toPayloadList(dayExercises);
     }
+
+    /**
+     * @param dayId
+     * @param muscleGroupId
+     * @return
+     */
+    @Override
+    public Integer getDayExerciseMaxJointPain(Long dayId, Long muscleGroupId) {
+        return repo.findMaxJointPainByDayId(dayId, muscleGroupId);
+    }
+
+
 }

@@ -49,7 +49,8 @@ public class DayMuscleGroup {
     
     @Column(name = "created_at")
     private Instant createdAt;
-    
+
+    @Setter
     @Column(name = "updated_at")
     private Instant updatedAt;
 
@@ -106,7 +107,6 @@ public class DayMuscleGroup {
      */
     public int calculateRecommendedSets(int previous, int jointPain, int pump, int soreness, int workload) {
         // Clamp inputs defensively
-        jointPain = Math.max(0, Math.min(3, jointPain));
         soreness  = Math.max(0, Math.min(3, soreness));
         workload  = Math.max(0, Math.min(3, workload));
         pump      = Math.max(0, Math.min(2, pump));

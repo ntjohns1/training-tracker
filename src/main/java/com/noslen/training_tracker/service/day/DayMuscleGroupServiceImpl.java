@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
+import com.noslen.training_tracker.dto.day.request.UpdateDayMuscleGroupRequest;
 import com.noslen.training_tracker.dto.day.response.DayMuscleGroupResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.mapper.day.DayMuscleGroupMapper;
 import com.noslen.training_tracker.model.day.Day;
-import com.noslen.training_tracker.util.EnumConverter;
 import com.noslen.training_tracker.model.day.DayMuscleGroup;
 import com.noslen.training_tracker.model.progression.MuscleGroup;
 import com.noslen.training_tracker.repository.day.DayMuscleGroupRepo;
@@ -19,19 +19,22 @@ import com.noslen.training_tracker.repository.day.DayRepo;
 import com.noslen.training_tracker.repository.progression.MuscleGroupRepo;
 
 @Service
+@Transactional
 public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
     
     private final DayMuscleGroupRepo repo;
     private final DayRepo dayRepo;
     private final MuscleGroupRepo muscleGroupRepo;
     private final DayMuscleGroupMapper mapper;
+    private final DayExerciseService dayExerciseService;
 
     public DayMuscleGroupServiceImpl(DayMuscleGroupRepo repo, DayRepo dayRepo, 
-                                   MuscleGroupRepo muscleGroupRepo, DayMuscleGroupMapper mapper) {
+                                   MuscleGroupRepo muscleGroupRepo, DayMuscleGroupMapper mapper, DayExerciseService dayExerciseService) {
         this.repo = repo;
         this.dayRepo = dayRepo;
         this.muscleGroupRepo = muscleGroupRepo;
         this.mapper = mapper;
+        this.dayExerciseService = dayExerciseService;
     }
 
     @Override
@@ -67,12 +70,12 @@ public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
 
     @Override
     @Transactional
-    public DayMuscleGroupResponse updateDayMuscleGroup(Long id, DayMuscleGroupResponse dayMuscleGroupResponse) {
+    public DayMuscleGroupResponse updateDayMuscleGroup(Long id, UpdateDayMuscleGroupRequest request) {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
-        if (dayMuscleGroupResponse == null) {
-            throw new IllegalArgumentException("DayMuscleGroupResponse cannot be null");
+        if (request == null) {
+            throw new IllegalArgumentException("UpdateDayMuscleGroupRequest cannot be null");
         }
 
         // Find existing entity
@@ -83,21 +86,8 @@ public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
 
         DayMuscleGroup existingDayMuscleGroup = existingOpt.get();
         
-        // Update entity with payload data using merge since entity is mostly immutable
-        DayMuscleGroup updatedDayMuscleGroup = mapper.mergeEntity(existingDayMuscleGroup,
-                                                                  dayMuscleGroupResponse);
-        updatedDayMuscleGroup = DayMuscleGroup.builder()
-                .id(existingDayMuscleGroup.getId())
-                .day(existingDayMuscleGroup.getDay())
-                .muscleGroup(existingDayMuscleGroup.getMuscleGroup())
-                .pump(dayMuscleGroupResponse.pump() != null ? dayMuscleGroupResponse.pump() : existingDayMuscleGroup.getPump())
-                .soreness(dayMuscleGroupResponse.soreness() != null ? dayMuscleGroupResponse.soreness() : existingDayMuscleGroup.getSoreness())
-                .workload(dayMuscleGroupResponse.workload() != null ? dayMuscleGroupResponse.workload() : existingDayMuscleGroup.getWorkload())
-                .recommendedSets(dayMuscleGroupResponse.recommendedSets() != null ? dayMuscleGroupResponse.recommendedSets() : existingDayMuscleGroup.getRecommendedSets())
-                .status(dayMuscleGroupResponse.status() != null ? EnumConverter.<Status>stringToEnum(Status.class, dayMuscleGroupResponse.status()) : existingDayMuscleGroup.getStatus())
-                .createdAt(existingDayMuscleGroup.getCreatedAt())
-                .updatedAt(Instant.now())
-                .build();
+        // Merge updates from request while preserving relationships
+        DayMuscleGroup updatedDayMuscleGroup = mapper.mergeEntity(existingDayMuscleGroup, request);
         
         // Save and return as DTO
         DayMuscleGroup savedDayMuscleGroup = repo.save(updatedDayMuscleGroup);
@@ -143,4 +133,75 @@ public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
         List<DayMuscleGroup> entities = repo.findByDay_Id(dayId);
         return mapper.toPayloadList(entities);
     }
+
+    /**
+     * @param currentDmgId
+     * @return
+     */
+    @Override
+    public DayMuscleGroupResponse getMostRecentWithSameMuscleGroup(Long currentDmgId) {
+        Optional<DayMuscleGroup> dayMuscleGroupOpt =
+                repo.findMostRecentWithSameMuscleGroup(currentDmgId);
+
+        if (dayMuscleGroupOpt.isEmpty()) {
+            throw new RuntimeException("Previous DayMuscleGroup not found for: " + currentDmgId);
+        }
+        return mapper.toPayload(dayMuscleGroupOpt.get());
+    }
+
+    /**
+     * @param currentDmgId
+     * @return
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public DayMuscleGroupResponse findNextDayMuscleGroup(Long currentDmgId) {
+        Optional<DayMuscleGroup> dayMuscleGroupOpt =
+                repo.findNextWithSameMuscleGroupByStatus(currentDmgId, Status.UNPROGRAMMED);
+
+        if (dayMuscleGroupOpt.isEmpty()) {
+            throw new RuntimeException("Next DayMuscleGroup not found for: " + currentDmgId);
+        }
+        return mapper.toPayload(dayMuscleGroupOpt.get());
+    }
+
+    /**
+     * @param currentDmgId
+     */
+    @Override
+    public void updateRecommendedSetsForNext(Long currentDmgId) {
+//        TODO: check if next week is deload week
+        Optional<DayMuscleGroup> currentDmgOpt = repo.findById(currentDmgId);
+        if (currentDmgOpt.isEmpty()) {
+            throw new RuntimeException("Current DayMuscleGroup not found for: " + currentDmgId);
+        }
+        Optional<DayMuscleGroup> previousDmgOpt = repo.findMostRecentWithSameMuscleGroup(currentDmgId);
+        if (previousDmgOpt.isEmpty()) {
+            throw new RuntimeException("Previous DayMuscleGroup not found for: " + currentDmgId);
+        }
+        DayMuscleGroup previousDmg = previousDmgOpt.get();
+        DayMuscleGroup currentDmg = currentDmgOpt.get();
+
+        Optional<DayMuscleGroup> nextDmgOpt =
+                repo.findDayMuscleGroupAt(previousDmg.getDay().getWeek() + 1,
+                                          previousDmg.getDay().getPosition(),
+                                          previousDmg.getMuscleGroup().getId());
+        if (nextDmgOpt.isEmpty()) {
+            throw new RuntimeException("Next DayMuscleGroup not found for: " + currentDmgId);
+        }
+        DayMuscleGroup nextDmg = nextDmgOpt.get();
+        Integer maxJointPain =
+                dayExerciseService.getDayExerciseMaxJointPain(previousDmg.getDay().getId(),
+                                                              previousDmg.getMuscleGroup().getId());
+        nextDmg.calculateRecommendedSets(previousDmg.getRecommendedSets(),
+                                         maxJointPain,
+                                         previousDmg.getPump(),
+                                         currentDmg.getSoreness(),
+                                         previousDmg.getWorkload());
+        nextDmg.setStatus(Status.PROGRAMMED);
+        nextDmg.setUpdatedAt(Instant.now());
+        repo.save(nextDmg);
+    }
+
+
 }

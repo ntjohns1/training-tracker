@@ -11,8 +11,9 @@ import org.springframework.data.repository.query.Param;
 
 public interface DayRepo extends JpaRepository<Day, Long> {
     List<Day> findByMesocycleId(Long mesocycleId);
-
-    Optional<Day> findByMesocycleMesocycleKeyAndWeekAndPosition(String mesocycleKey, Integer week, Integer position);
+    
+    Optional<Day> findByMesocycleIdAndWeekAndPosition(Long mesocycleId, Integer week,
+            Integer position);
     
     /**
      * Finds the next day in the mesocycle sequence that contains the same muscle group.

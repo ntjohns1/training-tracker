@@ -1,6 +1,7 @@
 package com.noslen.training_tracker.service.day;
 
 import com.noslen.training_tracker.dto.day.response.DayMuscleGroupResponse;
+import com.noslen.training_tracker.dto.day.request.UpdateDayMuscleGroupRequest;
 import com.noslen.training_tracker.mapper.day.DayMuscleGroupMapper;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.day.DayMuscleGroup;
@@ -88,19 +89,21 @@ public class DayMuscleGroupServiceTests {
     void updateDayMuscleGroup() {
         // Arrange
         Long id = 1L;
-        DayMuscleGroupResponse payload = new DayMuscleGroupResponse(id, 1L, 2L, 8, 3, 7,
-                                                                    Instant.now(), Instant.now(), 12, "complete");
+        UpdateDayMuscleGroupRequest request = new UpdateDayMuscleGroupRequest(id, 1L, 2L, 8, 3, 7,
+                                                                              Instant.now(), Instant.now(), 12, "complete");
         DayMuscleGroup existingEntity = DayMuscleGroup.builder().id(id).pump(6).soreness(2).workload(5).build();
         DayMuscleGroup savedEntity = DayMuscleGroup.builder().id(id).pump(8).soreness(3).workload(7).build();
         DayMuscleGroupResponse expectedPayload = new DayMuscleGroupResponse(id, 1L, 2L, 8, 3, 7,
                                                                             Instant.now(), Instant.now(), 12, "complete");
 
         when(repo.findById(id)).thenReturn(Optional.of(existingEntity));
+        // Since mapper is mocked, ensure mergeEntity returns a non-null entity
+        when(mapper.mergeEntity(existingEntity, request)).thenReturn(existingEntity);
         when(repo.save(any(DayMuscleGroup.class))).thenReturn(savedEntity);
         when(mapper.toPayload(savedEntity)).thenReturn(expectedPayload);
 
         // Act
-        DayMuscleGroupResponse result = service.updateDayMuscleGroup(id, payload);
+        DayMuscleGroupResponse result = service.updateDayMuscleGroup(id, request);
 
         // Assert
         assertEquals(expectedPayload, result);
@@ -211,12 +214,12 @@ public class DayMuscleGroupServiceTests {
     void testUpdateDayMuscleGroupNotFound() {
         // Arrange
         Long id = 1L;
-        DayMuscleGroupResponse payload = new DayMuscleGroupResponse(id, 1L, 2L, 8, 3, 7,
-                                                                    Instant.now(), Instant.now(), 12, "complete");
+        UpdateDayMuscleGroupRequest request = new UpdateDayMuscleGroupRequest(id, 1L, 2L, 8, 3, 7,
+                                                                              Instant.now(), Instant.now(), 12, "complete");
         when(repo.findById(id)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> service.updateDayMuscleGroup(id, payload));
+        assertThrows(RuntimeException.class, () -> service.updateDayMuscleGroup(id, request));
         verify(repo, times(1)).findById(id);
     }
 }

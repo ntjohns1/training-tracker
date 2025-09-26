@@ -112,7 +112,7 @@ class DayMapperTest {
                 .jointPain(0)
                 .createdAt(now)
                 .updatedAt(now)
-                .muscleGroup(DayMuscleGroup.builder().id(1L).build())
+                .muscleGroup(new MuscleGroup(1L, MgName.CHEST, now, now))
                 .status(Status.READY)
                 .build();
 

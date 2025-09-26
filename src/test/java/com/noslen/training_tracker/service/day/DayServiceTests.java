@@ -28,7 +28,6 @@ import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 import com.noslen.training_tracker.repository.day.DayRepo;
 import com.noslen.training_tracker.repository.mesocycle.MesocycleRepo;
-import com.noslen.training_tracker.service.progression.ProgressionCalculationService;
 
 public class DayServiceTests {
 
@@ -46,9 +45,6 @@ public class DayServiceTests {
 
     @Mock
     private MesocycleRepo mesocycleRepo;
-
-    @Mock
-    private ProgressionCalculationService progressionCalculationService;
 
     @InjectMocks
     private DayServiceImpl service;

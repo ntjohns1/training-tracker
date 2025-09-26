@@ -1,5 +1,6 @@
 package com.noslen.training_tracker.mapper.day;
 
+import com.noslen.training_tracker.dto.day.request.UpdateDayMuscleGroupRequest;
 import com.noslen.training_tracker.dto.day.response.DayMuscleGroupResponse;
 import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.model.day.DayMuscleGroup;
@@ -7,6 +8,7 @@ import com.noslen.training_tracker.util.EnumConverter;
 
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -111,6 +113,32 @@ public class DayMuscleGroupMapper {
                 .status(payload.status() != null ? EnumConverter.stringToEnum(Status.class, payload.status()) : existing.getStatus())
                 .createdAt(existing.getCreatedAt()) // Preserve creation timestamp
                 .updatedAt(payload.updatedAt() != null ? payload.updatedAt() : existing.getUpdatedAt())
+                .build();
+    }
+
+    /**
+     * Creates a new DayMuscleGroup entity by merging existing entity with updates from UpdateDayMuscleGroupRequest.
+     * Relationships (day, muscleGroup) are preserved from the existing entity.
+     */
+    public DayMuscleGroup mergeEntity(DayMuscleGroup existing, UpdateDayMuscleGroupRequest payload) {
+        if (existing == null) {
+            return null;
+        }
+        if (payload == null) {
+            return existing;
+        }
+
+        return DayMuscleGroup.builder()
+                .id(existing.getId())
+                .day(existing.getDay())
+                .muscleGroup(existing.getMuscleGroup())
+                .pump(payload.pump() != null ? payload.pump() : existing.getPump())
+                .soreness(payload.soreness() != null ? payload.soreness() : existing.getSoreness())
+                .workload(payload.workload() != null ? payload.workload() : existing.getWorkload())
+                .recommendedSets(payload.recommendedSets() != null ? payload.recommendedSets() : existing.getRecommendedSets())
+                .status(payload.status() != null ? EnumConverter.stringToEnum(Status.class, payload.status()) : existing.getStatus())
+                .createdAt(existing.getCreatedAt())
+                .updatedAt(Instant.now())
                 .build();
     }
 

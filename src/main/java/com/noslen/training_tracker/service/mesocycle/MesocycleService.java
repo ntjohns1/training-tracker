@@ -40,7 +40,7 @@ public interface MesocycleService {
      */
     MesocycleResponse updateMesocycle(Long id, MesocycleResponse mesocycleResponse);
 
-//    void progressMesocycle(String key, Long dayId);
+//    void progressMesocycle(Long mesocycleId, Long dayId);
     /**
      * Soft deletes a mesocycle by setting deletedAt timestamp
      * @param id the mesocycle ID to delete
