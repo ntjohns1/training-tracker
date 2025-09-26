@@ -11,4 +11,6 @@ public interface DayMuscleGroupService {
     void deleteDayMuscleGroup(Long id);
     DayMuscleGroupResponse getDayMuscleGroup(Long id);
     List<DayMuscleGroupResponse> getDayMuscleGroupsByDayId(Long dayId);
+
+
 }

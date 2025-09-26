@@ -5,17 +5,36 @@ Each week of a Mesocycle progresses with RIR -= the field, Mesocycle.microRirs i
 32108 for a 5 week Mesocycle would mean week 1: 3 RIR; week 2: 2 RIR; week 3: 1 RIR, week 4: 0 RIR; week 5: 8 RIR (Deload)
 note that final week is always Deload
 
+## Shower Thoughts:
+- To generate recommendedSets, look back at the previous week of the mesocycle and use feedback to calculate recommended sets - this is how we incorporate the exercise-specific feedback (joint pain)
+- Looking up next DayMuscleGroup is a separate concern from calculating recommended sets, we still need to get the next DayMuscleGroup to change the status to "Programmed"
+- Should we have a method in DayMuscleGroup: calculateRecommendedSets?
 
-## Important note: Progression Entity Holds a List of DayMuscleGroups in chronological order
+## Note:
+- New Method in Day Exercise Repo: findAllByMuscleGroupId - returns List<DayExercise> we can also use length to divide recommended sets
+
 ## Setup:
-1. User creates Mesocycle - First half of first week (rounded up) is populated with default number of sets per muscle group (need field for default # of sets?), recommended sets is -1.
+1. User creates Mesocycle - Entire first week  is populated with default number of sets per muscle group (need field for default # of sets?), recommended sets is -1.
 2. User completes day - PUT Request updates Day to PendingConfirmation
 3. event is triggered: action:workoutComplete
+    - get next DayMuscleGroup: findNextWithSameMuscleGroup
+    - call ProgressionService to calculate recommended sets
+         - get previous week's feedback for corresponding DayMuscleGroup
+         - use our new method in DayMuscleGroupRepo: findNextWithSameMuscleGroup to get soreness for NEXT workout, other metrics are from the day
+         - call DayMuscleGroupService to update recommended sets taking in the feedback
+    - call ProgressionService to calculate targets
+    - find Day exercises by DayMuscleGroup
+    - call ExerciseSetService to create the ExerciseSets
+      - divide recommended sets by count of DayExercises (first exercises in the order get the larger number when rounding)
+    - set status for all entities
+    - set timestamp for all entities
+    - 
 ## Business logic:
 1. Triggering event provides DayId for PendingConfirmation day and meso key
 2. For Each DayMuscleGroup in completedDay:
 3. Look up Day by DayMuscleGroup.muscleGroup.id
 4. Call Progression service to sum Joint Pain, Pump, Soreness (if applicable), and Workload - Method: CalculateRecommendedSets takes in feedback Sum and returns int for recommended sets
+   - 
 5. PUT - recommended sets for DayMuscleGroup on target day
 6. for each updatedDayMuscleGroup:
 7. Look up DayExercises by DayMuscleGroup - DayExerciseRepo: List<DayExercise> getDayExercisesByDayMuscleGroupId

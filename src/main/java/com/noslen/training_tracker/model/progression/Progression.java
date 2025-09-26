@@ -33,10 +33,6 @@ public class Progression {
     @JoinColumn(name = "mesocycle_id")
     private Mesocycle mesocycle;
 
-    // @Transient
-    // @OneToMany(mappedBy = "progression")
-    // private Collection<DayMuscleGroup> dayMuscleGroups;
-
     public long getMuscleGroupId() {
         return muscleGroup.getId();
     }

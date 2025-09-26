@@ -3,9 +3,9 @@ package com.noslen.training_tracker.model.mesocycle;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.noslen.training_tracker.enums.Status;
+import com.noslen.training_tracker.enums.Unit;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.progression.Progression;
-import com.noslen.training_tracker.enums.Unit;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,7 +24,7 @@ public class Mesocycle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @Column(name = "meso_key")
     private String mesocycleKey;
     private Long userId;
@@ -88,6 +88,34 @@ public class Mesocycle {
     @MapKeyJoinColumn(name = "muscle_group_id")
     @JsonProperty("progressions")
     private Map<Long, Progression> progressions;
+
+    private int pow10(int k) {
+        int p = 1;
+        for (int i = 0; i < k; i++)
+            p *= 10;
+        return p;
+    }
+
+    int digits(long n) {
+        n = Math.abs(n);
+        int count = 1;
+        while (n >= 10) {
+            n /= 10;
+            count++;
+        }
+        return count;
+    }
+
+    public long getRirForWeek(int week) {
+
+            int len = digits(this.microRirs);
+            if (week < 0 || week >= len)
+                throw new IndexOutOfBoundsException();
+
+            int shift = len - 1 - week;
+            return (microRirs / pow10(shift)) % 10;
+
+    }
 
     @Override
     public boolean equals(Object o) {

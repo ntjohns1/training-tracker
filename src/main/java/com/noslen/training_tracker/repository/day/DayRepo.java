@@ -11,14 +11,14 @@ import org.springframework.data.repository.query.Param;
 
 public interface DayRepo extends JpaRepository<Day, Long> {
     List<Day> findByMesocycleId(Long mesocycleId);
-    
-    Optional<Day> findByMesocycleAndWeekAndPosition(Mesocycle mesocycle, Integer week, Integer position);
+
+    Optional<Day> findByMesocycleMesocycleKeyAndWeekAndPosition(String mesocycleKey, Integer week, Integer position);
     
     /**
      * Finds the next day in the mesocycle sequence that contains the same muscle group.
      * Given a current day and muscle group, this method looks for the next day (by week/position)
      * in the same mesocycle that has a DayMuscleGroup targeting the same MuscleGroup.
-     * 
+     *
      * @param currentDayId The ID of the current day
      * @param muscleGroupId The ID of the muscle group to find in the next day
      * @return Optional containing the next day with the same muscle group, or empty if not found
@@ -35,6 +35,6 @@ public interface DayRepo extends JpaRepository<Day, Long> {
         ORDER BY next_day.week ASC, next_day.position ASC
         LIMIT 1
         """, nativeQuery = true)
-    Optional<Day> findNextDayWithSameMuscleGroup(@Param("currentDayId") Long currentDayId, 
+    Optional<Day> findNextDayWithSameMuscleGroup(@Param("currentDayId") Long currentDayId,
                                                  @Param("muscleGroupId") Long muscleGroupId);
 }

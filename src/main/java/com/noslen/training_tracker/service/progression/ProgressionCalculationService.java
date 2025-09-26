@@ -8,7 +8,8 @@ import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 
 public interface ProgressionCalculationService {
 
-    boolean calculateProgression(Day completedDay);
+    void calculateRecommendedSets(Long mesoId);
+    void calculateTargets(Long mesoId);
 
 }
 /*
