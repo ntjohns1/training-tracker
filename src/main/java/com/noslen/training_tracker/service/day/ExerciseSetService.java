@@ -10,4 +10,5 @@ public interface ExerciseSetService {
     ExerciseSetResponse getExerciseSet(Long id);
     void deleteExerciseSet(Long id);
     List<ExerciseSetResponse> getExerciseSetsByDayExerciseId(Long dayExerciseId);
+    Integer countExerciseSetsByMuscleGroupId(Long dayId, Long muscleGroupId);
 }

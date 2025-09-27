@@ -27,14 +27,16 @@ public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
     private final MuscleGroupRepo muscleGroupRepo;
     private final DayMuscleGroupMapper mapper;
     private final DayExerciseService dayExerciseService;
+    private final ExerciseSetService exerciseSetService;
 
     public DayMuscleGroupServiceImpl(DayMuscleGroupRepo repo, DayRepo dayRepo, 
-                                   MuscleGroupRepo muscleGroupRepo, DayMuscleGroupMapper mapper, DayExerciseService dayExerciseService) {
+                                   MuscleGroupRepo muscleGroupRepo, DayMuscleGroupMapper mapper, DayExerciseService dayExerciseService, ExerciseSetService exerciseSetService) {
         this.repo = repo;
         this.dayRepo = dayRepo;
         this.muscleGroupRepo = muscleGroupRepo;
         this.mapper = mapper;
         this.dayExerciseService = dayExerciseService;
+        this.exerciseSetService = exerciseSetService;
     }
 
     @Override
@@ -185,15 +187,18 @@ public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
         Optional<DayMuscleGroup> nextDmgOpt =
                 repo.findDayMuscleGroupAt(previousDmg.getDay().getWeek() + 1,
                                           previousDmg.getDay().getPosition(),
-                                          previousDmg.getMuscleGroup().getId());
+                                          previousDmg.getMuscleGroupId());
         if (nextDmgOpt.isEmpty()) {
             throw new RuntimeException("Next DayMuscleGroup not found for: " + currentDmgId);
         }
         DayMuscleGroup nextDmg = nextDmgOpt.get();
         Integer maxJointPain =
-                dayExerciseService.getDayExerciseMaxJointPain(previousDmg.getDay().getId(),
-                                                              previousDmg.getMuscleGroup().getId());
-        nextDmg.calculateRecommendedSets(previousDmg.getRecommendedSets(),
+                dayExerciseService.getDayExerciseMaxJointPain(previousDmg.getDayId(),
+                                                              previousDmg.getMuscleGroupId());
+        Integer totalExerciseSets =
+                exerciseSetService.countExerciseSetsByMuscleGroupId(previousDmg.getDayId(),
+                                                                    previousDmg.getMuscleGroupId());
+        nextDmg.calculateRecommendedSets(totalExerciseSets,
                                          maxJointPain,
                                          previousDmg.getPump(),
                                          currentDmg.getSoreness(),

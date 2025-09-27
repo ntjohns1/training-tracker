@@ -4,6 +4,7 @@ import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.model.day.DayMuscleGroup;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 
@@ -26,7 +27,7 @@ public interface DayMuscleGroupRepo extends JpaRepository<DayMuscleGroup, Long> 
               AND dmgNext.status = :status 
             ORDER BY nextDay.week, nextDay.position 
             """)
-    Optional<DayMuscleGroup> findNextWithSameMuscleGroupByStatus(Long currentDmgId, Status status);
+    Optional<DayMuscleGroup> findNextWithSameMuscleGroupByStatus(@Param("currentDmgId") Long currentDmgId,@Param("status") Status status);
 
     @Query("""
             SELECT dmgNext
@@ -42,7 +43,7 @@ public interface DayMuscleGroupRepo extends JpaRepository<DayMuscleGroup, Long> 
                   )
             ORDER BY nextDay.week, nextDay.position
             """)
-    Optional<DayMuscleGroup> findNextWithSameMuscleGroup(Long currentDmgId);
+    Optional<DayMuscleGroup> findNextWithSameMuscleGroup(@Param("currentDmgId") Long currentDmgId);
 
     @Query("""
             SELECT dmgPrev
@@ -59,7 +60,7 @@ public interface DayMuscleGroupRepo extends JpaRepository<DayMuscleGroup, Long> 
               AND dmgPrev.status = COMPLETE
             ORDER BY prevDay.week DESC, prevDay.position DESC
             """)
-    List<DayMuscleGroup> findPreviousWithSameMuscleGroup(Long currentDmgId, Pageable pageable);
+    List<DayMuscleGroup> findPreviousWithSameMuscleGroup(@Param("currentDmgId") Long currentDmgId, Pageable pageable);
 
 
     @Query("""
@@ -71,8 +72,9 @@ public interface DayMuscleGroupRepo extends JpaRepository<DayMuscleGroup, Long> 
               AND day.position = :position
               AND dmg.muscleGroup.id = :mgId
             """)
-    Optional<DayMuscleGroup> findDayMuscleGroupAt(int week, int position,
-            Long mgId);
+    Optional<DayMuscleGroup> findDayMuscleGroupAt(@Param("week") int week,
+            @Param("position") int position,
+            @Param("mgId") Long mgId);
 
     List<DayMuscleGroup> findByDay_Id(Long dayId);
 

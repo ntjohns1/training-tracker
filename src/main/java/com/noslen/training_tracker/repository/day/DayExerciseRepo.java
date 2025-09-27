@@ -15,4 +15,7 @@ public interface DayExerciseRepo extends JpaRepository<DayExercise, Long> {
     // Returns just the maximum jointPain value for a given day (null if none)
     @Query("select max(de.jointPain) from DayExercise de where de.day.id = :dayId and de.muscleGroup.id = :muscleGroupId")
     Integer findMaxJointPainByDayId(@Param("dayId") Long dayId, @Param("muscleGroupId") Long muscleGroupId);
+
+    @Query("select count(de) from DayExercise de where de.day.id = :dayId and de.muscleGroup.id = :muscleGroupId")
+    Integer countByDayIdAndMuscleGroupId(@Param("dayId") Long dayId, @Param("muscleGroupId") Long muscleGroupId);
 }

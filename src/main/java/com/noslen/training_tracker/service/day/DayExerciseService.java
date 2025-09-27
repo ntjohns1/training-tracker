@@ -12,4 +12,5 @@ public interface DayExerciseService {
     DayExerciseResponse getDayExercise(Long dayId, Long exerciseId);
     List<DayExerciseResponse> getDayExercisesByDayId(Long dayId);
     Integer getDayExerciseMaxJointPain(Long dayId, Long muscleGroupId);
+    Integer countDayExercisesByDayIdAndMuscleGroupId(Long dayId, Long muscleGroupId);
 }

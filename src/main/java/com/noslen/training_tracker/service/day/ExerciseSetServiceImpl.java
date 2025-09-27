@@ -138,4 +138,14 @@ public class ExerciseSetServiceImpl implements ExerciseSetService {
         
         return mapper.toPayloadList(exerciseSets);
     }
+
+    /**
+     * @param dayId
+     * @param muscleGroupId
+     * @return
+     */
+    @Override
+    public Integer countExerciseSetsByMuscleGroupId(Long dayId, Long muscleGroupId) {
+        return repo.countByDayExercise_Day_IdAndDayExercise_MuscleGroup_Id(dayId, muscleGroupId);
+    }
 }

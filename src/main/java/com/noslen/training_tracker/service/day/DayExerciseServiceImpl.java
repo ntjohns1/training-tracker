@@ -174,5 +174,15 @@ public class DayExerciseServiceImpl implements DayExerciseService {
         return repo.findMaxJointPainByDayId(dayId, muscleGroupId);
     }
 
+    /**
+     * @param dayId
+     * @param muscleGroupId
+     * @return
+     */
+    @Override
+    public Integer countDayExercisesByDayIdAndMuscleGroupId(Long dayId, Long muscleGroupId) {
+        return repo.countByDayIdAndMuscleGroupId(dayId, muscleGroupId);
+    }
+
 
 }

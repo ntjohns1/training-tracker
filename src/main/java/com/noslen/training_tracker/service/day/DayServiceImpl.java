@@ -195,11 +195,7 @@ public class DayServiceImpl implements DayService {
         // calculate recommended sets for next day
         for (FinishDayRequest.DayMuscleGroupFinishRequest dayMuscleGroupFinishRequest :
                 finishDayRequest.muscleGroups()) {
-//          TODO: we can look up by week and position in week instead of using findNextWithSameMuscleGroupByStatus
             dayMuscleGroupService.updateRecommendedSetsForNext(dayMuscleGroupFinishRequest.id());
-
-//            TODO: day exercise repository method to find count of exercises for next day for a given
-//             day muscle group.
             // create ExerciseSets for next day based on recommended sets
             Optional<Day> dayOpt = dayRepo.findNextDayWithSameMuscleGroup(finishDayRequest.id(),
                                                              dayMuscleGroupFinishRequest.muscleGroupId());
@@ -209,8 +205,13 @@ public class DayServiceImpl implements DayService {
             // get next day
             Day nextDay = dayOpt.get();
             // get recommended sets for next day
+            Integer recommendedSets = dayMuscleGroupFinishRequest.recommendedSets();
             // get count of exercises for next day for each day muscle group
-            // create ExerciseSet for each recommended set
+            Integer totalExerciseSets =
+                    dayExerciseService.countDayExercisesByDayIdAndMuscleGroupId(nextDay.getId(),
+                                                                                dayMuscleGroupFinishRequest.muscleGroupId());
+//            TODO: divide recommended sets by total exercises - figure out how to distribute sets
+
             // save ExerciseSet
 
         }
