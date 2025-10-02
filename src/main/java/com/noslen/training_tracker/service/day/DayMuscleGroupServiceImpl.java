@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import com.noslen.training_tracker.dto.day.request.UpdateDayMuscleGroupRequest;
 import com.noslen.training_tracker.dto.day.response.DayMuscleGroupResponse;
+import com.noslen.training_tracker.service.progression.ProgressionCalculator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -198,11 +199,13 @@ public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
         Integer totalExerciseSets =
                 exerciseSetService.countExerciseSetsByMuscleGroupId(previousDmg.getDayId(),
                                                                     previousDmg.getMuscleGroupId());
-        nextDmg.calculateRecommendedSets(totalExerciseSets,
-                                         maxJointPain,
-                                         previousDmg.getPump(),
-                                         currentDmg.getSoreness(),
-                                         previousDmg.getWorkload());
+
+        int recommendedSets = ProgressionCalculator.calculateRecommendedSets(totalExerciseSets,
+                                                                             maxJointPain,
+                                                                             previousDmg.getPump(),
+                                                                             currentDmg.getSoreness(),
+                                                                             previousDmg.getWorkload());
+        nextDmg.setRecommendedSets(recommendedSets);
         nextDmg.setStatus(Status.PROGRAMMED);
         nextDmg.setUpdatedAt(Instant.now());
         repo.save(nextDmg);

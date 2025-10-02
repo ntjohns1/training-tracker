@@ -1,11 +1,6 @@
 package com.noslen.training_tracker.service.progression;
 
-
-import org.springframework.stereotype.Component;
-
-@Component
 public class ProgressionCalculator {
-
 
         /**
          * Calculates the next recommended set count for this muscle group based on the
@@ -42,7 +37,7 @@ public class ProgressionCalculator {
          * @return the next recommended set count, never less than 1
          */
 
-        public int calculateRecommendedSets ( int previous, int jointPain, int pump, int soreness,
+        public static int calculateRecommendedSets ( int previous, int jointPain, int pump, int soreness,
         int workload){
             // Clamp inputs defensively
             soreness = Math.max(0,

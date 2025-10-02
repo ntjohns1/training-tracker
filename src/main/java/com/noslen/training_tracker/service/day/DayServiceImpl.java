@@ -1,9 +1,7 @@
 package com.noslen.training_tracker.service.day;
 
 import com.noslen.training_tracker.dto.day.request.FinishDayRequest;
-import com.noslen.training_tracker.dto.day.request.UpdateDayMuscleGroupRequest;
-import com.noslen.training_tracker.dto.day.response.DayMgFeedbackResponse;
-import com.noslen.training_tracker.dto.day.response.DayMuscleGroupResponse;
+
 import com.noslen.training_tracker.dto.day.response.DayResponse;
 import com.noslen.training_tracker.factory.DayFactory;
 import com.noslen.training_tracker.mapper.day.DayMapper;
@@ -191,7 +189,6 @@ public class DayServiceImpl implements DayService {
      * This method should be called when a user finishes their workout and provides feedback.
      *
      * @param finishDayRequest The completed day request with feedback
-     * @return void
      */
     @Override
     public void programNextDay(FinishDayRequest finishDayRequest) {
