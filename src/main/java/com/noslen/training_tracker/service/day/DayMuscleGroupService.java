@@ -19,6 +19,9 @@ public interface DayMuscleGroupService {
 
     DayMuscleGroupResponse getMostRecentWithSameMuscleGroup(Long currentDmgId);
 
+    DayMuscleGroupResponse getDayMuscleGroupAt(Integer week, Integer position,
+            Long muscleGroupId);
+
     DayMuscleGroupResponse findNextDayMuscleGroup(Long currentDmgId);
 
     void updateRecommendedSetsForNext(Long currentDmgId);

@@ -152,6 +152,18 @@ public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
         return mapper.toPayload(dayMuscleGroupOpt.get());
     }
 
+    @Override
+    public DayMuscleGroupResponse getDayMuscleGroupAt(Integer week, Integer position,
+            Long muscleGroupId) {
+        Optional<DayMuscleGroup> dayMuscleGroupOpt =
+                repo.findDayMuscleGroupAt(week, position, muscleGroupId);
+        if (dayMuscleGroupOpt.isEmpty()) {
+            throw new RuntimeException("DayMuscleGroup not found for week: " + week + "at " +
+                                               "position: " + position + "for muscle group: " + muscleGroupId);
+        }
+        return mapper.toPayload(dayMuscleGroupOpt.get());
+    }
+
     /**
      * @param currentDmgId
      * @return

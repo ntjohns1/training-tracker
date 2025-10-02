@@ -38,12 +38,8 @@ public class MesocycleProgressionServiceImpl implements MesocycleProgressionServ
         //        TODO: check if next week is deload week
         DayMuscleGroupResponse currentDmg = dayMuscleGroupService.getDayMuscleGroup(dayMuscleGroupId);
 
-        Optional<DayMuscleGroup> previousDmgOpt = repo.findMostRecentWithSameMuscleGroup(dayMuscleGroupId);
-        if (previousDmgOpt.isEmpty()) {
-            throw new RuntimeException("Previous DayMuscleGroup not found for: " + dayMuscleGroupId);
-        }
-        DayMuscleGroup previousDmg = previousDmgOpt.get();
-        DayMuscleGroup currentDmg = currentDmgOpt.get();
+        DayMuscleGroupResponse previousDmg =
+                dayMuscleGroupService.getMostRecentWithSameMuscleGroup(dayMuscleGroupId);
 
         Optional<DayMuscleGroup> nextDmgOpt =
                 repo.findDayMuscleGroupAt(previousDmg.getDay()
