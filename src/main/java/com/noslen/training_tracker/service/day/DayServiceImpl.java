@@ -40,6 +40,7 @@ public class DayServiceImpl implements DayService {
         this.dayMapper = dayMapper;
         this.dayFactory = dayFactory;
         this.userContext = userContext;
+//        TODO: remove this
         this.mesocycleRepo = mesocycleRepo;
         this.mesocycleService = mesocycleService;
         this.dayMuscleGroupService = dayMuscleGroupService;
@@ -160,6 +161,17 @@ public class DayServiceImpl implements DayService {
     }
 
     @Override
+    public DayResponse getNextDayWithSameMuscleGroup(Long dayId, Long muscleGroupId) {
+        Optional<Day> dayOpt = dayRepo.findNextDayWithSameMuscleGroup(dayId,
+                                                                      muscleGroupId);
+        if (dayOpt.isEmpty()) {
+            throw new RuntimeException("Next day not found for day: " + dayId + " and muscle group: " + muscleGroupId);
+        }
+        return dayMapper.toPayload(dayOpt.get());
+    }
+
+
+    @Override
     @Transactional
     public DayResponse completeDay(Long dayId) {
         if (dayId == null) {
@@ -184,40 +196,7 @@ public class DayServiceImpl implements DayService {
         return dayMapper.toPayload(savedDay);
     }
 
-    /**
-     * Programs the next day of the mesocycle based on the completed day.
-     * This method should be called when a user finishes their workout and provides feedback.
-     *
-     * @param finishDayRequest The completed day request with feedback
-     */
-    @Override
-    public void programNextDay(FinishDayRequest finishDayRequest) {
-        // calculate recommended sets for next day
-        for (FinishDayRequest.DayMuscleGroupFinishRequest dmgFinishRequest :
-                finishDayRequest.muscleGroups()) {
-            dayMuscleGroupService.updateRecommendedSetsForNext(dmgFinishRequest.id());
-            // create ExerciseSets for next day based on recommended sets
-            Optional<Day> dayOpt = dayRepo.findNextDayWithSameMuscleGroup(finishDayRequest.id(),
-                                                             dmgFinishRequest.muscleGroupId());
-            if (dayOpt.isEmpty()) {
-                throw new RuntimeException("Next day not found with id: " + finishDayRequest.id());
-            }
-            // get next day
-            Day nextDay = dayOpt.get();
-            // get recommended sets for next day
-            Integer recommendedSets = dmgFinishRequest.recommendedSets();
-            // get count of exercises for next day for next day muscle group
-            Integer totalExerciseSets =
-                    dayExerciseService.countDayExercisesByDayIdAndMuscleGroupId(nextDay.getId(),
-                                                                                dmgFinishRequest.muscleGroupId());
 
-            //            TODO: divide recommended sets by total exercises - figure out how to distribute sets
-
-            // save ExerciseSet
-
-        }
-
-    }
 
 
 
