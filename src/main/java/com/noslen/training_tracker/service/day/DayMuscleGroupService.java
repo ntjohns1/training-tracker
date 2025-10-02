@@ -22,9 +22,9 @@ public interface DayMuscleGroupService {
     DayMuscleGroupResponse getDayMuscleGroupAt(Integer week, Integer position,
             Long muscleGroupId);
 
-    DayMuscleGroupResponse findNextDayMuscleGroup(Long currentDmgId);
+    DayMuscleGroupResponse getNextDayMuscleGroup(Long currentDmgId);
 
-    DayMuscleGroupResponse getNextDayMuscleGroupForNextWeek(Long currentDmgId);
+    DayMuscleGroupResponse getDayMuscleGroupForNextWeek(Long currentDmgId);
 
     void updateRecommendedSetsForNext(Long currentDmgId);
 

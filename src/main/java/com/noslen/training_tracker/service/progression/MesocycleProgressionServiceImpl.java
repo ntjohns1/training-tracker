@@ -2,12 +2,9 @@ package com.noslen.training_tracker.service.progression;
 
 import com.noslen.training_tracker.dto.day.request.FinishDayRequest;
 import com.noslen.training_tracker.dto.day.response.DayMuscleGroupResponse;
-import com.noslen.training_tracker.model.day.DayMuscleGroup;
 import com.noslen.training_tracker.service.day.DayExerciseService;
 import com.noslen.training_tracker.service.day.DayMuscleGroupService;
 import com.noslen.training_tracker.service.day.ExerciseSetService;
-
-import java.util.Optional;
 
 public class MesocycleProgressionServiceImpl implements MesocycleProgressionService {
     //    private final DayMuscleGroupRepository repo;
@@ -43,7 +40,7 @@ public class MesocycleProgressionServiceImpl implements MesocycleProgressionServ
 
 
         DayMuscleGroupResponse nextDmg =
-                dayMuscleGroupService.getNextDayMuscleGroupForNextWeek(previousDmg.id());
+                dayMuscleGroupService.getDayMuscleGroupForNextWeek(previousDmg.id());
 
         Integer maxJointPain =
                 dayExerciseService.getDayExerciseMaxJointPain(previousDmg.dayId(),

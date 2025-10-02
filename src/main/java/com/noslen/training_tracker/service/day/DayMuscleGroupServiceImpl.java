@@ -171,7 +171,7 @@ public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
      */
     @Override
     @Transactional(readOnly = true)
-    public DayMuscleGroupResponse findNextDayMuscleGroup(Long currentDmgId) {
+    public DayMuscleGroupResponse getNextDayMuscleGroup(Long currentDmgId) {
         Optional<DayMuscleGroup> dayMuscleGroupOpt =
                 repo.findNextWithSameMuscleGroupByStatus(currentDmgId, Status.UNPROGRAMMED);
 
@@ -182,7 +182,7 @@ public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
     }
 
     @Override
-    public DayMuscleGroupResponse getNextDayMuscleGroupForNextWeek(Long currentDmgId) {
+    public DayMuscleGroupResponse getDayMuscleGroupForNextWeek(Long currentDmgId) {
         Optional<DayMuscleGroup> dayMuscleGroupOpt = repo.findNextDayMuscleGroupForNextWeek(currentDmgId);
         if (dayMuscleGroupOpt.isEmpty()) {
             throw new RuntimeException("Next DayMuscleGroup not found for: " + currentDmgId);
