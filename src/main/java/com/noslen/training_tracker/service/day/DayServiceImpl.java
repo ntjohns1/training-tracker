@@ -11,6 +11,7 @@ import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.repository.day.DayRepo;
 import com.noslen.training_tracker.repository.mesocycle.MesocycleRepo;
 import com.noslen.training_tracker.security.UserContext;
+import com.noslen.training_tracker.service.mesocycle.MesocycleService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,17 +31,19 @@ public class DayServiceImpl implements DayService {
     private final DayFactory dayFactory;
     private final UserContext userContext;
     private final MesocycleRepo mesocycleRepo;
+    private final MesocycleService mesocycleService;
     private final DayMuscleGroupService dayMuscleGroupService;
     private final DayExerciseService dayExerciseService;
 
     public DayServiceImpl(DayRepo dayRepo, DayMapper dayMapper, DayFactory dayFactory,
-            UserContext userContext, MesocycleRepo mesocycleRepo,
+            UserContext userContext, MesocycleRepo mesocycleRepo, MesocycleService mesocycleService,
             DayMuscleGroupService dayMuscleGroupService, DayExerciseService dayExerciseService) {
         this.dayRepo = dayRepo;
         this.dayMapper = dayMapper;
         this.dayFactory = dayFactory;
         this.userContext = userContext;
         this.mesocycleRepo = mesocycleRepo;
+        this.mesocycleService = mesocycleService;
         this.dayMuscleGroupService = dayMuscleGroupService;
         this.dayExerciseService = dayExerciseService;
     }
@@ -193,24 +196,25 @@ public class DayServiceImpl implements DayService {
     @Override
     public void programNextDay(FinishDayRequest finishDayRequest) {
         // calculate recommended sets for next day
-        for (FinishDayRequest.DayMuscleGroupFinishRequest dayMuscleGroupFinishRequest :
+        for (FinishDayRequest.DayMuscleGroupFinishRequest dmgFinishRequest :
                 finishDayRequest.muscleGroups()) {
-            dayMuscleGroupService.updateRecommendedSetsForNext(dayMuscleGroupFinishRequest.id());
+            dayMuscleGroupService.updateRecommendedSetsForNext(dmgFinishRequest.id());
             // create ExerciseSets for next day based on recommended sets
             Optional<Day> dayOpt = dayRepo.findNextDayWithSameMuscleGroup(finishDayRequest.id(),
-                                                             dayMuscleGroupFinishRequest.muscleGroupId());
+                                                             dmgFinishRequest.muscleGroupId());
             if (dayOpt.isEmpty()) {
                 throw new RuntimeException("Next day not found with id: " + finishDayRequest.id());
             }
             // get next day
             Day nextDay = dayOpt.get();
             // get recommended sets for next day
-            Integer recommendedSets = dayMuscleGroupFinishRequest.recommendedSets();
-            // get count of exercises for next day for each day muscle group
+            Integer recommendedSets = dmgFinishRequest.recommendedSets();
+            // get count of exercises for next day for next day muscle group
             Integer totalExerciseSets =
                     dayExerciseService.countDayExercisesByDayIdAndMuscleGroupId(nextDay.getId(),
-                                                                                dayMuscleGroupFinishRequest.muscleGroupId());
-//            TODO: divide recommended sets by total exercises - figure out how to distribute sets
+                                                                                dmgFinishRequest.muscleGroupId());
+
+            //            TODO: divide recommended sets by total exercises - figure out how to distribute sets
 
             // save ExerciseSet
 

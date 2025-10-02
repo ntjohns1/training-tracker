@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.noslen.training_tracker.model.day.Day;
-import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
