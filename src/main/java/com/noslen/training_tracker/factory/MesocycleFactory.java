@@ -30,11 +30,12 @@ import java.util.UUID;
 @Component
 public class MesocycleFactory {
     
+//    TODO: use services instead of repos for all instance fields
     private final ExerciseRepo exerciseRepo;
     private final DayMuscleGroupRepo dayMuscleGroupRepo;
     private final MuscleGroupRepo muscleGroupRepo;
     private final DayFactory dayFactory;
-    
+
     public MesocycleFactory(ExerciseRepo exerciseRepo, DayMuscleGroupRepo dayMuscleGroupRepo, MuscleGroupRepo muscleGroupRepo, DayFactory dayFactory) {
         this.exerciseRepo = exerciseRepo;
         this.dayMuscleGroupRepo = dayMuscleGroupRepo;

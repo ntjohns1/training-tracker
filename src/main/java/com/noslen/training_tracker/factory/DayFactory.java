@@ -15,6 +15,7 @@ import java.util.Optional;
  * and relationship handling, eliminating redundant instantiation patterns.
  */
 @Component
+// TODO: use services instead of repos for all instance fields, possibly EntityManager for mesocycle
 public class DayFactory {
 
     private final DayMapper dayMapper;

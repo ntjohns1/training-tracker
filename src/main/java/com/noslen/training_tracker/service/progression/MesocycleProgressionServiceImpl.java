@@ -30,18 +30,18 @@ public class MesocycleProgressionServiceImpl implements MesocycleProgressionServ
         // calculate recommended sets for next day
         for (FinishDayRequest.DayMuscleGroupFinishRequest dmgFinishRequest :
                 finishDayRequest.muscleGroups()) {
-            dayMuscleGroupService.updateRecommendedSetsForNext(dmgFinishRequest.id());
+//            dayMuscleGroupService.updateRecommendedSetsForNext(dmgFinishRequest.id());
             // create ExerciseSets for next day based on recommended sets
-            DayResponse nextDay = dayService.getNextDayWithSameMuscleGroup(finishDayRequest.id(),
-                                                                           dmgFinishRequest.muscleGroupId());
+//            DayResponse nextDay = dayService.getNextDayWithSameMuscleGroup(finishDayRequest.id(),
+//                                                                           dmgFinishRequest.muscleGroupId());
             // get recommended sets for next day
-            Integer recommendedSets = dmgFinishRequest.recommendedSets();
+            Integer recommendedSets = calculateRecommendedSets(dmgFinishRequest.id());
             // get count of exercises for next day for next day muscle group
-            Integer totalExerciseSets =
-                    dayExerciseService.countDayExercisesByDayIdAndMuscleGroupId(nextDay.id(),
-                                                                                dmgFinishRequest.muscleGroupId());
+//            Integer totalExerciseSets =
+//                    dayExerciseService.countDayExercisesByDayIdAndMuscleGroupId(nextDay.id(),
+//                                                                                dmgFinishRequest.muscleGroupId());
 
-            //            TODO: divide recommended sets by total exercises - figure out how to distribute sets
+            // TODO: divide recommended sets by total exercises - figure out how to distribute sets
 
             // save ExerciseSet
 

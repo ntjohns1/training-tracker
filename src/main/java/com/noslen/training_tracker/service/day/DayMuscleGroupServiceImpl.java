@@ -4,9 +4,11 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
+import com.noslen.training_tracker.dto.day.request.CreateDayMuscleGroupRequest;
 import com.noslen.training_tracker.dto.day.request.UpdateDayMuscleGroupRequest;
 import com.noslen.training_tracker.dto.day.response.DayMuscleGroupResponse;
-import com.noslen.training_tracker.service.progression.ProgressionCalculator;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,53 +18,37 @@ import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.day.DayMuscleGroup;
 import com.noslen.training_tracker.model.progression.MuscleGroup;
 import com.noslen.training_tracker.repository.day.DayMuscleGroupRepo;
-import com.noslen.training_tracker.repository.day.DayRepo;
-import com.noslen.training_tracker.repository.progression.MuscleGroupRepo;
 
 @Service
 @Transactional
 public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
     
     private final DayMuscleGroupRepo repo;
-    private final DayRepo dayRepo;
-    private final MuscleGroupRepo muscleGroupRepo;
     private final DayMuscleGroupMapper mapper;
-    private final DayExerciseService dayExerciseService;
-    private final ExerciseSetService exerciseSetService;
 
-    public DayMuscleGroupServiceImpl(DayMuscleGroupRepo repo, DayRepo dayRepo, 
-                                   MuscleGroupRepo muscleGroupRepo, DayMuscleGroupMapper mapper, DayExerciseService dayExerciseService, ExerciseSetService exerciseSetService) {
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    public DayMuscleGroupServiceImpl(DayMuscleGroupRepo repo, DayMuscleGroupMapper mapper) {
         this.repo = repo;
-        this.dayRepo = dayRepo;
-        this.muscleGroupRepo = muscleGroupRepo;
         this.mapper = mapper;
-        this.dayExerciseService = dayExerciseService;
-        this.exerciseSetService = exerciseSetService;
     }
 
 //    TODO: review this method, reconsider using DayRepo
     @Override
     @Transactional
-    public DayMuscleGroupResponse createDayMuscleGroup(Long dayId, Long muscleGroupId) {
-        if (dayId == null || muscleGroupId == null) {
+    public DayMuscleGroupResponse createDayMuscleGroup(CreateDayMuscleGroupRequest request) {
+        if (request.dayId() == null || request.muscleGroupId() == null) {
             throw new IllegalArgumentException("Day ID and Muscle Group ID cannot be null");
         }
 
-        // Fetch the Day and MuscleGroup entities
-        Optional<Day> dayOpt = dayRepo.findById(dayId);
-        if (dayOpt.isEmpty()) {
-            throw new RuntimeException("Day not found with id: " + dayId);
-        }
-
-        Optional<MuscleGroup> muscleGroupOpt = muscleGroupRepo.findById(muscleGroupId);
-        if (muscleGroupOpt.isEmpty()) {
-            throw new RuntimeException("MuscleGroup not found with id: " + muscleGroupId);
-        }
+        Day day = entityManager.find(Day.class, request.dayId());
+        MuscleGroup muscleGroup = entityManager.find(MuscleGroup.class, request.muscleGroupId());
 
         // Create new DayMuscleGroup entity
         DayMuscleGroup dayMuscleGroup = DayMuscleGroup.builder()
-                .day(dayOpt.get())
-                .muscleGroup(muscleGroupOpt.get())
+                .day(day)
+                .muscleGroup(muscleGroup)
                 .createdAt(Instant.now())
                 .updatedAt(Instant.now())
                 .build();
@@ -189,52 +175,5 @@ public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
         }
 
         return mapper.toPayload(dayMuscleGroupOpt.get());
-
-
     }
-
-    /**
-     * @param currentDmgId
-     */
-    @Override
-    public void updateRecommendedSetsForNext(Long currentDmgId) {
-//        TODO: check if next week is deload week
-        Optional<DayMuscleGroup> currentDmgOpt = repo.findById(currentDmgId);
-        if (currentDmgOpt.isEmpty()) {
-            throw new RuntimeException("Current DayMuscleGroup not found for: " + currentDmgId);
-        }
-        Optional<DayMuscleGroup> previousDmgOpt = repo.findMostRecentWithSameMuscleGroup(currentDmgId);
-        if (previousDmgOpt.isEmpty()) {
-            throw new RuntimeException("Previous DayMuscleGroup not found for: " + currentDmgId);
-        }
-        DayMuscleGroup previousDmg = previousDmgOpt.get();
-        DayMuscleGroup currentDmg = currentDmgOpt.get();
-
-        Optional<DayMuscleGroup> nextDmgOpt =
-                repo.findDayMuscleGroupAt(previousDmg.getDay().getWeek() + 1,
-                                          previousDmg.getDay().getPosition(),
-                                          previousDmg.getMuscleGroupId());
-        if (nextDmgOpt.isEmpty()) {
-            throw new RuntimeException("Next DayMuscleGroup not found for: " + currentDmgId);
-        }
-        DayMuscleGroup nextDmg = nextDmgOpt.get();
-        Integer maxJointPain =
-                dayExerciseService.getDayExerciseMaxJointPain(previousDmg.getDayId(),
-                                                              previousDmg.getMuscleGroupId());
-        Integer totalExerciseSets =
-                exerciseSetService.countExerciseSetsByMuscleGroupId(previousDmg.getDayId(),
-                                                                    previousDmg.getMuscleGroupId());
-
-        int recommendedSets = ProgressionCalculator.calculateRecommendedSets(totalExerciseSets,
-                                                                             maxJointPain,
-                                                                             previousDmg.getPump(),
-                                                                             currentDmg.getSoreness(),
-                                                                             previousDmg.getWorkload());
-        nextDmg.setRecommendedSets(recommendedSets);
-        nextDmg.setStatus(Status.PROGRAMMED);
-        nextDmg.setUpdatedAt(Instant.now());
-        repo.save(nextDmg);
-    }
-
-
 }

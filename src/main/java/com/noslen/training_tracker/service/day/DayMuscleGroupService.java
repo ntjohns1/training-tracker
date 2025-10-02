@@ -1,5 +1,6 @@
 package com.noslen.training_tracker.service.day;
 
+import com.noslen.training_tracker.dto.day.request.CreateDayMuscleGroupRequest;
 import com.noslen.training_tracker.dto.day.request.UpdateDayMuscleGroupRequest;
 import com.noslen.training_tracker.dto.day.response.DayMuscleGroupResponse;
 
@@ -7,7 +8,7 @@ import java.util.List;
 
 public interface DayMuscleGroupService {
 
-    DayMuscleGroupResponse createDayMuscleGroup(Long dayId, Long muscleGroupId);
+    DayMuscleGroupResponse createDayMuscleGroup(CreateDayMuscleGroupRequest dayMuscleGroupRequest);
 
     DayMuscleGroupResponse updateDayMuscleGroup(Long id, UpdateDayMuscleGroupRequest dayMuscleGroupRequest);
 
@@ -25,8 +26,5 @@ public interface DayMuscleGroupService {
     DayMuscleGroupResponse getNextDayMuscleGroup(Long currentDmgId);
 
     DayMuscleGroupResponse getDayMuscleGroupForNextWeek(Long currentDmgId);
-
-    void updateRecommendedSetsForNext(Long currentDmgId);
-
 
 }
