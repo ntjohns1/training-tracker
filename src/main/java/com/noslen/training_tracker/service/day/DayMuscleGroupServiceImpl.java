@@ -40,6 +40,7 @@ public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
         this.exerciseSetService = exerciseSetService;
     }
 
+//    TODO: review this method, reconsider using DayRepo
     @Override
     @Transactional
     public DayMuscleGroupResponse createDayMuscleGroup(Long dayId, Long muscleGroupId) {
@@ -178,6 +179,18 @@ public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
             throw new RuntimeException("Next DayMuscleGroup not found for: " + currentDmgId);
         }
         return mapper.toPayload(dayMuscleGroupOpt.get());
+    }
+
+    @Override
+    public DayMuscleGroupResponse getNextDayMuscleGroupForNextWeek(Long currentDmgId) {
+        Optional<DayMuscleGroup> dayMuscleGroupOpt = repo.findNextDayMuscleGroupForNextWeek(currentDmgId);
+        if (dayMuscleGroupOpt.isEmpty()) {
+            throw new RuntimeException("Next DayMuscleGroup not found for: " + currentDmgId);
+        }
+
+        return mapper.toPayload(dayMuscleGroupOpt.get());
+
+
     }
 
     /**

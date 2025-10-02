@@ -24,6 +24,8 @@ public interface DayMuscleGroupService {
 
     DayMuscleGroupResponse findNextDayMuscleGroup(Long currentDmgId);
 
+    DayMuscleGroupResponse getNextDayMuscleGroupForNextWeek(Long currentDmgId);
+
     void updateRecommendedSetsForNext(Long currentDmgId);
 
 

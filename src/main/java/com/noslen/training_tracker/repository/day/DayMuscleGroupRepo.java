@@ -84,4 +84,13 @@ public interface DayMuscleGroupRepo extends JpaRepository<DayMuscleGroup, Long> 
         return page.stream().findFirst();
     }
 
+    @Query("""
+            SELECT dmg
+            FROM DayMuscleGroup dmg
+            JOIN dmg.day day
+            WHERE day.week = day.week + 1
+              AND day.position = day.position
+            """)
+    Optional<DayMuscleGroup> findNextDayMuscleGroupForNextWeek(Long currentDmgId);
+
 }

@@ -41,28 +41,22 @@ public class MesocycleProgressionServiceImpl implements MesocycleProgressionServ
         DayMuscleGroupResponse previousDmg =
                 dayMuscleGroupService.getMostRecentWithSameMuscleGroup(dayMuscleGroupId);
 
-        Optional<DayMuscleGroup> nextDmgOpt =
-                repo.findDayMuscleGroupAt(previousDmg.getDay()
-                                                  .getWeek() + 1,
-                                          previousDmg.getDay()
-                                                  .getPosition(),
-                                          previousDmg.getMuscleGroupId());
-        if (nextDmgOpt.isEmpty()) {
-            throw new RuntimeException("Next DayMuscleGroup not found for: " + dayMuscleGroupId);
-        }
-        DayMuscleGroup nextDmg = nextDmgOpt.get();
+
+        DayMuscleGroupResponse nextDmg =
+                dayMuscleGroupService.getNextDayMuscleGroupForNextWeek(previousDmg.id());
+
         Integer maxJointPain =
-                dayExerciseService.getDayExerciseMaxJointPain(previousDmg.getDayId(),
-                                                              previousDmg.getMuscleGroupId());
+                dayExerciseService.getDayExerciseMaxJointPain(previousDmg.dayId(),
+                                                              previousDmg.muscleGroupId());
         Integer totalExerciseSets =
-                exerciseSetService.countExerciseSetsByMuscleGroupId(previousDmg.getDayId(),
-                                                                    previousDmg.getMuscleGroupId());
+                exerciseSetService.countExerciseSetsByMuscleGroupId(previousDmg.dayId(),
+                                                                    previousDmg.muscleGroupId());
 
         return ProgressionCalculator.calculateRecommendedSets(totalExerciseSets,
                                                               maxJointPain,
-                                                              previousDmg.getPump(),
-                                                              currentDmg.getSoreness(),
-                                                              previousDmg.getWorkload());
+                                                              previousDmg.pump(),
+                                                              currentDmg.soreness(),
+                                                              previousDmg.workload());
 //        nextDmg.setStatus(Status.PROGRAMMED);
 //        nextDmg.setUpdatedAt(Instant.now());
 //        repo.save(nextDmg);
