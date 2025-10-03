@@ -1,15 +1,11 @@
 package com.noslen.training_tracker.service.day;
 
-import com.noslen.training_tracker.dto.day.request.FinishDayRequest;
-
 import com.noslen.training_tracker.dto.day.response.DayResponse;
 import com.noslen.training_tracker.factory.DayFactory;
 import com.noslen.training_tracker.mapper.day.DayMapper;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.repository.day.DayRepo;
-import com.noslen.training_tracker.repository.mesocycle.MesocycleRepo;
 import com.noslen.training_tracker.security.UserContext;
-import com.noslen.training_tracker.service.mesocycle.MesocycleService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,27 +20,17 @@ import java.util.Optional;
 @Service
 public class DayServiceImpl implements DayService {
 
-    private final DayRepo dayRepo;
+    private final DayRepo repo;
     private final DayMapper dayMapper;
     private final DayFactory dayFactory;
     private final UserContext userContext;
-    private final MesocycleRepo mesocycleRepo;
-    private final MesocycleService mesocycleService;
-    private final DayMuscleGroupService dayMuscleGroupService;
-    private final DayExerciseService dayExerciseService;
 
-    public DayServiceImpl(DayRepo dayRepo, DayMapper dayMapper, DayFactory dayFactory,
-            UserContext userContext, MesocycleRepo mesocycleRepo, MesocycleService mesocycleService,
-            DayMuscleGroupService dayMuscleGroupService, DayExerciseService dayExerciseService) {
-        this.dayRepo = dayRepo;
+    public DayServiceImpl(DayRepo repo, DayMapper dayMapper, DayFactory dayFactory,
+            UserContext userContext) {
+        this.repo = repo;
         this.dayMapper = dayMapper;
         this.dayFactory = dayFactory;
         this.userContext = userContext;
-//        TODO: remove this
-        this.mesocycleRepo = mesocycleRepo;
-        this.mesocycleService = mesocycleService;
-        this.dayMuscleGroupService = dayMuscleGroupService;
-        this.dayExerciseService = dayExerciseService;
     }
 
     @Override
@@ -54,19 +40,12 @@ public class DayServiceImpl implements DayService {
             throw new IllegalArgumentException("DayResponse cannot be null");
         }
 
-        // Validate that the current user owns the mesocycle this day belongs to
-        if (dayResponse.mesoId() != null) {
-            // Fetch the mesocycle and validate ownership before creating the day
-            var mesocycle = mesocycleRepo.findById(dayResponse.mesoId())
-                    .orElseThrow(() -> new RuntimeException("Mesocycle not found with id: " + dayResponse.mesoId()));
-            userContext.validateUserAccess(mesocycle.getUserId());
-        }
-
+        // TODO: refactor to validate mesocycle ownership at repository level
         // Use factory to create entity
         Day day = dayFactory.createFromResponse(dayResponse);
 
         // Save entity
-        Day savedDay = dayRepo.save(day);
+        Day savedDay = repo.save(day);
 
         // Convert back to response DTO
         return dayMapper.toPayload(savedDay);
@@ -82,7 +61,7 @@ public class DayServiceImpl implements DayService {
             throw new IllegalArgumentException("DayResponse cannot be null");
         }
 
-        Optional<Day> existingOptional = dayRepo.findById(dayId);
+        Optional<Day> existingOptional = repo.findById(dayId);
         if (existingOptional.isEmpty()) {
             throw new RuntimeException("Day not found with id: " + dayId);
         }
@@ -101,7 +80,7 @@ public class DayServiceImpl implements DayService {
         existing.setUpdatedAt(Instant.now());
 
         // Save updated entity
-        Day savedEntity = dayRepo.save(existing);
+        Day savedEntity = repo.save(existing);
 
         // Convert back to payload and return
         return dayMapper.toPayload(savedEntity);
@@ -114,7 +93,7 @@ public class DayServiceImpl implements DayService {
             throw new IllegalArgumentException("ID cannot be null");
         }
 
-        Day day = dayRepo.findById(id)
+        Day day = repo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Day not found with id: " + id));
 
         // Validate that the current user owns the mesocycle this day belongs to
@@ -132,14 +111,14 @@ public class DayServiceImpl implements DayService {
         }
 
         // Find existing day and validate ownership before deletion
-        Day existingDay = dayRepo.findById(id)
+        Day existingDay = repo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Day not found with id: " + id));
 
         // Validate that the current user owns the mesocycle this day belongs to
         userContext.validateUserAccess(existingDay.getMesocycle()
                                                .getUserId());
 
-        dayRepo.deleteById(id);
+        repo.deleteById(id);
     }
 
     @Override
@@ -149,21 +128,15 @@ public class DayServiceImpl implements DayService {
             throw new IllegalArgumentException("Mesocycle ID cannot be null");
         }
 
-        // First validate that the current user owns the mesocycle
-        // We need to check this before querying days to ensure data segregation
-        var mesocycle = mesocycleRepo.findById(mesocycleId)
-                .orElseThrow(() -> new RuntimeException("Mesocycle not found with id: " + mesocycleId));
-        userContext.validateUserAccess(mesocycle.getUserId());
-
-        List<Day> days = dayRepo.findByMesocycleId(mesocycleId);
+        List<Day> days = repo.findByMesocycleId(mesocycleId);
 
         return dayMapper.toPayloadList(days);
     }
 
     @Override
     public DayResponse getNextDayWithSameMuscleGroup(Long dayId, Long muscleGroupId) {
-        Optional<Day> dayOpt = dayRepo.findNextDayWithSameMuscleGroup(dayId,
-                                                                      muscleGroupId);
+        Optional<Day> dayOpt = repo.findNextDayWithSameMuscleGroup(dayId,
+                                                                   muscleGroupId);
         if (dayOpt.isEmpty()) {
             throw new RuntimeException("Next day not found for day: " + dayId + " and muscle group: " + muscleGroupId);
         }
@@ -179,7 +152,7 @@ public class DayServiceImpl implements DayService {
         }
 
         // Find existing day and validate ownership before completion
-        Day existingDay = dayRepo.findById(dayId)
+        Day existingDay = repo.findById(dayId)
                 .orElseThrow(() -> new RuntimeException("Day not found with id: " + dayId));
 
         // Validate that the current user owns the mesocycle this day belongs to
@@ -190,14 +163,11 @@ public class DayServiceImpl implements DayService {
         existingDay.setFinishedAt(Instant.now());
 
         // Save updated entity
-        Day savedDay = dayRepo.save(existingDay);
+        Day savedDay = repo.save(existingDay);
 
         // Return updated day response
         return dayMapper.toPayload(savedDay);
     }
-
-
-
 
 
 }

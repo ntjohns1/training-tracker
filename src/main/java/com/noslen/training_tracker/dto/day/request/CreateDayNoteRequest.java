@@ -1,4 +1,12 @@
 package com.noslen.training_tracker.dto.day.request;
 
-public record CreateDayNoteRequest() {
+import java.time.Instant;
+
+public record CreateDayNoteRequest(
+        Long dayId,
+        String content,
+        Instant createdAt,
+        Instant updatedAt,
+        String status
+) {
 }

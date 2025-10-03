@@ -9,7 +9,6 @@ public record UpdateDayMuscleGroupRequest(
         Integer pump,
         Integer soreness,
         Integer workload,
-        Instant createdAt,
         Instant updatedAt,
         Integer recommendedSets,
         String status

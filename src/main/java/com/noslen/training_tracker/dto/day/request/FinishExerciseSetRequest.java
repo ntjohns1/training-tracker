@@ -9,5 +9,6 @@ import java.time.Instant;
 public record FinishExerciseSetRequest(
         Instant finishedAt,
         Integer reps,
+        Float weight,
         Integer soreness  // Optional: only required for first set of exercise
 ) {}

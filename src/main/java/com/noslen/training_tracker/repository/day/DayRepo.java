@@ -24,7 +24,7 @@ public interface DayRepo extends JpaRepository<Day, Long> {
      * @return Optional containing the next day with the same muscle group, or empty if not found
      */
     @Query(value = """
-        SELECT DISTINCT next_day.* 
+        SELECT DISTINCT next_day.*
         FROM days current_day
         JOIN days next_day ON next_day.meso_id = current_day.meso_id
         JOIN day_muscle_groups dmg ON dmg.day_id = next_day.id

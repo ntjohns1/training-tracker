@@ -34,6 +34,7 @@ public class DayFactory {
      * @return a properly initialized Day entity
      * @throws RuntimeException if mesocycle is not found when mesoId is provided
      */
+    // TODO: change to createFromRequest
     public Day createFromResponse(DayResponse dayResponse) {
         if (dayResponse == null) {
             throw new IllegalArgumentException("DayResponse cannot be null");

@@ -36,6 +36,8 @@ public class DayMapper {
      * @param payload the DayResponse to convert
      * @return the converted Day entity, or null if payload is null
      */
+    // TODO: refactor - either rename DayResponse to more generic name or create a new dto for
+    //  the mapping logic
     public Day toEntity(DayResponse payload) {
         if (payload == null) {
             return null;
