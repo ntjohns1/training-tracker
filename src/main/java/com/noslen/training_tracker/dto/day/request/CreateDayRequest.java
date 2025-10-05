@@ -4,8 +4,8 @@ import java.time.Instant;
 
 public record CreateDayRequest(
         Long mesoId,
-        Long week,
-        Long position,
+        Integer week,
+        Integer position,
         Instant createdAt,
         Instant updatedAt,
         String unit,

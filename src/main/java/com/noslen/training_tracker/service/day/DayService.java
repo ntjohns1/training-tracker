@@ -2,13 +2,13 @@ package com.noslen.training_tracker.service.day;
 
 import java.util.List;
 
-import com.noslen.training_tracker.dto.day.request.FinishDayRequest;
+import com.noslen.training_tracker.dto.day.request.CreateDayRequest;
 import com.noslen.training_tracker.dto.day.response.DayResponse;
 
 public interface DayService {
 
 //    TODO: update method signature to accept DayRequest instead of DayResponse
-    DayResponse createDay(DayResponse dayResponse);
+    DayResponse createDay(CreateDayRequest dayRequest);
 //    TODO: update method signature to accept DayRequest instead of DayResponse
     DayResponse updateDay(Long id, DayResponse dayResponse);
     DayResponse getDay(Long id);

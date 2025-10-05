@@ -90,7 +90,7 @@ public class DayMuscleGroupServiceTests {
         // Arrange
         Long id = 1L;
         UpdateDayMuscleGroupRequest request = new UpdateDayMuscleGroupRequest(id, 1L, 2L, 8, 3, 7,
-                                                                              Instant.now(), Instant.now(), 12, "complete");
+                                                                              Instant.now(), 12, "complete");
         DayMuscleGroup existingEntity = DayMuscleGroup.builder().id(id).pump(6).soreness(2).workload(5).build();
         DayMuscleGroup savedEntity = DayMuscleGroup.builder().id(id).pump(8).soreness(3).workload(7).build();
         DayMuscleGroupResponse expectedPayload = new DayMuscleGroupResponse(id, 1L, 2L, 8, 3, 7,
@@ -215,7 +215,7 @@ public class DayMuscleGroupServiceTests {
         // Arrange
         Long id = 1L;
         UpdateDayMuscleGroupRequest request = new UpdateDayMuscleGroupRequest(id, 1L, 2L, 8, 3, 7,
-                                                                              Instant.now(), Instant.now(), 12, "complete");
+                                                                              Instant.now(), 12, "complete");
         when(repo.findById(id)).thenReturn(Optional.empty());
 
         // Act & Assert

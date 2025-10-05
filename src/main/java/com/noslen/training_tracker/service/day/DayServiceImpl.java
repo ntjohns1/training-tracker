@@ -1,5 +1,6 @@
 package com.noslen.training_tracker.service.day;
 
+import com.noslen.training_tracker.dto.day.request.CreateDayRequest;
 import com.noslen.training_tracker.dto.day.response.DayResponse;
 import com.noslen.training_tracker.factory.DayFactory;
 import com.noslen.training_tracker.mapper.day.DayMapper;
@@ -35,14 +36,14 @@ public class DayServiceImpl implements DayService {
 
     @Override
     @Transactional
-    public DayResponse createDay(DayResponse dayResponse) {
-        if (dayResponse == null) {
+    public DayResponse createDay(CreateDayRequest dayRequest) {
+        if (dayRequest == null) {
             throw new IllegalArgumentException("DayResponse cannot be null");
         }
 
         // TODO: refactor to validate mesocycle ownership at repository level
         // Use factory to create entity
-        Day day = dayFactory.createFromResponse(dayResponse);
+        Day day = dayFactory.createFromRequest(dayRequest);
 
         // Save entity
         Day savedDay = repo.save(day);
