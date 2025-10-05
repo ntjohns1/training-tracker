@@ -30,7 +30,7 @@ import java.util.UUID;
 @Component
 public class MesocycleFactory {
     
-//    TODO: use services instead of repos for all instance fields
+//    TODO: use services or EntityManager instead of repos for all instance
     private final ExerciseRepo exerciseRepo;
     private final DayMuscleGroupRepo dayMuscleGroupRepo;
     private final MuscleGroupRepo muscleGroupRepo;

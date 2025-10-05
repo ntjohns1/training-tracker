@@ -13,7 +13,7 @@
     [ ] ExerciseSetService.updateExerciseSet()  
     [ ] DayMapper.toPayload()  
     [ ] DayMapper.toEntity()  
-    [ ] DayFactory.createFromResponse()
+    [x] DayFactory.createFromResponse()
 
 [ ] unit tests for all new service methods   
     [ ] DayMuscleGroupService   

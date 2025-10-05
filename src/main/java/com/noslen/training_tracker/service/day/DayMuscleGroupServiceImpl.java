@@ -34,7 +34,6 @@ public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
         this.mapper = mapper;
     }
 
-//    TODO: review this method, reconsider using DayRepo
     @Override
     @Transactional
     public DayMuscleGroupResponse createDayMuscleGroup(CreateDayMuscleGroupRequest request) {
@@ -60,6 +59,7 @@ public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
 
     @Override
     @Transactional
+//    TODO: remove mergeEntity, use direct field updates, add setters to DayMuscleGroup where needed
     public DayMuscleGroupResponse updateDayMuscleGroup(Long id, UpdateDayMuscleGroupRequest request) {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
@@ -112,6 +112,8 @@ public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
 
         return mapper.toPayload(dayMuscleGroupOpt.get());
     }
+//    TODO: review mapper.toPayloadList(entities) - can probably be simplified
+//    TODO: review mapper.toPayload(dayMuscleGroupOpt.get()) - can probably be simplified
 
     @Override
     @Transactional(readOnly = true)

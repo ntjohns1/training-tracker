@@ -3,7 +3,6 @@ package com.noslen.training_tracker.factory;
 import com.noslen.training_tracker.dto.day.request.CreateDayRequest;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
-import com.noslen.training_tracker.repository.mesocycle.MesocycleRepo;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.validation.constraints.NotNull;
@@ -16,7 +15,6 @@ import java.time.Instant;
  * and relationship handling, eliminating redundant instantiation patterns.
  */
 @Component
-// TODO: use services instead of repos for all instance fields, possibly EntityManager for mesocycle
 public class DayFactory {
 
     @PersistenceContext
@@ -46,8 +44,6 @@ public class DayFactory {
                 .updatedAt(now)
                 .label(dayRequest.label())
                 .build();
-
-
     }
 
     /**

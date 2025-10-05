@@ -111,40 +111,6 @@ public class DayMapper {
     }
 
     /**
-     * Creates a new Day entity by merging existing entity with payload updates.
-     * Used when immutable fields need to be changed.
-     *
-     * @param existing the existing Day entity
-     * @param payload  the DayResponse containing update data
-     * @return a new Day entity with merged data
-     */
-    public Day mergeEntity(Day existing, DayResponse payload) {
-        if (existing == null) {
-            return toEntity(payload);
-        }
-        if (payload == null) {
-            return existing;
-        }
-
-        return Day.builder()
-                .id(existing.getId()) // Always preserve existing ID
-                .mesocycle(existing.getMesocycle()) // Preserve relationship
-                .week(payload.week() != null ? payload.week().intValue() : existing.getWeek())
-                .position(payload.position() != null ? payload.position().intValue() : existing.getPosition())
-                .createdAt(existing.getCreatedAt()) // Preserve creation timestamp
-                .updatedAt(payload.updatedAt() != null ? payload.updatedAt() : existing.getUpdatedAt())
-                .bodyweight(payload.bodyweight() != null ? payload.bodyweight().doubleValue() : existing.getBodyweight())
-                .bodyweightAt(payload.bodyweightAt() != null ? payload.bodyweightAt() : existing.getBodyweightAt())
-                .unit(stringToUnit(payload.unit()) != null ? stringToUnit(payload.unit()) : existing.getUnit())
-                .finishedAt(payload.finishedAt() != null ? payload.finishedAt() : existing.getFinishedAt())
-                .label(payload.label() != null ? payload.label() : existing.getLabel())
-                .notes(existing.getNotes()) // Preserve existing collections
-                .exercises(existing.getExercises()) // Preserve existing collections
-                .muscleGroups(existing.getMuscleGroups()) // Preserve existing collections
-                .build();
-    }
-
-    /**
      * Converts a list of Day entities to a list of DayResponse DTOs.
      *
      * @param entities the list of Day entities to convert

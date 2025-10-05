@@ -33,9 +33,12 @@ public class DayMuscleGroup {
     @JoinColumn(name = "muscle_group_id")
     @JsonBackReference(value = "musclegroup-musclegroup")
     private MuscleGroup muscleGroup;
-    
+
+    @Setter
     private Integer pump;
+    @Setter
     private Integer soreness;
+    @Setter
     private Integer workload;
     
     @Column(name = "recommended_sets")
