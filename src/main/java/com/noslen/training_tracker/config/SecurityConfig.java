@@ -2,6 +2,7 @@ package com.noslen.training_tracker.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -25,6 +26,7 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     @Bean
+    @Profile("!dev")
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             // Disable CSRF for stateless JWT authentication
@@ -59,6 +61,21 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Dev profile: no Keycloak/JWT (the resource-server auto-config is excluded in
+     * application-dev.yml), all requests permitted. Pair with DevUserContext for a stub user.
+     */
+    @Bean
+    @Profile("dev")
+    public SecurityFilterChain devFilterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf.disable())
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(authz -> authz.anyRequest().permitAll());
+        return http.build();
+    }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -66,6 +83,7 @@ public class SecurityConfig {
         // Allow specific origins (add your frontend URLs)
         configuration.setAllowedOriginPatterns(Arrays.asList(
             "http://localhost:3000",  // React dev server
+            "http://localhost:5173",  // Vite dev server
             "http://localhost:8080",  // Alternative dev server
             "https://*.nelsonjohns.com" // Your domain
         ));

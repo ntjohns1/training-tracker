@@ -1,5 +1,6 @@
 package com.noslen.training_tracker.security;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -8,8 +9,11 @@ import org.springframework.stereotype.Component;
 /**
  * Utility class for extracting user information from the current security context.
  * Provides methods to get the current user's ID and other claims from JWT tokens.
+ *
+ * <p>Active outside the {@code dev} profile; the dev profile uses {@link DevUserContext}.</p>
  */
 @Component
+@Profile("!dev")
 public class UserContext {
 
     /**
