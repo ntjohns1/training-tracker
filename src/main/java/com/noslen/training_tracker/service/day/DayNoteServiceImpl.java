@@ -2,9 +2,11 @@ package com.noslen.training_tracker.service.day;
 
 import com.noslen.training_tracker.dto.day.response.DayNoteResponse;
 import com.noslen.training_tracker.mapper.day.DayNoteMapper;
+import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.day.DayNote;
 import com.noslen.training_tracker.repository.day.DayNoteRepo;
 import com.noslen.training_tracker.security.UserContext;
+import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,11 +22,13 @@ import java.util.Optional;
 @Transactional
 public class DayNoteServiceImpl implements DayNoteService {
 
+    private final EntityManager entityManager;
     private final DayNoteRepo repo;
     private final DayNoteMapper mapper;
     private final UserContext userContext;
 
-    public DayNoteServiceImpl(DayNoteRepo repo, DayNoteMapper mapper, UserContext userContext) {
+    public DayNoteServiceImpl(EntityManager entityManager, DayNoteRepo repo, DayNoteMapper mapper, UserContext userContext) {
+        this.entityManager = entityManager;
         this.repo = repo;
         this.mapper = mapper;
         this.userContext = userContext;
@@ -36,21 +40,22 @@ public class DayNoteServiceImpl implements DayNoteService {
             throw new IllegalArgumentException("DayNoteResponse cannot be null");
         }
 
-        // Convert payload to entity
-        DayNote dayNote = mapper.toEntity(dayNoteResponse);
-        
-        // Note: User access validation for create operations should be handled 
+        // Note: User access validation for create operations should be handled
         // at the controller level since day notes are typically created as part of day operations
-        
-        // Set timestamps
-        dayNote.setCreatedAt(Instant.now());
-        dayNote.setUpdatedAt(Instant.now());
-        
-        // Save entity
-        DayNote savedDayNote = repo.save(dayNote);
-        
-        // Convert back to payload and return
-        return mapper.toPayload(savedDayNote);
+
+        Instant now = Instant.now();
+        DayNote dayNote = new DayNote();
+        dayNote.setDay(dayNoteResponse.dayId() != null
+                ? entityManager.getReference(Day.class, dayNoteResponse.dayId())
+                : null);
+        dayNote.setNoteId(dayNoteResponse.noteId());
+        dayNote.setPinned(dayNoteResponse.pinned());
+        dayNote.setText(dayNoteResponse.text());
+        dayNote.setCreatedAt(now);
+        dayNote.setUpdatedAt(now);
+
+        // Save entity and convert back to payload
+        return mapper.toPayload(repo.save(dayNote));
     }
 
     @Override
@@ -67,22 +72,28 @@ public class DayNoteServiceImpl implements DayNoteService {
             throw new RuntimeException("DayNote not found with id: " + id);
         }
 
-        DayNote existingDayNote = dayNoteOptional.get();
-        
+        DayNote existing = dayNoteOptional.get();
+
         // Validate that the current user owns the mesocycle this day note belongs to
-        userContext.validateUserAccess(existingDayNote.getDay().getMesocycle().getUserId());
-        
-        // Update entity with payload data
-        mapper.updateEntity(existingDayNote, dayNoteResponse);
-        
-        // Update timestamp
-        existingDayNote.setUpdatedAt(Instant.now());
-        
-        // Save updated entity
-        DayNote savedDayNote = repo.save(existingDayNote);
-        
-        // Convert back to payload and return
-        return mapper.toPayload(savedDayNote);
+        userContext.validateUserAccess(existing.getDay().getMesocycle().getUserId());
+
+        if (dayNoteResponse.dayId() != null) {
+            existing.setDay(entityManager.getReference(Day.class, dayNoteResponse.dayId()));
+        }
+        if (dayNoteResponse.noteId() != null) {
+            existing.setNoteId(dayNoteResponse.noteId());
+        }
+        if (dayNoteResponse.pinned() != null) {
+            existing.setPinned(dayNoteResponse.pinned());
+        }
+        if (dayNoteResponse.text() != null) {
+            existing.setText(dayNoteResponse.text());
+        }
+
+        existing.setUpdatedAt(Instant.now());
+
+        // Save updated entity and convert back to payload
+        return mapper.toPayload(repo.save(existing));
     }
 
     @Override

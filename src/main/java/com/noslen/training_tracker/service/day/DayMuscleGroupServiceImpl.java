@@ -8,7 +8,6 @@ import com.noslen.training_tracker.dto.day.request.CreateDayMuscleGroupRequest;
 import com.noslen.training_tracker.dto.day.request.UpdateDayMuscleGroupRequest;
 import com.noslen.training_tracker.dto.day.response.DayMuscleGroupResponse;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,18 +17,18 @@ import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.day.DayMuscleGroup;
 import com.noslen.training_tracker.model.progression.MuscleGroup;
 import com.noslen.training_tracker.repository.day.DayMuscleGroupRepo;
+import com.noslen.training_tracker.util.EnumConverter;
 
 @Service
 @Transactional
 public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
-    
+
+    private final EntityManager entityManager;
     private final DayMuscleGroupRepo repo;
     private final DayMuscleGroupMapper mapper;
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    public DayMuscleGroupServiceImpl(DayMuscleGroupRepo repo, DayMuscleGroupMapper mapper) {
+    public DayMuscleGroupServiceImpl(EntityManager entityManager, DayMuscleGroupRepo repo, DayMuscleGroupMapper mapper) {
+        this.entityManager = entityManager;
         this.repo = repo;
         this.mapper = mapper;
     }
@@ -41,15 +40,17 @@ public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
             throw new IllegalArgumentException("Day ID and Muscle Group ID cannot be null");
         }
 
-        Day day = entityManager.find(Day.class, request.dayId());
-        MuscleGroup muscleGroup = entityManager.find(MuscleGroup.class, request.muscleGroupId());
+        Day day = entityManager.getReference(Day.class, request.dayId());
+        MuscleGroup muscleGroup = entityManager.getReference(MuscleGroup.class, request.muscleGroupId());
 
         // Create new DayMuscleGroup entity
+        Instant now = Instant.now();
         DayMuscleGroup dayMuscleGroup = DayMuscleGroup.builder()
                 .day(day)
                 .muscleGroup(muscleGroup)
-                .createdAt(Instant.now())
-                .updatedAt(Instant.now())
+                .recommendedSets(request.recommendedSets())
+                .createdAt(request.createdAt() != null ? request.createdAt() : now)
+                .updatedAt(request.updatedAt() != null ? request.updatedAt() : now)
                 .build();
 
         // Save and return as DTO
@@ -59,7 +60,6 @@ public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
 
     @Override
     @Transactional
-//    TODO: remove mergeEntity, use direct field updates, add setters to DayMuscleGroup where needed
     public DayMuscleGroupResponse updateDayMuscleGroup(Long id, UpdateDayMuscleGroupRequest request) {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
@@ -74,13 +74,34 @@ public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
             throw new RuntimeException("DayMuscleGroup not found with id: " + id);
         }
 
-        DayMuscleGroup existingDayMuscleGroup = existingOpt.get();
-        
-        // Merge updates from request while preserving relationships
-        DayMuscleGroup updatedDayMuscleGroup = mapper.mergeEntity(existingDayMuscleGroup, request);
-        
+        DayMuscleGroup existing = existingOpt.get();
+
+        if (request.dayId() != null) {
+            existing.setDay(entityManager.getReference(Day.class, request.dayId()));
+        }
+        if (request.muscleGroupId() != null) {
+            existing.setMuscleGroup(entityManager.getReference(MuscleGroup.class, request.muscleGroupId()));
+        }
+        if (request.pump() != null) {
+            existing.setPump(request.pump());
+        }
+        if (request.soreness() != null) {
+            existing.setSoreness(request.soreness());
+        }
+        if (request.workload() != null) {
+            existing.setWorkload(request.workload());
+        }
+        if (request.recommendedSets() != null) {
+            existing.setRecommendedSets(request.recommendedSets());
+        }
+        if (request.status() != null) {
+            existing.setStatus(EnumConverter.stringToEnum(Status.class, request.status()));
+        }
+
+        existing.setUpdatedAt(Instant.now());
+
         // Save and return as DTO
-        DayMuscleGroup savedDayMuscleGroup = repo.save(updatedDayMuscleGroup);
+        DayMuscleGroup savedDayMuscleGroup = repo.save(existing);
         return mapper.toPayload(savedDayMuscleGroup);
     }
 

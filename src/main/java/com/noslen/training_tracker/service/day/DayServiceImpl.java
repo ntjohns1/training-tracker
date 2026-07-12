@@ -1,12 +1,15 @@
 package com.noslen.training_tracker.service.day;
 
 import com.noslen.training_tracker.dto.day.request.CreateDayRequest;
+import com.noslen.training_tracker.dto.day.request.FinishDayRequest;
 import com.noslen.training_tracker.dto.day.response.DayResponse;
+import com.noslen.training_tracker.event.DayCompletedEvent;
 import com.noslen.training_tracker.factory.DayFactory;
 import com.noslen.training_tracker.mapper.day.DayMapper;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.repository.day.DayRepo;
 import com.noslen.training_tracker.security.UserContext;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,13 +28,15 @@ public class DayServiceImpl implements DayService {
     private final DayMapper dayMapper;
     private final DayFactory dayFactory;
     private final UserContext userContext;
+    private final ApplicationEventPublisher eventPublisher;
 
     public DayServiceImpl(DayRepo repo, DayMapper dayMapper, DayFactory dayFactory,
-            UserContext userContext) {
+            UserContext userContext, ApplicationEventPublisher eventPublisher) {
         this.repo = repo;
         this.dayMapper = dayMapper;
         this.dayFactory = dayFactory;
         this.userContext = userContext;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -147,9 +152,12 @@ public class DayServiceImpl implements DayService {
 
     @Override
     @Transactional
-    public DayResponse completeDay(Long dayId) {
+    public DayResponse completeDay(Long dayId, FinishDayRequest finishDayRequest) {
         if (dayId == null) {
             throw new IllegalArgumentException("Day ID cannot be null");
+        }
+        if (finishDayRequest == null) {
+            throw new IllegalArgumentException("FinishDayRequest cannot be null");
         }
 
         // Find existing day and validate ownership before completion
@@ -165,6 +173,11 @@ public class DayServiceImpl implements DayService {
 
         // Save updated entity
         Day savedDay = repo.save(existingDay);
+
+        // Publish completion; DayCompletedKafkaPublisher forwards to Kafka only after this
+        // transaction commits, which drives next-week progression asynchronously.
+        Long mesoId = savedDay.getMesocycle() != null ? savedDay.getMesocycle().getId() : null;
+        eventPublisher.publishEvent(new DayCompletedEvent(dayId, mesoId, finishDayRequest));
 
         // Return updated day response
         return dayMapper.toPayload(savedDay);

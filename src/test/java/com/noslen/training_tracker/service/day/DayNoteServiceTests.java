@@ -15,6 +15,7 @@ import java.util.Optional;
 
 import com.noslen.training_tracker.dto.day.response.DayNoteResponse;
 import com.noslen.training_tracker.security.UserContext;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -22,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.noslen.training_tracker.mapper.day.DayNoteMapper;
+import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.day.DayNote;
 import com.noslen.training_tracker.repository.day.DayNoteRepo;
 
@@ -29,12 +31,15 @@ public class DayNoteServiceTests {
 
     @Mock
     private DayNoteRepo repo;
-    
+
     @Mock
     private DayNoteMapper mapper;
 
     @Mock
     private UserContext userContext;
+
+    @Mock
+    private EntityManager entityManager;
 
     @InjectMocks
     private DayNoteServiceImpl service;
@@ -48,23 +53,22 @@ public class DayNoteServiceTests {
     void testCreateDayNote() {
         // Arrange
         DayNoteResponse payload = new DayNoteResponse(null, 1L, null, false, Instant.now(), Instant.now(), "Day Note");
-        DayNote entity = new DayNote();
-        entity.setText("Day Note");
+        Day day = Day.builder().id(1L).build();
         DayNote savedEntity = new DayNote();
         savedEntity.setId(1L);
         savedEntity.setText("Day Note");
         DayNoteResponse expectedPayload = new DayNoteResponse(1L, 1L, null, false, Instant.now(), Instant.now(), "Day Note");
-        
-        when(mapper.toEntity(payload)).thenReturn(entity);
+
+        when(entityManager.getReference(Day.class, 1L)).thenReturn(day);
         when(repo.save(any(DayNote.class))).thenReturn(savedEntity);
         when(mapper.toPayload(savedEntity)).thenReturn(expectedPayload);
 
         // Act
         DayNoteResponse result = service.createDayNote(payload);
-        
+
         // Assert
         assertEquals(expectedPayload, result);
-        verify(mapper, times(1)).toEntity(payload);
+        verify(entityManager, times(1)).getReference(Day.class, 1L);
         verify(repo, times(1)).save(any(DayNote.class));
         verify(mapper, times(1)).toPayload(savedEntity);
     }
@@ -92,29 +96,25 @@ public class DayNoteServiceTests {
         existingEntity.setId(id);
         existingEntity.setText("Day Note");
         existingEntity.setDay(day);
-        
-        DayNote savedEntity = new DayNote();
-        savedEntity.setId(id);
-        savedEntity.setText("Updated Day Note");
-        savedEntity.setDay(day);
-        
+
         DayNoteResponse expectedPayload = new DayNoteResponse(id, 1L, null, false, Instant.now(), Instant.now(), "Updated Day Note");
 
         when(repo.findById(id)).thenReturn(Optional.of(existingEntity));
         doNothing().when(userContext).validateUserAccess(100L);
-        when(repo.save(existingEntity)).thenReturn(savedEntity);
-        when(mapper.toPayload(savedEntity)).thenReturn(expectedPayload);
+        when(entityManager.getReference(com.noslen.training_tracker.model.day.Day.class, 1L)).thenReturn(day);
+        when(repo.save(existingEntity)).thenReturn(existingEntity);
+        when(mapper.toPayload(existingEntity)).thenReturn(expectedPayload);
 
         // Act
         DayNoteResponse result = service.updateDayNote(id, payload);
 
         // Assert
         assertEquals(expectedPayload, result);
+        assertEquals("Updated Day Note", existingEntity.getText());
         verify(repo, times(1)).findById(id);
         verify(userContext, times(1)).validateUserAccess(100L);
-        verify(mapper, times(1)).updateEntity(existingEntity, payload);
         verify(repo, times(1)).save(existingEntity);
-        verify(mapper, times(1)).toPayload(savedEntity);
+        verify(mapper, times(1)).toPayload(existingEntity);
     }
 
     @Test

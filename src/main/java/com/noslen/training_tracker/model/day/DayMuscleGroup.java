@@ -24,11 +24,13 @@ public class DayMuscleGroup {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @ManyToOne
     @JoinColumn(name = "day_id")
     @JsonBackReference(value = "musclegroup-day")
     private Day day;
 
+    @Setter
     @ManyToOne
     @JoinColumn(name = "muscle_group_id")
     @JsonBackReference(value = "musclegroup-musclegroup")

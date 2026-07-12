@@ -41,8 +41,10 @@ public class DayExercise {
     @JoinColumn(name = "exercise_id")
     private Exercise exercise;
     
+    @Setter
     private Integer position;
-    
+
+    @Setter
     @Column(name = "joint_pain")
     private Integer jointPain;
 
@@ -54,6 +56,7 @@ public class DayExercise {
     @Column(name = "updated_at")
     private Instant updatedAt;
     
+    @Setter
     @Column(name = "source_day_exercise_id")
     private Long sourceDayExerciseId;
     

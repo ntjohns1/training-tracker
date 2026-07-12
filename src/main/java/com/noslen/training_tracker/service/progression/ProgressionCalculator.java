@@ -98,4 +98,29 @@ public class ProgressionCalculator {
                                 previous);
             }
         }
+
+        /**
+         * Distributes a total set count across a number of exercises, giving the
+         * remainder to the earliest positions.
+         *
+         * <p>Example: {@code distributeSets(7, 3)} → {@code [3, 2, 2]}.</p>
+         *
+         * @param totalSets     the total number of sets to allocate (clamped to ≥ 0)
+         * @param exerciseCount the number of exercises to spread across
+         * @return an array of length {@code exerciseCount} whose values sum to {@code totalSets};
+         *         empty array if {@code exerciseCount ≤ 0}
+         */
+        public static int[] distributeSets(int totalSets, int exerciseCount) {
+            if (exerciseCount <= 0) {
+                return new int[0];
+            }
+            int total = Math.max(0, totalSets);
+            int base = total / exerciseCount;
+            int remainder = total % exerciseCount;
+            int[] distribution = new int[exerciseCount];
+            for (int i = 0; i < exerciseCount; i++) {
+                distribution[i] = base + (i < remainder ? 1 : 0);
+            }
+            return distribution;
+        }
     }

@@ -36,8 +36,6 @@ public class DayMapper {
      * @param payload the DayResponse to convert
      * @return the converted Day entity, or null if payload is null
      */
-    // TODO: refactor - either rename DayResponse to more generic name or create a new dto for
-    //  the mapping logic
     public Day toEntity(DayResponse payload) {
         if (payload == null) {
             return null;
@@ -132,15 +130,7 @@ public class DayMapper {
      * @param payloads the list of DayResponse DTOs to convert
      * @return the converted list of Day entities, or null if input is null
      */
-    public List<Day> toEntityList(List<DayResponse> payloads) {
-        if (payloads == null) {
-            return null;
-        }
 
-        return payloads.stream()
-                .map(this::toEntity)
-                .collect(Collectors.toList());
-    }
 
     /**
      * Determines the status of a Day based on its current state.

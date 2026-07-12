@@ -7,33 +7,21 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class DayNoteMapperTest {
 
     private DayNoteMapper mapper;
-    private DayNoteResponse samplePayload;
     private DayNote sampleEntity;
     private Instant now;
     private Day day = Day.builder().id(1L).build();
-    
-
 
     @BeforeEach
     void setUp() {
         mapper = new DayNoteMapper();
         now = Instant.now();
-
-        samplePayload = new DayNoteResponse(
-                1L,
-                10L,
-                20L,
-                true,
-                now,
-                now,
-                "Test note content"
-        );
 
         sampleEntity = new DayNote();
         sampleEntity.setId(1L);
@@ -43,69 +31,6 @@ class DayNoteMapperTest {
         sampleEntity.setPinned(true);
         sampleEntity.setCreatedAt(now);
         sampleEntity.setUpdatedAt(now);
-    }
-
-    @Test
-    void toEntity_WithValidPayload_ShouldReturnEntity() {
-        // When
-        DayNote result = mapper.toEntity(samplePayload);
-
-        // Then
-        assertNotNull(result);
-        assertEquals(samplePayload.id(), result.getId());
-        assertNull(result.getDay()); // toEntity doesn't set Day relationship
-        assertEquals(samplePayload.noteId(), result.getNoteId());
-        assertEquals(samplePayload.text(), result.getText());
-        assertEquals(samplePayload.pinned(), result.getPinned());
-        assertEquals(samplePayload.createdAt(), result.getCreatedAt());
-        assertEquals(samplePayload.updatedAt(), result.getUpdatedAt());
-
-        // Note: Day relationship is not set by toEntity and should be handled by service layer
-    }
-
-    @Test
-    void toEntity_WithNullPayload_ShouldReturnNull() {
-        // When
-        DayNote result = mapper.toEntity(null);
-
-        // Then
-        assertNull(result);
-    }
-
-    @Test
-    void toEntity_WithNullFields_ShouldHandleGracefully() {
-        // Given
-        DayNoteResponse payloadWithNulls = new DayNoteResponse(
-                null, null, null, null, null, null, null
-        );
-
-        // When
-        DayNote result = mapper.toEntity(payloadWithNulls);
-
-        // Then
-        assertNotNull(result);
-        assertNull(result.getId());
-        assertNull(result.getDay());
-        assertNull(result.getNoteId());
-        assertNull(result.getText());
-        assertNull(result.getPinned());
-        assertNull(result.getCreatedAt());
-        assertNull(result.getUpdatedAt());
-    }
-
-    @Test
-    void toEntity_WithFalsePinned_ShouldHandleCorrectly() {
-        // Given
-        DayNoteResponse payloadWithFalsePinned = new DayNoteResponse(
-                1L, 10L, 20L, false, now, now, "Test note"
-        );
-
-        // When
-        DayNote result = mapper.toEntity(payloadWithFalsePinned);
-
-        // Then
-        assertNotNull(result);
-        assertEquals(false, result.getPinned());
     }
 
     @Test
@@ -181,180 +106,22 @@ class DayNoteMapperTest {
     }
 
     @Test
-    void updateEntity_WithValidData_ShouldUpdateMutableFields() {
-        // Given
-        DayNote existingEntity = new DayNote();
-        existingEntity.setDay(Day.builder().id(10L).build());
-        existingEntity.setNoteId(20L);
-        existingEntity.setText("Old text");
-        existingEntity.setPinned(false);
-        existingEntity.setCreatedAt(now.minusSeconds(3600));
-        existingEntity.setUpdatedAt(now.minusSeconds(1800));
-
-        DayNoteResponse updatePayload = new DayNoteResponse(
-                1L, 15L, 25L, true, now.minusSeconds(3600), now, "Updated note content"
-        );
-
+    void toPayloadList_WithValidList_ShouldMapAll() {
         // When
-        mapper.updateEntity(existingEntity, updatePayload);
-
-        // Then - updateEntity only updates text, updatedAt, and createdAt fields
-        assertEquals("Updated note content", existingEntity.getText());
-        assertEquals(false, existingEntity.getPinned()); // pinned is immutable, not updated by updateEntity
-        
-        // Verify updatedAt is set to current time (not from payload)
-        assertNotNull(existingEntity.getUpdatedAt());
-        assertTrue(existingEntity.getUpdatedAt().isAfter(now.minusSeconds(10)));
-
-        // Verify relationships are preserved (updateEntity doesn't modify relationships)
-        assertNotNull(existingEntity.getDay());
-        assertEquals(10L, existingEntity.getDay().getId()); // Original day ID preserved
-    }
-
-    @Test
-    void updateEntity_WithNullPayload_ShouldNotCrash() {
-        // Given
-        DayNote existingEntity = new DayNote();
-        existingEntity.setId(1L);
-
-        // When & Then
-        assertDoesNotThrow(() -> mapper.updateEntity(existingEntity, null));
-    }
-
-    @Test
-    void updateEntity_WithNullEntity_ShouldNotCrash() {
-        // When & Then
-        assertDoesNotThrow(() -> mapper.updateEntity(null, samplePayload));
-    }
-
-    @Test
-    void updateEntity_WithNullRelationshipIds_ShouldHandleGracefully() {
-        // Given
-        DayNote existingEntity = new DayNote();
-        existingEntity.setDay(Day.builder().id(10L).build());
-        existingEntity.setNoteId(20L);
-        existingEntity.setText("Old text");
-        existingEntity.setPinned(false);
-        existingEntity.setCreatedAt(now.minusSeconds(3600)); // Added createdAt timestamp
-
-        DayNoteResponse payloadWithNullIds = new DayNoteResponse(
-                1L, null, null, true, now, now, "New text"
-        );
-
-        // When
-        mapper.updateEntity(existingEntity, payloadWithNullIds);
-
-        // Then - updateEntity only updates text, updatedAt, and createdAt fields
-        assertEquals("New text", existingEntity.getText());
-        assertEquals(false, existingEntity.getPinned()); // pinned is immutable, not updated by updateEntity
-        assertNotNull(existingEntity.getUpdatedAt());
-        
-        // Day relationship is preserved (updateEntity doesn't modify relationships)
-        assertNotNull(existingEntity.getDay());
-        assertEquals(10L, existingEntity.getDay().getId());
-    }
-
-    @Test
-    void mergeEntity_WithValidData_ShouldCreateNewEntityWithUpdatedFields() {
-        // Given
-        DayNote existingEntity = new DayNote();
-        existingEntity.setDay(Day.builder().id(10L).build());
-        existingEntity.setNoteId(20L);
-        existingEntity.setText("Old text");
-        existingEntity.setPinned(false);
-        existingEntity.setCreatedAt(now.minusSeconds(3600));
-        existingEntity.setUpdatedAt(now.minusSeconds(1800));
-
-        DayNoteResponse updatePayload = new DayNoteResponse(
-                1L, 15L, 25L, true, now.minusSeconds(3600), now, "Updated note content"
-        );
-
-        // When
-        DayNote result = mapper.mergeEntity(existingEntity, updatePayload);
+        List<DayNoteResponse> result = mapper.toPayloadList(List.of(sampleEntity));
 
         // Then
         assertNotNull(result);
-        assertNotSame(existingEntity, result); // Should be a new instance
-        assertEquals(existingEntity.getId(), result.getId()); // ID preserved from existing
-        assertEquals(10L, result.getDay().getId()); // Day relationship preserved from existing
-        assertEquals(25L, result.getNoteId());
-        assertEquals("Updated note content", result.getText());
-        assertEquals(true, result.getPinned());
-        assertEquals(now.minusSeconds(3600), result.getCreatedAt()); // Preserved from existing
-        assertNotNull(result.getUpdatedAt());
-
-        // Verify relationships are preserved from existing entity
-        assertNotNull(result.getDay());
-        assertEquals(10L, result.getDay().getId());
+        assertEquals(1, result.size());
+        assertEquals(sampleEntity.getId(), result.get(0).id());
     }
 
     @Test
-    void mergeEntity_WithNullPayload_ShouldReturnNull() {
-        // Given
-        DayNote existingEntity = new DayNote();
-        existingEntity.setId(1L);
-
+    void toPayloadList_WithNullList_ShouldReturnNull() {
         // When
-        DayNote result = mapper.mergeEntity(existingEntity, null);
+        List<DayNoteResponse> result = mapper.toPayloadList(null);
 
         // Then
-        assertNotNull(result); // mergeEntity returns existing entity when payload is null
-        assertEquals(existingEntity, result);
-    }
-
-    @Test
-    void mergeEntity_WithNullEntity_ShouldReturnNull() {
-        // When
-        DayNote result = mapper.mergeEntity(null, samplePayload);
-
-        // Then
-        assertNotNull(result); // mergeEntity calls toEntity when existing is null
-        assertEquals(samplePayload.id(), result.getId());
-    }
-
-    @Test
-    void mergeEntity_WithNullRelationshipIds_ShouldHandleGracefully() {
-        // Given
-        DayNote existingEntity = new DayNote();
-        existingEntity.setDay(Day.builder().id(10L).build());
-        existingEntity.setNoteId(20L);
-        existingEntity.setText("Old text");
-        existingEntity.setPinned(false);
-        existingEntity.setCreatedAt(now.minusSeconds(3600)); // Added createdAt timestamp
-
-        DayNoteResponse payloadWithNullIds = new DayNoteResponse(
-                1L, null, null, true, now.minusSeconds(3600), now, "New text"
-        );
-
-        // When
-        DayNote result = mapper.mergeEntity(existingEntity, payloadWithNullIds);
-
-        // Then
-        assertNotNull(result);
-        assertEquals(existingEntity.getId(), result.getId()); // ID preserved from existing
-        assertEquals(10L, result.getDay().getId()); // Day relationship preserved from existing
-        assertEquals(20L, result.getNoteId()); // noteId preserved from existing (payload has null)
-        assertEquals("New text", result.getText());
-        assertEquals(true, result.getPinned());
-        assertEquals(now.minusSeconds(3600), result.getCreatedAt());
-        assertNotNull(result.getUpdatedAt());
-    }
-
-    @Test
-    void updateEntity_WithEmptyText_ShouldHandleCorrectly() {
-        // Given
-        DayNote existingEntity = new DayNote();
-        existingEntity.setText("Old text");
-
-        DayNoteResponse payloadWithEmptyText = new DayNoteResponse(
-                1L, 10L, 20L, false, now, now, ""
-        );
-
-        // When
-        mapper.updateEntity(existingEntity, payloadWithEmptyText);
-
-        // Then - updateEntity only updates text field, pinned is immutable
-        assertEquals("", existingEntity.getText());
-        assertNull(existingEntity.getPinned()); // pinned not updated by updateEntity
+        assertNull(result);
     }
 }

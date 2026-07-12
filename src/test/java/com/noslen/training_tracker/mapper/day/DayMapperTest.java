@@ -142,17 +142,6 @@ class DayMapperTest {
 
     @Test
     void toEntity_WithValidPayload_ShouldReturnEntity() {
-        // Given
-        DayNote noteEntity = new DayNote();
-        noteEntity.setId(1L);
-
-        DayExercise exerciseEntity = DayExercise.builder().id(1L).build();
-        DayMuscleGroup muscleGroupEntity = DayMuscleGroup.builder().id(1L).build();
-
-        when(dayNoteMapper.toEntity(any(DayNoteResponse.class))).thenReturn(noteEntity);
-        when(dayExerciseMapper.toEntity(any(DayExerciseResponse.class))).thenReturn(exerciseEntity);
-        when(dayMuscleGroupMapper.toEntity(any(DayMuscleGroupResponse.class))).thenReturn(muscleGroupEntity);
-
         // When
         Day result = dayMapper.toEntity(samplePayload);
 

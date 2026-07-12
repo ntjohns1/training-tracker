@@ -1,6 +1,6 @@
 [ ] Verify validation logic for all entities  
 [ ] Verify JPA logic for all entities  
-[ ] Verify mapping logic for all entities  
+[ ] Refactor mapping logic for all entities, remove mappers  
 [ ] Verify recent changes to security context  
 
 ---
@@ -10,9 +10,7 @@
     [x] DayMuscleGroupService.createDayMuscleGroup()  
     [ ] DayExerciseService.createDayExercise()  
     [ ] ExerciseSetService.createExerciseSet()  
-    [ ] ExerciseSetService.updateExerciseSet()  
-    [ ] DayMapper.toPayload()  
-    [ ] DayMapper.toEntity()  
+    [ ] ExerciseSetService.updateExerciseSet()
     [x] DayFactory.createFromResponse()
 
 [ ] unit tests for all new service methods   
@@ -20,8 +18,8 @@
     [ ] DayExerciseService   
     [ ] ExerciseSetService   
     [ ] DayService   
-    [ ] MesocycleProgressionService  
-    [ ] ProgressionCalculator  
+    [x] MesocycleProgressionService (3 behavior-defining tests @Disabled pending implementation)  
+    [x] ProgressionCalculator  
 
 Concrete Implementation Plan   
 [] Create WorkoutProgressionService:   
@@ -41,3 +39,9 @@ Concrete Implementation Plan
 [] Refactor relevant service methods to validate mesocycle ownership at repository level / security layer
     [ ] Look for areas where we are calling MesocycleService directly for validation (fix these!)  
     [ ] filter in the repository where possible, use custom annotations otherwise
+
+[] Remove all Mapper classes
+[] DayExerciseService.createDayExercise() - need to handle case where DayMuscleGroup has not yet been created for this day
+
+
+
