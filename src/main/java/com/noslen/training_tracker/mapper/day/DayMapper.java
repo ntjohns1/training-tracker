@@ -88,27 +88,6 @@ public class DayMapper {
     }
 
     /**
-     * Updates mutable fields of an existing Day entity from DayResponse.
-     * Only updates fields that can be modified after creation.
-     *
-     * @param entity  the existing Day entity to update
-     * @param payload the DayResponse containing update data
-     */
-    public void updateEntity(Day entity, DayResponse payload) {
-        if (entity == null || payload == null) {
-            return;
-        }
-
-        // Update mutable timestamp fields using available setters
-        if (payload.updatedAt() != null) {
-            entity.setUpdatedAt(payload.updatedAt());
-        }
-        
-        // Note: Other fields are immutable and would require using mergeEntity method
-        // or handling at the service layer with entity rebuilding
-    }
-
-    /**
      * Converts a list of Day entities to a list of DayResponse DTOs.
      *
      * @param entities the list of Day entities to convert

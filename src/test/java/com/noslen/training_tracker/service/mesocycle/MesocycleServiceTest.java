@@ -1,5 +1,6 @@
 package com.noslen.training_tracker.service.mesocycle;
 
+import com.noslen.training_tracker.dto.mesocycle.request.CreateMesocycleRequest;
 import com.noslen.training_tracker.dto.mesocycle.response.MesoNoteResponse;
 import com.noslen.training_tracker.dto.mesocycle.response.MesocycleResponse;
 import com.noslen.training_tracker.enums.Status;
@@ -95,20 +96,30 @@ class MesocycleServiceTest {
                 null, null, null, null, null, null, null, null, null, null, null,
                 4, Arrays.asList(notePayload)
         );
+        CreateMesocycleRequest request = new CreateMesocycleRequest(
+                "Test Mesocycle", 4,
+                List.of(
+                        new CreateMesocycleRequest.DayRequest("Push",
+                                List.of(new CreateMesocycleRequest.DayExerciseRequest(4L))),
+                        new CreateMesocycleRequest.DayRequest("Pull",
+                                List.of(new CreateMesocycleRequest.DayExerciseRequest(42L)))
+                ),
+                "lbs", null, null, null);
 
-        when(mesocycleFactory.createFromResponse(any(MesocycleResponse.class))).thenReturn(sampleEntity);
+        when(userContext.getCurrentUserId()).thenReturn(100L);
+        when(mesocycleFactory.createFromRequest(request, 100L)).thenReturn(sampleEntity);
         when(mesocycleRepo.save(any(Mesocycle.class))).thenReturn(sampleEntity);
         when(mesocycleMapper.toPayload(any(Mesocycle.class))).thenReturn(resultPayload);
 
         // When
-        MesocycleResponse result = mesocycleService.createMesocycle(samplePayload);
+        MesocycleResponse result = mesocycleService.createMesocycle(request);
 
         // Then
         assertNotNull(result);
-        assertEquals(samplePayload.key(), result.key());
-        assertEquals(samplePayload.name(), result.name());
+        assertEquals(resultPayload.key(), result.key());
+        assertEquals(resultPayload.name(), result.name());
 
-        verify(mesocycleFactory).createFromResponse(any(MesocycleResponse.class));
+        verify(mesocycleFactory).createFromRequest(request, 100L);
         verify(mesocycleRepo).save(any(Mesocycle.class));
         verify(mesocycleMapper).toPayload(any(Mesocycle.class));
     }

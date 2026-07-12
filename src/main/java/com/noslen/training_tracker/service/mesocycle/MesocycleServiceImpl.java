@@ -1,5 +1,6 @@
 package com.noslen.training_tracker.service.mesocycle;
 
+import com.noslen.training_tracker.dto.mesocycle.request.CreateMesocycleRequest;
 import com.noslen.training_tracker.dto.mesocycle.response.MesocycleResponse;
 import com.noslen.training_tracker.factory.MesocycleFactory;
 import com.noslen.training_tracker.mapper.mesocycle.MesocycleMapper;
@@ -34,14 +35,15 @@ public class MesocycleServiceImpl implements MesocycleService {
     }
 
     @Override
-    public MesocycleResponse createMesocycle(MesocycleResponse mesocycleResponse) {
-        // Use factory to create entity directly from DTO - no redundant instantiation
-        Mesocycle mesocycle = mesocycleFactory.createFromResponse(mesocycleResponse);
-        
-        // Save entity
+    public MesocycleResponse createMesocycle(CreateMesocycleRequest request) {
+        // Ownership comes from the authenticated user, not the request payload.
+        Long userId = userContext.getCurrentUserId();
+
+        // Factory builds the full nested Mesocycle (weeks -> days -> exercises/muscle groups + progressions).
+        Mesocycle mesocycle = mesocycleFactory.createFromRequest(request, userId);
+
         Mesocycle savedMesocycle = mesocycleRepo.save(mesocycle);
-        
-        // Convert back to response DTO
+
         return mesocycleMapper.toPayload(savedMesocycle);
     }
 

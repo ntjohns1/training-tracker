@@ -59,12 +59,14 @@ class MesocycleFactoryIntegrationTest {
     void setUp() {
         mesocycleFactory = new MesocycleFactory(exerciseRepo, dayMuscleGroupRepo, muscleGroupRepo, dayFactory);
 
-        // Setup mock exercises with lenient stubbing
+        // Setup mock exercises with lenient stubbing. Each exercise carries a muscleGroupId
+        // (cycling 1..3) since day muscle groups are derived from the exercise's muscle group.
         mockExercises = new ArrayList<>();
         for (int i = 1; i <= 5; i++) {
             Exercise exercise = new Exercise();
             exercise.setId((long) i);
             exercise.setName("Exercise " + i);
+            exercise.setMuscleGroupId((long) ((i - 1) % 3 + 1)); // ex1->1, ex2->2, ex3->3, ex4->1, ex5->2
             mockExercises.add(exercise);
             lenient().when(exerciseRepo.findById((long) i)).thenReturn(Optional.of(exercise));
         }
@@ -291,10 +293,10 @@ class MesocycleFactoryIntegrationTest {
             }
         }
         
-        // We expect DayMuscleGroup entities to be created for each day
-        // Each day should have at least 1 DayMuscleGroup (hardcoded muscleGroupId = 1L in factory)
-        // 8 days × 1 muscle group per day = 8 total DayMuscleGroup entities
-        assertThat(totalDayMuscleGroups).isEqualTo(8);
+        // DayMuscleGroups are derived from the distinct muscle groups trained each day:
+        // Push Day = ex1(mg1) + ex2(mg2) => 2; Pull Day = ex3(mg3) => 1.
+        // 4 weeks × (2 + 1) = 12 total DayMuscleGroup entities.
+        assertThat(totalDayMuscleGroups).isEqualTo(12);
     }
 
     @Test

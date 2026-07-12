@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.noslen.training_tracker.dto.day.request.CreateDayRequest;
+import com.noslen.training_tracker.dto.day.request.UpdateDayRequest;
 import com.noslen.training_tracker.dto.day.response.DayResponse;
 import com.noslen.training_tracker.factory.DayFactory;
 import com.noslen.training_tracker.security.UserContext;
@@ -92,9 +93,9 @@ public class DayServiceTests {
                 .userId(100L)
                 .build();
                 
-        DayResponse payload = new DayResponse(id, 1L, 1L, 1L, Instant.now(), Instant.now(),
-                                              77, Instant.now(), "kg", Instant.now(), "Updated Day 1", new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), "complete");
-        
+        UpdateDayRequest payload = new UpdateDayRequest(id, 1L, 1, 1, Instant.now(), Instant.now(),
+                                              77f, Instant.now(), "kg", Instant.now(), "Updated Day 1", new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), "complete");
+
         Day existingEntity = Day.builder()
                 .id(id)
                 .mesocycle(mesocycle)
@@ -261,8 +262,8 @@ public class DayServiceTests {
     void testUpdateDayNotFound() {
         // Arrange
         Long id = 1L;
-        DayResponse payload = new DayResponse(id, 1L, 1L, 1L, Instant.now(), Instant.now(),
-                                              77, Instant.now(), "kg", Instant.now(), "Updated Day 1", new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), "complete");
+        UpdateDayRequest payload = new UpdateDayRequest(id, 1L, 1, 1, Instant.now(), Instant.now(),
+                                              77f, Instant.now(), "kg", Instant.now(), "Updated Day 1", new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), "complete");
         when(repo.findById(id)).thenReturn(Optional.empty());
 
         // Act & Assert

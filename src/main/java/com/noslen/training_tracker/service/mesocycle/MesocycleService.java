@@ -1,5 +1,6 @@
 package com.noslen.training_tracker.service.mesocycle;
 
+import com.noslen.training_tracker.dto.mesocycle.request.CreateMesocycleRequest;
 import com.noslen.training_tracker.dto.mesocycle.response.MesocycleResponse;
 
 import java.util.List;
@@ -10,11 +11,12 @@ import java.util.List;
 public interface MesocycleService {
 
     /**
-     * Creates a new mesocycle
-     * @param mesocycleResponse the mesocycle data to create
+     * Creates a new mesocycle (with its full week/day/exercise/progression structure) for the
+     * current user from a builder request.
+     * @param request the mesocycle builder request
      * @return the created mesocycle as DTO
      */
-    MesocycleResponse createMesocycle(MesocycleResponse mesocycleResponse);
+    MesocycleResponse createMesocycle(CreateMesocycleRequest request);
 
     /**
      * Retrieves a mesocycle by its ID

@@ -233,29 +233,31 @@ public class MesocycleFactory {
     private Set<DayMuscleGroup> createDayMuscleGroupsForDay(Day day, List<DayExercise> dayExercises, Instant now) {
         Set<DayMuscleGroup> dayMuscleGroups = new HashSet<>();
         Set<Long> processedMuscleGroups = new HashSet<>();
-        
+
         for (DayExercise dayExercise : dayExercises) {
-            // Note: Need to check if Exercise has getMuscleGroup() method
-            // For now, we'll create a placeholder implementation
-            Long muscleGroupId = 1L; // This should come from the exercise or request
-            
-            if (!processedMuscleGroups.contains(muscleGroupId)) {
-                MuscleGroup muscleGroup = muscleGroupRepo.findById(muscleGroupId)
-                        .orElseThrow(() -> new IllegalArgumentException("MuscleGroup not found with ID: " + muscleGroupId));
-                
-                DayMuscleGroup dayMuscleGroup = DayMuscleGroup.builder()
-                        .day(day)
-                        .muscleGroup(muscleGroup)
-                        .createdAt(now)
-                        .updatedAt(now)
-                        .build();
-                
-                // Use setter for status since it has @Setter annotation
-                dayMuscleGroup.setStatus(Status.UNPROGRAMMED);
-                
-                dayMuscleGroups.add(dayMuscleGroup);
-                processedMuscleGroups.add(muscleGroupId);
+            // Derive the muscle group from the exercise's catalog muscleGroupId; one
+            // DayMuscleGroup per distinct muscle group trained on this day.
+            Exercise exercise = dayExercise.getExercise();
+            Long muscleGroupId = exercise != null ? exercise.getMuscleGroupId() : null;
+
+            if (muscleGroupId == null || !processedMuscleGroups.add(muscleGroupId)) {
+                continue;
             }
+
+            MuscleGroup muscleGroup = muscleGroupRepo.findById(muscleGroupId)
+                    .orElseThrow(() -> new IllegalArgumentException("MuscleGroup not found with ID: " + muscleGroupId));
+
+            DayMuscleGroup dayMuscleGroup = DayMuscleGroup.builder()
+                    .day(day)
+                    .muscleGroup(muscleGroup)
+                    .createdAt(now)
+                    .updatedAt(now)
+                    .build();
+
+            // Use setter for status since it has @Setter annotation
+            dayMuscleGroup.setStatus(Status.UNPROGRAMMED);
+
+            dayMuscleGroups.add(dayMuscleGroup);
         }
         return dayMuscleGroups;
     }

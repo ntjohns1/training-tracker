@@ -2,6 +2,7 @@ package com.noslen.training_tracker.service.day;
 
 import com.noslen.training_tracker.dto.day.request.CreateDayRequest;
 import com.noslen.training_tracker.dto.day.request.FinishDayRequest;
+import com.noslen.training_tracker.dto.day.request.UpdateDayRequest;
 import com.noslen.training_tracker.dto.day.response.DayResponse;
 import com.noslen.training_tracker.event.DayCompletedEvent;
 import com.noslen.training_tracker.factory.DayFactory;
@@ -59,12 +60,12 @@ public class DayServiceImpl implements DayService {
 
     @Override
     @Transactional
-    public DayResponse updateDay(Long dayId, DayResponse dayResponse) {
+    public DayResponse updateDay(Long dayId, UpdateDayRequest dayRequest) {
         if (dayId == null) {
             throw new IllegalArgumentException("Day ID cannot be null");
         }
-        if (dayResponse == null) {
-            throw new IllegalArgumentException("DayResponse cannot be null");
+        if (dayRequest == null) {
+            throw new IllegalArgumentException("UpdateDayRequest cannot be null");
         }
 
         Optional<Day> existingOptional = repo.findById(dayId);
@@ -78,12 +79,11 @@ public class DayServiceImpl implements DayService {
         userContext.validateUserAccess(existing.getMesocycle()
                                                .getUserId());
 
-        // Update entity with payload data using mapper
-        dayMapper.updateEntity(existing,
-                               dayResponse);
-
-        // Ensure updated timestamp is set
-        existing.setUpdatedAt(Instant.now());
+        // Apply mutable fields directly (Day exposes setters only for these).
+        if (dayRequest.finishedAt() != null) {
+            existing.setFinishedAt(dayRequest.finishedAt());
+        }
+        existing.setUpdatedAt(dayRequest.updatedAt() != null ? dayRequest.updatedAt() : Instant.now());
 
         // Save updated entity
         Day savedEntity = repo.save(existing);

@@ -219,11 +219,13 @@ class MesocycleFactoryUnitTest {
         Exercise exercise1 = new Exercise();
         exercise1.setId(1L);
         exercise1.setName("Exercise 1");
-        
+        exercise1.setMuscleGroupId(1L); // day muscle group is derived from the exercise's muscle group
+
         Exercise exercise2 = new Exercise();
         exercise2.setId(2L);
         exercise2.setName("Exercise 2");
-        
+        exercise2.setMuscleGroupId(1L);
+
         MuscleGroup muscleGroup1 = new MuscleGroup();
         muscleGroup1.setId(1L);
         muscleGroup1.setName(MgName.CHEST);
