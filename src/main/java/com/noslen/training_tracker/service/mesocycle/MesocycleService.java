@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.service.mesocycle;
 
-import com.noslen.training_tracker.dto.mesocycle.MesocyclePayload;
+import com.noslen.training_tracker.dto.mesocycle.response.MesocycleResponse;
 
 import java.util.List;
 
@@ -11,10 +11,10 @@ public interface MesocycleService {
 
     /**
      * Creates a new mesocycle
-     * @param mesocyclePayload the mesocycle data to create
+     * @param mesocycleResponse the mesocycle data to create
      * @return the created mesocycle as DTO
      */
-    MesocyclePayload createMesocycle(MesocyclePayload mesocyclePayload);
+    MesocycleResponse createMesocycle(MesocycleResponse mesocycleResponse);
 
     /**
      * Retrieves a mesocycle by its ID
@@ -22,24 +22,25 @@ public interface MesocycleService {
      * @return the mesocycle as DTO
      * @throws RuntimeException if mesocycle not found
      */
-    MesocyclePayload getMesocycle(Long id);
+    MesocycleResponse getMesocycle(Long id);
 
     /**
      * Retrieves all mesocycles for a specific user
      * @param userId the user ID
      * @return list of mesocycles as DTOs
      */
-    List<MesocyclePayload> getMesocyclesByUserId(Long userId);
+    List<MesocycleResponse> getMesocyclesByUserId(Long userId);
 
     /**
      * Updates an existing mesocycle
      * @param id the mesocycle ID to update
-     * @param mesocyclePayload the updated mesocycle data
+     * @param mesocycleResponse the updated mesocycle data
      * @return the updated mesocycle as DTO
      * @throws RuntimeException if mesocycle not found
      */
-    MesocyclePayload updateMesocycle(Long id, MesocyclePayload mesocyclePayload);
+    MesocycleResponse updateMesocycle(Long id, MesocycleResponse mesocycleResponse);
 
+//    void progressMesocycle(Long mesocycleId, Long dayId);
     /**
      * Soft deletes a mesocycle by setting deletedAt timestamp
      * @param id the mesocycle ID to delete
@@ -51,20 +52,20 @@ public interface MesocycleService {
      * Retrieves all mesocycles
      * @return list of all mesocycles as DTOs
      */
-    List<MesocyclePayload> getAllMesocycles();
+    List<MesocycleResponse> getAllMesocycles();
 
     /**
      * Retrieves all active (non-deleted) mesocycles
      * @return list of active mesocycles as DTOs
      */
-    List<MesocyclePayload> getAllActiveMesocycles();
+    List<MesocycleResponse> getAllActiveMesocycles();
 
     /**
      * Retrieves all active mesocycles for a specific user
      * @param userId the user ID
      * @return list of active mesocycles as DTOs
      */
-    List<MesocyclePayload> getActiveMesocyclesByUserId(Long userId);
+    List<MesocycleResponse> getActiveMesocyclesByUserId(Long userId);
 
     /**
      * Finishes a mesocycle by setting finishedAt timestamp
@@ -72,5 +73,5 @@ public interface MesocycleService {
      * @return the finished mesocycle as DTO
      * @throws RuntimeException if mesocycle not found
      */
-    MesocyclePayload finishMesocycle(Long id);
+    MesocycleResponse finishMesocycle(Long id);
 }

@@ -12,12 +12,12 @@ import java.util.Objects;
 
 @Getter
 @Entity
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "exercise_sets")
 public class ExerciseSet {
     
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,20 +29,31 @@ public class ExerciseSet {
     @JoinColumn(name = "day_exercise_id")
     private DayExercise dayExercise;
     
+    @Setter
     private Integer position;
-    
+
+    @Setter
+    @Enumerated(EnumType.STRING)
     @Column(name = "set_type")
     private SetType setType;
+    @Setter
     private Float weight;
+    @Setter
     private Float weightTarget;
+    @Setter
     private Float weightTargetMin;
+    @Setter
     private Float weightTargetMax;
+    @Setter
     private Integer reps;
+    @Setter
     private Integer repsTarget;
+    @Setter
     private Float bodyweight;
 
+    @Setter
+    @Enumerated(EnumType.STRING)
     private Unit unit;
-
 
     @Setter
     @Column(name = "created_at")
@@ -53,10 +64,11 @@ public class ExerciseSet {
     private Instant finishedAt;
 
     @Setter
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     /**
-     * Convenience method to get the dayExercise ID from the DayExercisePayload object
+     * Convenience method to get the dayExercise ID from the DayExerciseResponse object
      * @return the ID of the associated dayExercise
      */
     public Long getDayExerciseId() {

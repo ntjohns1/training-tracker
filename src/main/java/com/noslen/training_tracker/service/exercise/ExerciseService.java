@@ -2,15 +2,15 @@ package com.noslen.training_tracker.service.exercise;
 
 import java.util.List;
 
-import com.noslen.training_tracker.dto.exercise.ExercisePayload;
-import com.noslen.training_tracker.dto.exercise.ExerciseNotePayload;
+import com.noslen.training_tracker.dto.exercise.response.ExerciseResponse;
+import com.noslen.training_tracker.dto.exercise.response.ExerciseNoteResponse;
 
 public interface ExerciseService {
-    ExercisePayload createExercise(ExercisePayload exercisePayload);
-    ExercisePayload updateExercise(Long exerciseId, ExercisePayload exercisePayload);
+    ExerciseResponse createExercise(ExerciseResponse exerciseResponse);
+    ExerciseResponse updateExercise(Long exerciseId, ExerciseResponse exerciseResponse);
     void deleteExercise(Long exerciseId);
-    ExercisePayload getExercise(Long exerciseId);
-    List<ExercisePayload> getAllExercises();
+    ExerciseResponse getExercise(Long exerciseId);
+    List<ExerciseResponse> getAllExercises();
 
-    void addExerciseNote(Long exerciseId, ExerciseNotePayload exerciseNotePayload);
+    void addExerciseNote(Long exerciseId, ExerciseNoteResponse exerciseNoteResponse);
 }

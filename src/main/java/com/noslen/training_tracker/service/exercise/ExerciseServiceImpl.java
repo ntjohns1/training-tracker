@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.noslen.training_tracker.dto.exercise.response.ExerciseResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.noslen.training_tracker.dto.exercise.ExercisePayload;
-import com.noslen.training_tracker.dto.exercise.ExerciseNotePayload;
+import com.noslen.training_tracker.dto.exercise.response.ExerciseNoteResponse;
 import com.noslen.training_tracker.mapper.exercise.ExerciseMapper;
 import com.noslen.training_tracker.mapper.exercise.ExerciseNoteMapper;
 import com.noslen.training_tracker.model.exercise.Exercise;
@@ -30,13 +30,13 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Override
     @Transactional
-    public ExercisePayload createExercise(ExercisePayload exercisePayload) {
-        if (exercisePayload == null) {
-            throw new IllegalArgumentException("ExercisePayload cannot be null");
+    public ExerciseResponse createExercise(ExerciseResponse exerciseResponse) {
+        if (exerciseResponse == null) {
+            throw new IllegalArgumentException("ExerciseResponse cannot be null");
         }
 
         // Convert payload to entity
-        Exercise exercise = mapper.toEntity(exercisePayload);
+        Exercise exercise = mapper.toEntity(exerciseResponse);
         
         // Set creation timestamp if not already set
         if (exercise.getCreatedAt() == null) {
@@ -55,12 +55,12 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Override
     @Transactional
-    public ExercisePayload updateExercise(Long exerciseId, ExercisePayload exercisePayload) {
+    public ExerciseResponse updateExercise(Long exerciseId, ExerciseResponse exerciseResponse) {
         if (exerciseId == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
-        if (exercisePayload == null) {
-            throw new IllegalArgumentException("ExercisePayload cannot be null");
+        if (exerciseResponse == null) {
+            throw new IllegalArgumentException("ExerciseResponse cannot be null");
         }
 
         Optional<Exercise> existingOptional = repo.findById(exerciseId);
@@ -71,7 +71,8 @@ public class ExerciseServiceImpl implements ExerciseService {
         Exercise existing = existingOptional.get();
         
         // Update entity with payload data using mapper
-        mapper.updateEntity(existing, exercisePayload);
+        mapper.updateEntity(existing,
+                            exerciseResponse);
         
         // Ensure updated timestamp is set
         existing.setUpdatedAt(Instant.now());
@@ -102,7 +103,7 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Override
     @Transactional(readOnly = true)
-    public ExercisePayload getExercise(Long exerciseId) {
+    public ExerciseResponse getExercise(Long exerciseId) {
         if (exerciseId == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
@@ -116,19 +117,19 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ExercisePayload> getAllExercises() {
+    public List<ExerciseResponse> getAllExercises() {
         List<Exercise> exercises = repo.findAll();
         return mapper.toPayloadList(exercises);
     }
 
     @Override
     @Transactional
-    public void addExerciseNote(Long exerciseId, ExerciseNotePayload exerciseNotePayload) {
+    public void addExerciseNote(Long exerciseId, ExerciseNoteResponse exerciseNoteResponse) {
         if (exerciseId == null) {
             throw new IllegalArgumentException("Exercise ID cannot be null");
         }
-        if (exerciseNotePayload == null) {
-            throw new IllegalArgumentException("ExerciseNotePayload cannot be null");
+        if (exerciseNoteResponse == null) {
+            throw new IllegalArgumentException("ExerciseNoteResponse cannot be null");
         }
 
         Optional<Exercise> exerciseOptional = repo.findById(exerciseId);
@@ -142,7 +143,7 @@ public class ExerciseServiceImpl implements ExerciseService {
         }
         
         // Convert payload to entity and add to exercise
-        ExerciseNote exerciseNote = exerciseNoteMapper.toEntity(exerciseNotePayload);
+        ExerciseNote exerciseNote = exerciseNoteMapper.toEntity(exerciseNoteResponse);
         exercise.getNotes().add(exerciseNote);
         
         // Update exercise timestamp and save

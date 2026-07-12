@@ -1,14 +1,30 @@
 package com.noslen.training_tracker.service.day;
 
-import com.noslen.training_tracker.dto.day.DayMuscleGroupPayload;
+import com.noslen.training_tracker.dto.day.request.CreateDayMuscleGroupRequest;
+import com.noslen.training_tracker.dto.day.request.UpdateDayMuscleGroupRequest;
+import com.noslen.training_tracker.dto.day.response.DayMuscleGroupResponse;
 
 import java.util.List;
 
 public interface DayMuscleGroupService {
 
-    DayMuscleGroupPayload createDayMuscleGroup(Long dayId, Long muscleGroupId);
-    DayMuscleGroupPayload updateDayMuscleGroup(Long id, DayMuscleGroupPayload dayMuscleGroupPayload);
+    DayMuscleGroupResponse createDayMuscleGroup(CreateDayMuscleGroupRequest dayMuscleGroupRequest);
+
+    DayMuscleGroupResponse updateDayMuscleGroup(Long id, UpdateDayMuscleGroupRequest dayMuscleGroupRequest);
+
     void deleteDayMuscleGroup(Long id);
-    DayMuscleGroupPayload getDayMuscleGroup(Long id);
-    List<DayMuscleGroupPayload> getDayMuscleGroupsByDayId(Long dayId);
+
+    DayMuscleGroupResponse getDayMuscleGroup(Long id);
+
+    List<DayMuscleGroupResponse> getDayMuscleGroupsByDayId(Long dayId);
+
+    DayMuscleGroupResponse getMostRecentWithSameMuscleGroup(Long currentDmgId);
+
+    DayMuscleGroupResponse getDayMuscleGroupAt(Integer week, Integer position,
+            Long muscleGroupId);
+
+    DayMuscleGroupResponse getNextDayMuscleGroup(Long currentDmgId);
+
+    DayMuscleGroupResponse getDayMuscleGroupForNextWeek(Long currentDmgId);
+
 }

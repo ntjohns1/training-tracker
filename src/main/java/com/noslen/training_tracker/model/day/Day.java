@@ -21,10 +21,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.noslen.training_tracker.enums.Unit;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @Entity
@@ -46,9 +43,11 @@ public class Day {
     private Integer week;
     private Integer position;
     
+    @Setter
     @Column(name = "created_at")
     private Instant createdAt;
     
+    @Setter
     @Column(name = "updated_at")
     private Instant updatedAt;
     
@@ -59,6 +58,7 @@ public class Day {
     
     private Unit unit;
     
+    @Setter
     @Column(name = "finished_at")
     private Instant finishedAt;
     
@@ -83,13 +83,7 @@ public class Day {
         return mesocycle != null ? mesocycle.getId() : null;
     }
 
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
 
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 
     @Override
     public boolean equals(Object o) {

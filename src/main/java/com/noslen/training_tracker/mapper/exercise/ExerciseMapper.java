@@ -1,6 +1,6 @@
 package com.noslen.training_tracker.mapper.exercise;
 
-import com.noslen.training_tracker.dto.exercise.ExercisePayload;
+import com.noslen.training_tracker.dto.exercise.response.ExerciseResponse;
 import com.noslen.training_tracker.enums.ExerciseType;
 import com.noslen.training_tracker.enums.MgSubType;
 import com.noslen.training_tracker.model.exercise.Exercise;
@@ -20,42 +20,45 @@ public class ExerciseMapper {
     }
 
     /**
-     * Convert ExercisePayload to Exercise entity
+     * Convert ExerciseResponse to Exercise entity
      */
-    public Exercise toEntity(ExercisePayload payload) {
+    public Exercise toEntity(ExerciseResponse payload) {
         if (payload == null) {
             return null;
         }
 
-        return Exercise.builder()
-                .id(payload.id())
-                .name(payload.name())
-                .muscleGroupId(payload.muscleGroupId())
-                .youtubeId(payload.youtubeId())
-                .exerciseType(stringToExerciseType(payload.exerciseType()))
-                .userId(payload.userId())
-                .createdAt(payload.createdAt())
-                .updatedAt(payload.updatedAt())
-                .deletedAt(payload.deletedAt())
-                .mgSubType(stringToMgSubType(payload.mgSubType()))
-                // Convert nested ExerciseNotePayloads to ExerciseNote entities
-                .notes(payload.notes() != null ?
-                               payload.notes()
-                                       .stream()
-                                       .map(exerciseNoteMapper::toEntity)
-                                       .collect(Collectors.toList()) : null)
-                .build();
+        Exercise exercise = new Exercise();
+        exercise.setId(payload.id());
+        exercise.setName(payload.name());
+        exercise.setMuscleGroupId(payload.muscleGroupId());
+        exercise.setYoutubeId(payload.youtubeId());
+        exercise.setExerciseType(stringToExerciseType(payload.exerciseType()));
+        exercise.setUserId(payload.userId());
+        exercise.setCreatedAt(payload.createdAt());
+        exercise.setUpdatedAt(payload.updatedAt());
+        exercise.setDeletedAt(payload.deletedAt());
+        exercise.setMgSubType(stringToMgSubType(payload.mgSubType()));
+        
+        // Convert nested ExerciseNotePayloads to ExerciseNote entities
+        if (payload.notes() != null) {
+            exercise.setNotes(payload.notes()
+                    .stream()
+                    .map(exerciseNoteMapper::toEntity)
+                    .collect(Collectors.toList()));
+        }
+        
+        return exercise;
     }
 
     /**
-     * Convert Exercise entity to ExercisePayload
+     * Convert Exercise entity to ExerciseResponse
      */
-    public ExercisePayload toPayload(Exercise entity) {
+    public ExerciseResponse toPayload(Exercise entity) {
         if (entity == null) {
             return null;
         }
 
-        return new ExercisePayload(
+        return new ExerciseResponse(
                 entity.getId(),
                 entity.getName(),
                 entity.getMuscleGroupId(),
@@ -72,10 +75,10 @@ public class ExerciseMapper {
     }
 
     /**
-     * Update existing Exercise entity with data from ExercisePayload
+     * Update existing Exercise entity with data from ExerciseResponse
      * Only updates mutable fields that have setters
      */
-    public void updateEntity(Exercise existing, ExercisePayload payload) {
+    public void updateEntity(Exercise existing, ExerciseResponse payload) {
         if (existing == null || payload == null) {
             return;
         }
@@ -122,7 +125,7 @@ public class ExerciseMapper {
      * Create a new Exercise entity by merging existing entity with payload data
      * This handles immutable fields by creating a new entity
      */
-    public Exercise mergeEntity(Exercise existing, ExercisePayload payload) {
+    public Exercise mergeEntity(Exercise existing, ExerciseResponse payload) {
         if (payload == null) {
             return existing;
         }
@@ -130,34 +133,38 @@ public class ExerciseMapper {
             return toEntity(payload);
         }
 
-        return Exercise.builder()
-                .id(existing.getId()) // Keep existing ID
-                .name(payload.name() != null ? payload.name() : existing.getName())
-                .muscleGroupId(payload.muscleGroupId() != null && !payload.muscleGroupId()
-                        .equals(0L) ?
-                                       payload.muscleGroupId() : existing.getMuscleGroupId())
-                .youtubeId(payload.youtubeId() != null ? payload.youtubeId() : existing.getYoutubeId())
-                .exerciseType(payload.exerciseType() != null ? stringToExerciseType(payload.exerciseType()) :
-                                      existing.getExerciseType())
-                .userId(payload.userId() != null && !payload.userId()
-                        .equals(0L) ?
-                                payload.userId() : existing.getUserId())
-                .createdAt(existing.getCreatedAt()) // Keep existing creation time
-                .updatedAt(payload.updatedAt() != null ? payload.updatedAt() : existing.getUpdatedAt())
-                .deletedAt(payload.deletedAt() != null ? payload.deletedAt() : existing.getDeletedAt())
-                .mgSubType(stringToMgSubType(payload.mgSubType()) != null ? stringToMgSubType(payload.mgSubType()) : existing.getMgSubType())
-                .notes(payload.notes() != null ?
-                               payload.notes()
-                                       .stream()
-                                       .map(exerciseNoteMapper::toEntity)
-                                       .collect(Collectors.toList()) : existing.getNotes())
-                .build();
+        Exercise exercise = new Exercise();
+        // Keep existing ID - need to use reflection or constructor since there's no setId
+        exercise.setId(existing.getId());
+        exercise.setName(payload.name() != null ? payload.name() : existing.getName());
+        exercise.setMuscleGroupId(payload.muscleGroupId() != null && !payload.muscleGroupId().equals(0L) ?
+                payload.muscleGroupId() : existing.getMuscleGroupId());
+        exercise.setYoutubeId(payload.youtubeId() != null ? payload.youtubeId() : existing.getYoutubeId());
+        exercise.setExerciseType(payload.exerciseType() != null ? stringToExerciseType(payload.exerciseType()) :
+                existing.getExerciseType());
+        exercise.setUserId(payload.userId() != null && !payload.userId().equals(0L) ?
+                payload.userId() : existing.getUserId());
+        exercise.setCreatedAt(existing.getCreatedAt()); // Keep existing creation time
+        exercise.setUpdatedAt(payload.updatedAt() != null ? payload.updatedAt() : existing.getUpdatedAt());
+        exercise.setDeletedAt(payload.deletedAt() != null ? payload.deletedAt() : existing.getDeletedAt());
+        exercise.setMgSubType(stringToMgSubType(payload.mgSubType()) != null ? stringToMgSubType(payload.mgSubType()) : existing.getMgSubType());
+        
+        if (payload.notes() != null) {
+            exercise.setNotes(payload.notes()
+                    .stream()
+                    .map(exerciseNoteMapper::toEntity)
+                    .collect(Collectors.toList()));
+        } else {
+            exercise.setNotes(existing.getNotes());
+        }
+        
+        return exercise;
     }
 
     /**
      * Convert list of Exercise entities to list of ExercisePayloads
      */
-    public List<ExercisePayload> toPayloadList(List<Exercise> entities) {
+    public List<ExerciseResponse> toPayloadList(List<Exercise> entities) {
         if (entities == null) {
             return null;
         }

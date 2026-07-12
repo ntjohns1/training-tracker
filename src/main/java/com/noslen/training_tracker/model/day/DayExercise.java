@@ -6,16 +6,8 @@ import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import com.noslen.training_tracker.model.progression.MuscleGroup;
+import jakarta.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -35,19 +27,24 @@ public class DayExercise {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
+    // Setter methods for MapStruct mapping
+    @Setter
     @ManyToOne
     @JsonBackReference(value = "dayexercise-day")
     @JoinColumn(name = "day_id")
     private Day day;
     
+    @Setter
     @ManyToOne
     @JsonBackReference(value = "dayexercise-exercise")
     @JoinColumn(name = "exercise_id")
     private Exercise exercise;
     
+    @Setter
     private Integer position;
-    
+
+    @Setter
     @Column(name = "joint_pain")
     private Integer jointPain;
 
@@ -59,33 +56,24 @@ public class DayExercise {
     @Column(name = "updated_at")
     private Instant updatedAt;
     
+    @Setter
     @Column(name = "source_day_exercise_id")
     private Long sourceDayExerciseId;
     
+    @Setter
     @ManyToOne
     @JsonBackReference(value = "dayexercise-musclegroup")
     @JoinColumn(name = "muscle_group_id")
-    private DayMuscleGroup muscleGroup;
-    
+    private MuscleGroup muscleGroup;
+
+    @Setter
+    @Enumerated(EnumType.STRING)
     private Status status;
     
     @OneToMany(mappedBy = "dayExercise", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference(value = "exerciseset-dayexercise")
     @Builder.Default
     private List<ExerciseSet> sets = new ArrayList<>();
-
-    // Setter methods for MapStruct mapping
-    public void setDay(Day day) {
-        this.day = day;
-    }
-
-    public void setExercise(Exercise exercise) {
-        this.exercise = exercise;
-    }
-
-    public void setMuscleGroup(DayMuscleGroup muscleGroup) {
-        this.muscleGroup = muscleGroup;
-    }
 
     /**
      * Convenience method to get the exercise ID from the Exercise object

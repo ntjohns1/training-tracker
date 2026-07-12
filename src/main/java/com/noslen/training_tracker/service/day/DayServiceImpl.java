@@ -1,113 +1,112 @@
 package com.noslen.training_tracker.service.day;
 
+import com.noslen.training_tracker.dto.day.request.CreateDayRequest;
+import com.noslen.training_tracker.dto.day.request.FinishDayRequest;
+import com.noslen.training_tracker.dto.day.response.DayResponse;
+import com.noslen.training_tracker.event.DayCompletedEvent;
+import com.noslen.training_tracker.factory.DayFactory;
+import com.noslen.training_tracker.mapper.day.DayMapper;
+import com.noslen.training_tracker.model.day.Day;
+import com.noslen.training_tracker.repository.day.DayRepo;
+import com.noslen.training_tracker.security.UserContext;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.noslen.training_tracker.dto.day.DayPayload;
-import com.noslen.training_tracker.mapper.day.DayMapper;
-import com.noslen.training_tracker.model.day.Day;
-import com.noslen.training_tracker.model.mesocycle.Mesocycle;
-import com.noslen.training_tracker.repository.day.DayRepo;
-import com.noslen.training_tracker.repository.mesocycle.MesocycleRepo;
-
+/**
+ * Service implementation for Day operations.
+ * Uses DayFactory for clean entity creation and UserContext for data segregation.
+ */
 @Service
 public class DayServiceImpl implements DayService {
-    
+
     private final DayRepo repo;
-    private final MesocycleRepo mesocycleRepo;
-    private final DayMapper mapper;
+    private final DayMapper dayMapper;
+    private final DayFactory dayFactory;
+    private final UserContext userContext;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public DayServiceImpl(DayRepo repo, MesocycleRepo mesocycleRepo, DayMapper mapper) {
+    public DayServiceImpl(DayRepo repo, DayMapper dayMapper, DayFactory dayFactory,
+            UserContext userContext, ApplicationEventPublisher eventPublisher) {
         this.repo = repo;
-        this.mesocycleRepo = mesocycleRepo;
-        this.mapper = mapper;
+        this.dayMapper = dayMapper;
+        this.dayFactory = dayFactory;
+        this.userContext = userContext;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
     @Transactional
-    public DayPayload createDay(DayPayload dayPayload) {
-        if (dayPayload == null) {
-            throw new IllegalArgumentException("DayPayload cannot be null");
+    public DayResponse createDay(CreateDayRequest dayRequest) {
+        if (dayRequest == null) {
+            throw new IllegalArgumentException("DayResponse cannot be null");
         }
 
-        // Convert payload to entity
-        Day day = mapper.toEntity(dayPayload);
-        
-        // Handle mesocycle relationship if mesoId is provided
-        if (dayPayload.mesoId() != null) {
-            Optional<Mesocycle> mesocycleOpt = mesocycleRepo.findById(dayPayload.mesoId());
-            if (mesocycleOpt.isEmpty()) {
-                throw new RuntimeException("Mesocycle not found with id: " + dayPayload.mesoId());
-            }
-            // Rebuild entity with mesocycle relationship
-            day = Day.builder()
-                    .id(day.getId())
-                    .mesocycle(mesocycleOpt.get())
-                    .week(day.getWeek())
-                    .position(day.getPosition())
-                    .createdAt(Instant.now())
-                    .updatedAt(Instant.now())
-                    .bodyweight(day.getBodyweight())
-                    .bodyweightAt(day.getBodyweightAt())
-                    .unit(day.getUnit())
-                    .finishedAt(day.getFinishedAt())
-                    .label(day.getLabel())
-                    .build();
-        } else {
-            // Set timestamps for new entity
-            day.setCreatedAt(Instant.now());
-            day.setUpdatedAt(Instant.now());
-        }
+        // TODO: refactor to validate mesocycle ownership at repository level
+        // Use factory to create entity
+        Day day = dayFactory.createFromRequest(dayRequest);
 
-        // Save and return as DTO
+        // Save entity
         Day savedDay = repo.save(day);
-        return mapper.toPayload(savedDay);
+
+        // Convert back to response DTO
+        return dayMapper.toPayload(savedDay);
     }
 
     @Override
     @Transactional
-    public DayPayload updateDay(Long id, DayPayload dayPayload) {
-        if (id == null) {
-            throw new IllegalArgumentException("ID cannot be null");
+    public DayResponse updateDay(Long dayId, DayResponse dayResponse) {
+        if (dayId == null) {
+            throw new IllegalArgumentException("Day ID cannot be null");
         }
-        if (dayPayload == null) {
-            throw new IllegalArgumentException("DayPayload cannot be null");
-        }
-
-        // Find existing entity
-        Optional<Day> existingOpt = repo.findById(id);
-        if (existingOpt.isEmpty()) {
-            throw new RuntimeException("Day not found with id: " + id);
+        if (dayResponse == null) {
+            throw new IllegalArgumentException("DayResponse cannot be null");
         }
 
-        Day existingDay = existingOpt.get();
-        
-        // Update entity with payload data using merge since most fields are immutable
-        Day updatedDay = mapper.mergeEntity(existingDay, dayPayload);
-        updatedDay.setUpdatedAt(Instant.now());
-        
-        // Save and return as DTO
-        Day savedDay = repo.save(updatedDay);
-        return mapper.toPayload(savedDay);
+        Optional<Day> existingOptional = repo.findById(dayId);
+        if (existingOptional.isEmpty()) {
+            throw new RuntimeException("Day not found with id: " + dayId);
+        }
+
+        Day existing = existingOptional.get();
+
+        // Validate that the current user owns the mesocycle this day belongs to
+        userContext.validateUserAccess(existing.getMesocycle()
+                                               .getUserId());
+
+        // Update entity with payload data using mapper
+        dayMapper.updateEntity(existing,
+                               dayResponse);
+
+        // Ensure updated timestamp is set
+        existing.setUpdatedAt(Instant.now());
+
+        // Save updated entity
+        Day savedEntity = repo.save(existing);
+
+        // Convert back to payload and return
+        return dayMapper.toPayload(savedEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public DayPayload getDay(Long id) {
+    public DayResponse getDay(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
 
-        Optional<Day> dayOpt = repo.findById(id);
-        if (dayOpt.isEmpty()) {
-            throw new RuntimeException("Day not found with id: " + id);
-        }
+        Day day = repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Day not found with id: " + id));
 
-        return mapper.toPayload(dayOpt.get());
+        // Validate that the current user owns the mesocycle this day belongs to
+        userContext.validateUserAccess(day.getMesocycle()
+                                               .getUserId());
+
+        return dayMapper.toPayload(day);
     }
 
     @Override
@@ -117,21 +116,72 @@ public class DayServiceImpl implements DayService {
             throw new IllegalArgumentException("ID cannot be null");
         }
 
-        if (!repo.existsById(id)) {
-            throw new RuntimeException("Day not found with id: " + id);
-        }
+        // Find existing day and validate ownership before deletion
+        Day existingDay = repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Day not found with id: " + id));
+
+        // Validate that the current user owns the mesocycle this day belongs to
+        userContext.validateUserAccess(existingDay.getMesocycle()
+                                               .getUserId());
 
         repo.deleteById(id);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<DayPayload> getDaysByMesocycleId(Long mesocycleId) {
+    public List<DayResponse> getDaysByMesocycleId(Long mesocycleId) {
         if (mesocycleId == null) {
             throw new IllegalArgumentException("Mesocycle ID cannot be null");
         }
 
         List<Day> days = repo.findByMesocycleId(mesocycleId);
-        return mapper.toPayloadList(days);
+
+        return dayMapper.toPayloadList(days);
     }
+
+    @Override
+    public DayResponse getNextDayWithSameMuscleGroup(Long dayId, Long muscleGroupId) {
+        Optional<Day> dayOpt = repo.findNextDayWithSameMuscleGroup(dayId,
+                                                                   muscleGroupId);
+        if (dayOpt.isEmpty()) {
+            throw new RuntimeException("Next day not found for day: " + dayId + " and muscle group: " + muscleGroupId);
+        }
+        return dayMapper.toPayload(dayOpt.get());
+    }
+
+
+    @Override
+    @Transactional
+    public DayResponse completeDay(Long dayId, FinishDayRequest finishDayRequest) {
+        if (dayId == null) {
+            throw new IllegalArgumentException("Day ID cannot be null");
+        }
+        if (finishDayRequest == null) {
+            throw new IllegalArgumentException("FinishDayRequest cannot be null");
+        }
+
+        // Find existing day and validate ownership before completion
+        Day existingDay = repo.findById(dayId)
+                .orElseThrow(() -> new RuntimeException("Day not found with id: " + dayId));
+
+        // Validate that the current user owns the mesocycle this day belongs to
+        userContext.validateUserAccess(existingDay.getMesocycle()
+                                               .getUserId());
+
+        // Mark day as completed by setting finishedAt timestamp
+        existingDay.setFinishedAt(Instant.now());
+
+        // Save updated entity
+        Day savedDay = repo.save(existingDay);
+
+        // Publish completion; DayCompletedKafkaPublisher forwards to Kafka only after this
+        // transaction commits, which drives next-week progression asynchronously.
+        Long mesoId = savedDay.getMesocycle() != null ? savedDay.getMesocycle().getId() : null;
+        eventPublisher.publishEvent(new DayCompletedEvent(dayId, mesoId, finishDayRequest));
+
+        // Return updated day response
+        return dayMapper.toPayload(savedDay);
+    }
+
+
 }
