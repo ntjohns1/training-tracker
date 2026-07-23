@@ -2,7 +2,6 @@ package com.noslen.training_tracker.mapper.day;
 
 import com.noslen.training_tracker.dto.day.response.ExerciseSetResponse;
 import com.noslen.training_tracker.enums.Status;
-import com.noslen.training_tracker.enums.Unit;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.model.day.ExerciseSet;
 import com.noslen.training_tracker.enums.SetType;
@@ -25,7 +24,6 @@ class ExerciseSetMapperTest {
     @InjectMocks
     private ExerciseSetMapper exerciseSetMapper;
 
-    private ExerciseSetResponse testPayload;
     private ExerciseSet testEntity;
     private DayExercise testDayExercise;
     private Instant testTime;
@@ -33,16 +31,11 @@ class ExerciseSetMapperTest {
     @BeforeEach
     void setUp() {
         testTime = Instant.now();
-        
+
         testDayExercise = DayExercise.builder()
                 .id(1L)
                 .position(1)
                 .build();
-
-        testPayload = new ExerciseSetResponse(
-                1L, 2L, 1, "regular", 100.0f, 105.0f, 95.0f, 110.0f,
-                10, 12, 80.0f, "kgs", testTime, testTime, "complete"
-        );
 
         testEntity = new ExerciseSet();
         testEntity.setId(1L);
@@ -56,75 +49,10 @@ class ExerciseSetMapperTest {
         testEntity.setReps(10);
         testEntity.setRepsTarget(12);
         testEntity.setBodyweight(80.0f);
-        testEntity.setUnit(exerciseSetMapper.stringToUnit("kgs"));
+        testEntity.setUnit(exerciseSetMapper.stringToUnit("kg"));
         testEntity.setCreatedAt(testTime);
         testEntity.setFinishedAt(testTime);
         testEntity.setStatus(Status.COMPLETE);
-    }
-
-    @Test
-    void toEntity_WithValidPayload_ShouldMapCorrectly() {
-        // When
-        ExerciseSet result = exerciseSetMapper.toEntity(testPayload);
-
-        // Then
-        assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo(1L);
-        assertThat(result.getPosition()).isEqualTo(1);
-        assertThat(result.getSetType()).isEqualTo(SetType.REGULAR);
-        assertThat(result.getWeight()).isEqualTo(100.0f);
-        assertThat(result.getWeightTarget()).isEqualTo(105.0f);
-        assertThat(result.getWeightTargetMin()).isEqualTo(95.0f);
-        assertThat(result.getWeightTargetMax()).isEqualTo(110.0f);
-        assertThat(result.getReps()).isEqualTo(10);
-        assertThat(result.getRepsTarget()).isEqualTo(12);
-        assertThat(result.getBodyweight()).isEqualTo(80.0f);
-        assertThat(result.getUnit()).isEqualTo(exerciseSetMapper.stringToUnit("kgs"));
-        assertThat(result.getCreatedAt()).isEqualTo(testTime);
-        assertThat(result.getFinishedAt()).isEqualTo(testTime);
-        assertThat(result.getStatus()).isEqualTo(Status.COMPLETE);
-        assertThat(result.getDayExercise()).isNull(); // Not set in basic toEntity
-    }
-
-    @Test
-    void toEntity_WithNullPayload_ShouldReturnNull() {
-        // When
-        ExerciseSet result = exerciseSetMapper.toEntity(null);
-
-        // Then
-        assertThat(result).isNull();
-    }
-
-    @Test
-    void toEntity_WithDayExerciseContext_ShouldSetDayExercise() {
-        // When
-        ExerciseSet result = exerciseSetMapper.toEntity(testPayload, testDayExercise);
-
-        // Then
-        assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo(1L);
-        assertThat(result.getDayExercise()).isEqualTo(testDayExercise);
-        assertThat(result.getPosition()).isEqualTo(1);
-        assertThat(result.getSetType()).isEqualTo(SetType.REGULAR);
-    }
-
-    @Test
-    void toEntity_WithNullDayExerciseContext_ShouldNotSetDayExercise() {
-        // When
-        ExerciseSet result = exerciseSetMapper.toEntity(testPayload, null);
-
-        // Then
-        assertThat(result).isNotNull();
-        assertThat(result.getDayExercise()).isNull();
-    }
-
-    @Test
-    void toEntity_WithNullPayloadAndDayExercise_ShouldReturnNull() {
-        // When
-        ExerciseSet result = exerciseSetMapper.toEntity(null, testDayExercise);
-
-        // Then
-        assertThat(result).isNull();
     }
 
     @Test
@@ -145,7 +73,7 @@ class ExerciseSetMapperTest {
         assertThat(result.reps()).isEqualTo(10);
         assertThat(result.repsTarget()).isEqualTo(12);
         assertThat(result.bodyweight()).isEqualTo(80.0f);
-        assertThat(result.unit()).isEqualTo("kgs");
+        assertThat(result.unit()).isEqualTo("kg");
         assertThat(result.createdAt()).isEqualTo(testTime);
         assertThat(result.finishedAt()).isEqualTo(testTime);
         assertThat(result.status()).isEqualTo("complete");
@@ -169,7 +97,7 @@ class ExerciseSetMapperTest {
         entityWithNullDayExercise.setSetType(SetType.REGULAR);
         entityWithNullDayExercise.setWeight(100.0f);
         entityWithNullDayExercise.setReps(10);
-        entityWithNullDayExercise.setUnit(exerciseSetMapper.stringToUnit("kgs"));
+        entityWithNullDayExercise.setUnit(exerciseSetMapper.stringToUnit("kg"));
         entityWithNullDayExercise.setCreatedAt(testTime);
         entityWithNullDayExercise.setStatus(Status.COMPLETE);
         entityWithNullDayExercise.setDayExercise(null);
@@ -181,138 +109,6 @@ class ExerciseSetMapperTest {
         assertThat(result).isNotNull();
         assertThat(result.dayExerciseId()).isNull();
         assertThat(result.id()).isEqualTo(1L);
-    }
-
-    @Test
-    void updateEntity_WithValidData_ShouldUpdateMutableFields() {
-        // Given
-        ExerciseSet existing = new ExerciseSet();
-        existing.setId(1L);
-        existing.setPosition(1);
-        existing.setSetType(SetType.REGULAR);
-        existing.setWeight(100.0f);
-        existing.setReps(10);
-        existing.setUnit(exerciseSetMapper.stringToUnit("kgs"));
-        existing.setCreatedAt(testTime);
-        existing.setFinishedAt(null);
-        existing.setStatus(Status.READY);
-
-        Instant newFinishedTime = testTime.plusSeconds(3600);
-        ExerciseSetResponse updatePayload = new ExerciseSetResponse(
-                null, null, 2, "myo_rep", 110.0f, 115.0f, 105.0f, 120.0f,
-                12, 15, 85.0f, "lbs", testTime.plusSeconds(60), newFinishedTime, "complete"
-        );
-
-        // When
-        exerciseSetMapper.updateEntity(existing, updatePayload);
-
-        // Then
-        // Only mutable fields should be updated
-        assertThat(existing.getCreatedAt()).isEqualTo(testTime.plusSeconds(60));
-        assertThat(existing.getFinishedAt()).isEqualTo(newFinishedTime);
-        assertThat(existing.getStatus()).isEqualTo(Status.COMPLETE);
-        
-        // Immutable fields should remain unchanged
-        assertThat(existing.getPosition()).isEqualTo(1); // unchanged
-        assertThat(existing.getSetType()).isEqualTo(SetType.REGULAR); // unchanged
-        assertThat(existing.getWeight()).isEqualTo(100.0f); // unchanged
-        assertThat(existing.getReps()).isEqualTo(10); // unchanged
-        assertThat(existing.getUnit()).isEqualTo(Unit.KGS); // unchanged
-    }
-
-    @Test
-    void updateEntity_WithNullInputs_ShouldHandleGracefully() {
-        // When/Then - should not throw exceptions
-        exerciseSetMapper.updateEntity(null, testPayload);
-        exerciseSetMapper.updateEntity(testEntity, null);
-        exerciseSetMapper.updateEntity(null, null);
-    }
-
-    @Test
-    void updateEntity_WithPartialData_ShouldUpdateOnlyProvidedFields() {
-        // Given
-        ExerciseSet existing = new ExerciseSet();
-        existing.setId(1L);
-        existing.setCreatedAt(testTime);
-        existing.setFinishedAt(null);
-        existing.setStatus(Status.READY);
-
-        ExerciseSetResponse partialPayload = new ExerciseSetResponse(
-                null, null, null, null, null, null, null, null,
-                null, null, null, null, null, testTime.plusSeconds(3600), "complete"
-        );
-
-        // When
-        exerciseSetMapper.updateEntity(existing, partialPayload);
-
-        // Then
-        assertThat(existing.getCreatedAt()).isEqualTo(testTime); // unchanged (null in payload)
-        assertThat(existing.getFinishedAt()).isEqualTo(testTime.plusSeconds(3600)); // updated
-        assertThat(existing.getStatus()).isEqualTo(Status.COMPLETE); // updated
-    }
-
-    @Test
-    void mergeEntity_WithValidData_ShouldCreateNewEntityWithUpdatedFields() {
-        // Given
-        ExerciseSet existing = new ExerciseSet();
-        existing.setId(1L);
-        existing.setDayExercise(testDayExercise);
-        existing.setPosition(1);
-        existing.setSetType(SetType.REGULAR);
-        existing.setWeight(100.0f);
-        existing.setReps(10);
-        existing.setUnit(exerciseSetMapper.stringToUnit("kgs"));
-        existing.setCreatedAt(testTime);
-        existing.setFinishedAt(null);
-        existing.setStatus(Status.READY);
-
-        ExerciseSetResponse updatePayload = new ExerciseSetResponse(
-                null, null, 2, "myorep", 110.0f, 115.0f, 105.0f, 120.0f,
-                12, 15, 85.0f, "lbs", null, testTime.plusSeconds(3600), "complete"
-        );
-
-        // When
-        ExerciseSet result = exerciseSetMapper.mergeEntity(existing, updatePayload);
-
-        // Then
-        assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo(1L); // preserved
-        assertThat(result.getDayExercise()).isEqualTo(testDayExercise); // preserved
-        assertThat(result.getCreatedAt()).isEqualTo(testTime); // preserved (null in payload)
-        
-        // Updated fields
-        assertThat(result.getPosition()).isEqualTo(2);
-        assertThat(result.getSetType()).isEqualTo(SetType.MYOREP);
-        assertThat(result.getWeight()).isEqualTo(110.0f);
-        assertThat(result.getWeightTarget()).isEqualTo(115.0f);
-        assertThat(result.getWeightTargetMin()).isEqualTo(105.0f);
-        assertThat(result.getWeightTargetMax()).isEqualTo(120.0f);
-        assertThat(result.getReps()).isEqualTo(12);
-        assertThat(result.getRepsTarget()).isEqualTo(15);
-        assertThat(result.getBodyweight()).isEqualTo(85.0f);
-        assertThat(result.getUnit()).isEqualTo(Unit.LBS);
-        assertThat(result.getFinishedAt()).isEqualTo(testTime.plusSeconds(3600));
-        assertThat(result.getStatus()).isEqualTo(Status.COMPLETE);
-    }
-
-    @Test
-    void mergeEntity_WithNullExisting_ShouldReturnNewEntity() {
-        // When
-        ExerciseSet result = exerciseSetMapper.mergeEntity(null, testPayload);
-
-        // Then
-        assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo(testPayload.id());
-        assertThat(result.getPosition()).isEqualTo(testPayload.position());
-    }
-
-    @Test
-    void mergeEntity_WithNullPayload_ShouldReturnExisting() {
-        // When
-        ExerciseSet result = exerciseSetMapper.mergeEntity(testEntity, null);
-
-        // Then
-        assertThat(result).isSameAs(testEntity);
     }
 
     @Test

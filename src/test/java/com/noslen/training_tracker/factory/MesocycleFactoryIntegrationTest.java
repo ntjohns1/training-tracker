@@ -59,12 +59,14 @@ class MesocycleFactoryIntegrationTest {
     void setUp() {
         mesocycleFactory = new MesocycleFactory(exerciseRepo, dayMuscleGroupRepo, muscleGroupRepo, dayFactory);
 
-        // Setup mock exercises with lenient stubbing
+        // Setup mock exercises with lenient stubbing. Each exercise carries a muscleGroupId
+        // (cycling 1..3) since day muscle groups are derived from the exercise's muscle group.
         mockExercises = new ArrayList<>();
         for (int i = 1; i <= 5; i++) {
             Exercise exercise = new Exercise();
             exercise.setId((long) i);
             exercise.setName("Exercise " + i);
+            exercise.setMuscleGroupId((long) ((i - 1) % 3 + 1)); // ex1->1, ex2->2, ex3->3, ex4->1, ex5->2
             mockExercises.add(exercise);
             lenient().when(exerciseRepo.findById((long) i)).thenReturn(Optional.of(exercise));
         }
@@ -98,7 +100,7 @@ class MesocycleFactoryIntegrationTest {
                                                                       new CreateMesocycleRequest.DayExerciseRequest(3L)
                                                               ))
                 ),
-                "lbs",
+                "lb",
                 Map.of(
                         "1",
                         new CreateMesocycleRequest.ProgressionRequest("regular", 1L),
@@ -117,7 +119,7 @@ class MesocycleFactoryIntegrationTest {
         assertThat(result).isNotNull();
         assertThat(result.getName()).isEqualTo("Test Mesocycle");
         assertThat(result.getWeeks()).hasSize(8); // 2 weeks × 4 day patterns = 8 total days
-        assertThat(result.getUnit()).isEqualTo(Unit.LBS);
+        assertThat(result.getUnit()).isEqualTo(Unit.LB);
         assertThat(result.getCreatedAt()).isNotNull();
         assertThat(result.getUpdatedAt()).isNotNull();
 
@@ -145,7 +147,7 @@ class MesocycleFactoryIntegrationTest {
                                                                       new CreateMesocycleRequest.DayExerciseRequest(3L)
                                                               ))
                 ),
-                "lbs",
+                "lb",
                 Map.of(
                         "1",
                         new CreateMesocycleRequest.ProgressionRequest("regular", 1L),
@@ -193,7 +195,7 @@ class MesocycleFactoryIntegrationTest {
                                                                       new CreateMesocycleRequest.DayExerciseRequest(3L)
                                                               ))
                 ),
-                "lbs",
+                "lb",
                 Map.of(
                         "1",
                         new CreateMesocycleRequest.ProgressionRequest("regular", 1L),
@@ -254,7 +256,7 @@ class MesocycleFactoryIntegrationTest {
                                                                       new CreateMesocycleRequest.DayExerciseRequest(3L)
                                                               ))
                 ),
-                "lbs",
+                "lb",
                 Map.of(
                         "1",
                         new CreateMesocycleRequest.ProgressionRequest("regular", 1L),
@@ -291,10 +293,10 @@ class MesocycleFactoryIntegrationTest {
             }
         }
         
-        // We expect DayMuscleGroup entities to be created for each day
-        // Each day should have at least 1 DayMuscleGroup (hardcoded muscleGroupId = 1L in factory)
-        // 8 days × 1 muscle group per day = 8 total DayMuscleGroup entities
-        assertThat(totalDayMuscleGroups).isEqualTo(8);
+        // DayMuscleGroups are derived from the distinct muscle groups trained each day:
+        // Push Day = ex1(mg1) + ex2(mg2) => 2; Pull Day = ex3(mg3) => 1.
+        // 4 weeks × (2 + 1) = 12 total DayMuscleGroup entities.
+        assertThat(totalDayMuscleGroups).isEqualTo(12);
     }
 
     @Test
@@ -303,14 +305,14 @@ class MesocycleFactoryIntegrationTest {
         // Given
         CreateMesocycleRequest request = new CreateMesocycleRequest(
                 "Progression Test Mesocycle",
-                1,
+                4,
                 List.of(
                         new CreateMesocycleRequest.DayRequest("Day 1",
                                                               List.of(
                                                                       new CreateMesocycleRequest.DayExerciseRequest(1L)
                                                               ))
                 ),
-                "lbs",
+                "lb",
                 Map.of(
                         "1",
                         new CreateMesocycleRequest.ProgressionRequest("regular", 1L),
@@ -362,7 +364,7 @@ class MesocycleFactoryIntegrationTest {
                                                                       new CreateMesocycleRequest.DayExerciseRequest(3L)
                                                               ))
                 ),
-                "lbs",
+                "lb",
                 Map.of(
                         "1",
                         new CreateMesocycleRequest.ProgressionRequest("regular", 1L),
@@ -419,11 +421,11 @@ class MesocycleFactoryIntegrationTest {
         
         CreateMesocycleRequest request = new CreateMesocycleRequest(
             "Test Mesocycle",
-            1,
+            4,
             List.of(new CreateMesocycleRequest.DayRequest(null, List.of(
                 new CreateMesocycleRequest.DayExerciseRequest(999L) // Invalid exercise ID
             ))),
-            "lbs",
+            "lb",
             Map.of(),
             null,
             null
@@ -443,9 +445,9 @@ class MesocycleFactoryIntegrationTest {
         
         CreateMesocycleRequest request = new CreateMesocycleRequest(
             "Test Mesocycle",
-            1,
+            4,
             List.of(),
-            "lbs",
+            "lb",
             Map.of("999", new CreateMesocycleRequest.ProgressionRequest("regular", 999L)), // Invalid muscle group ID
             null,
             null
@@ -479,7 +481,7 @@ class MesocycleFactoryIntegrationTest {
                                                                       new CreateMesocycleRequest.DayExerciseRequest(4L)
                                                               ))
                 ),
-                "kgs",
+                "kg",
                 Map.of(
                         "1",
                         new CreateMesocycleRequest.ProgressionRequest("regular", 1L),
@@ -498,7 +500,7 @@ class MesocycleFactoryIntegrationTest {
         assertThat(result).isNotNull();
         assertThat(result.getName()).isEqualTo("Complex Mesocycle");
         assertThat(result.getWeeks()).hasSize(18); // 6 weeks × 3 day patterns = 18 total days
-        assertThat(result.getUnit()).isEqualTo(Unit.KGS);
+        assertThat(result.getUnit()).isEqualTo(Unit.KG);
         assertThat(result.getCreatedAt()).isNotNull();
         assertThat(result.getUpdatedAt()).isNotNull();
     }

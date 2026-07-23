@@ -20,11 +20,22 @@ public record UpdateDayRequest(
         String unit,
         Instant finishedAt,
         String label,
-        List<Object> notes,  // Simplified for now
+        List<DayNoteUpdateRequest> notes,
         List<DayExerciseUpdateRequest> exercises,
         List<DayMuscleGroupUpdateRequest> muscleGroups,
         String status
 ) {
+    /**
+     * Nested DTO for updating day notes within a day update.
+     */
+    public record DayNoteUpdateRequest(
+            Long id,
+            Long dayId,
+            String content,
+            Instant createdAt,
+            Instant updatedAt,
+            String status
+    ) {}
     
     /**
      * Nested DTO for updating day exercises within a day update.

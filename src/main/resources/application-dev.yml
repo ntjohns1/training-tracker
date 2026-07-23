@@ -1,0 +1,20 @@
+# Local development profile: no Keycloak (permissive security + stub user), local broker + DB
+# via docker-compose. Run with: ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+spring:
+  # Keycloak is not running locally; skip the resource-server auto-config so no JwtDecoder is
+  # created (which would try to reach the issuer at startup). DevSecurityConfig permits all.
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/training_tracker
+    username: noslen
+    password:
+  kafka:
+    bootstrap-servers: localhost:9092
+
+# Enable the Kafka listener container in dev (docker-compose runs a broker)
+app:
+  kafka:
+    consumer:
+      auto-startup: true

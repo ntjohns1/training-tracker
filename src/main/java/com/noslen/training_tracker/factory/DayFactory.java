@@ -1,14 +1,14 @@
 package com.noslen.training_tracker.factory;
 
-import com.noslen.training_tracker.dto.day.response.DayResponse;
-import com.noslen.training_tracker.mapper.day.DayMapper;
+import com.noslen.training_tracker.dto.day.request.CreateDayRequest;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
-import com.noslen.training_tracker.repository.mesocycle.MesocycleRepo;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
-import java.util.Optional;
 
 /**
  * Factory class for creating Day entities with proper initialization
@@ -17,56 +17,32 @@ import java.util.Optional;
 @Component
 public class DayFactory {
 
-    private final DayMapper dayMapper;
-    private final MesocycleRepo mesocycleRepo;
+    @PersistenceContext
+    private final EntityManager entityManager;
 
-    public DayFactory(DayMapper dayMapper, MesocycleRepo mesocycleRepo) {
-        this.dayMapper = dayMapper;
-        this.mesocycleRepo = mesocycleRepo;
+    public DayFactory(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
+
 
     /**
      * Creates a new Day entity from a DayResponse DTO with proper timestamps
      * and mesocycle relationship handling.
      *
-     * @param dayResponse the DTO containing day data
-     * @return a properly initialized Day entity
+     * @param dayRequest@return a properly initialized Day entity
      * @throws RuntimeException if mesocycle is not found when mesoId is provided
      */
-    public Day createFromResponse(DayResponse dayResponse) {
-        if (dayResponse == null) {
-            throw new IllegalArgumentException("DayResponse cannot be null");
-        }
-
+    public Day createFromRequest(@NotNull CreateDayRequest dayRequest) {
         // Convert DTO to entity
-        Day day = dayMapper.toEntity(dayResponse);
-        
-        // Set timestamps for new entity
         Instant now = Instant.now();
-        
-        // Handle mesocycle relationship if mesoId is provided
-        Mesocycle mesocycle = null;
-        if (dayResponse.mesoId() != null) {
-            Optional<Mesocycle> mesocycleOpt = mesocycleRepo.findById(dayResponse.mesoId());
-            if (mesocycleOpt.isEmpty()) {
-                throw new RuntimeException("Mesocycle not found with id: " + dayResponse.mesoId());
-            }
-            mesocycle = mesocycleOpt.get();
-        }
-
-        // Build entity with proper initialization
         return Day.builder()
-                .id(day.getId())
-                .mesocycle(mesocycle)
-                .week(day.getWeek())
-                .position(day.getPosition())
+                .mesocycle(entityManager.getReference(Mesocycle.class,
+                                                      dayRequest.mesoId()))
+                .week(dayRequest.week())
+                .position(dayRequest.position())
                 .createdAt(now)
                 .updatedAt(now)
-                .bodyweight(day.getBodyweight())
-                .bodyweightAt(day.getBodyweightAt())
-                .unit(day.getUnit())
-                .finishedAt(day.getFinishedAt())
-                .label(day.getLabel())
+                .label(dayRequest.label())
                 .build();
     }
 
@@ -82,7 +58,7 @@ public class DayFactory {
         }
 
         Instant now = Instant.now();
-        
+
         return Day.builder()
                 .id(existingDay.getId())
                 .mesocycle(existingDay.getMesocycle())

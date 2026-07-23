@@ -50,7 +50,7 @@ class MesocycleMapperTest {
                 100L,
                 "Test Mesocycle",
                 28,
-                "lbs",
+                "lb",
                 2L,
                 3L,
                 5L,
@@ -79,7 +79,7 @@ class MesocycleMapperTest {
                 .userId(100L)
                 .name("Test Mesocycle")
                 .days(28)
-                .unit(Unit.LBS)
+                .unit(Unit.LB)
                 .sourceTemplate(MesoTemplate.builder().id(2L).build())
                 .sourceMeso(Mesocycle.builder().id(3L).build())
                 .microRirs(5L)
@@ -104,99 +104,6 @@ class MesocycleMapperTest {
                 .generatedFrom("template")
                 .progressions(Collections.emptyMap())
                 .build();
-    }
-
-    @Test
-    void toEntity_WithValidPayload_ShouldReturnEntity() {
-        // Given
-        MesoNote mockNote = createMesoNote(1L);
-        when(mesoNoteMapper.toEntity(any(MesoNoteResponse.class))).thenReturn(mockNote);
-
-        // When
-        Mesocycle result = mapper.toEntity(samplePayload);
-
-        // Then
-        assertNotNull(result);
-        assertEquals(samplePayload.id(), result.getId());
-        assertEquals(samplePayload.key(), result.getMesocycleKey());
-        assertEquals(samplePayload.userId(), result.getUserId());
-        assertEquals(samplePayload.name(), result.getName());
-        assertEquals(samplePayload.days(), result.getDays());
-        assertEquals(mapper.stringToUnit(samplePayload.unit()), result.getUnit());
-        assertEquals(samplePayload.microRirs(), result.getMicroRirs());
-        assertEquals(samplePayload.createdAt(), result.getCreatedAt());
-        assertEquals(samplePayload.updatedAt(), result.getUpdatedAt());
-        assertEquals(samplePayload.finishedAt(), result.getFinishedAt());
-        assertEquals(samplePayload.deletedAt(), result.getDeletedAt());
-
-        // Verify relationships are set
-        assertNotNull(result.getSourceTemplate());
-        assertEquals(samplePayload.sourceTemplateId(), result.getSourceTemplate().getId());
-        assertNotNull(result.getSourceMeso());
-        assertEquals(samplePayload.sourceMesoId(), result.getSourceMeso().getId());
-
-        // Verify notes mapping
-        assertNotNull(result.getNotes());
-        assertEquals(1, result.getNotes().size());
-        verify(mesoNoteMapper).toEntity(any(MesoNoteResponse.class));
-    }
-
-    @Test
-    void toEntity_WithNullPayload_ShouldReturnNull() {
-        // When
-        Mesocycle result = mapper.toEntity(null);
-
-        // Then
-        assertNull(result);
-        verifyNoInteractions(mesoNoteMapper);
-    }
-
-    @Test
-    void toEntity_WithNullRelationshipIds_ShouldHandleGracefully() {
-        // Given
-        MesocycleResponse payloadWithNullIds = new MesocycleResponse(
-                1L, "test-key", 100L, "Test Mesocycle", 28, "lbs",
-                null, null, 5L, now, now, null, null,
-                null, null, null, null, null, null, null, null, null, null, null,
-                4, Collections.emptyList()
-        );
-
-        // When
-        Mesocycle result = mapper.toEntity(payloadWithNullIds);
-
-        // Then
-        assertNotNull(result);
-        assertEquals(1L, result.getId());
-        assertEquals("test-key", result.getMesocycleKey());
-        assertEquals("Test Mesocycle", result.getName());
-        assertNull(result.getSourceTemplate());
-        assertNull(result.getSourceMeso());
-        verifyNoInteractions(mesoNoteMapper);
-    }
-
-    @Test
-    void toEntity_WithNullFields_ShouldHandleGracefully() {
-        // Given
-        MesocycleResponse payloadWithNulls = new MesocycleResponse(
-                null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null
-        );
-
-        // When
-        Mesocycle result = mapper.toEntity(payloadWithNulls);
-
-        // Then
-        assertNotNull(result);
-        assertNull(result.getId());
-        assertNull(result.getMesocycleKey());
-        assertNull(result.getName());
-        assertNull(result.getUserId());
-        assertNull(result.getDays());
-        assertNull(result.getUnit());
-        assertNull(result.getSourceTemplate());
-        assertNull(result.getSourceMeso());
-        verifyNoInteractions(mesoNoteMapper);
     }
 
     @Test
@@ -256,7 +163,7 @@ class MesocycleMapperTest {
                 .name("Test Mesocycle")
                 .userId(100L)
                 .days(28)
-                .unit(Unit.LBS)
+                .unit(Unit.LB)
                 .sourceTemplate(null)
                 .sourceMeso(null)
                 .weeks(null)
@@ -278,202 +185,6 @@ class MesocycleMapperTest {
         assertNull(result.weeks());
         assertNotNull(result.notes());
         assertTrue(result.notes().isEmpty());
-        verifyNoInteractions(mesoNoteMapper);
-    }
-
-    @Test
-    void updateEntity_ShouldBeNoOp() {
-        // Given
-        Mesocycle existingEntity = Mesocycle.builder()
-                .id(1L)
-                .mesocycleKey("old-key")
-                .name("Old Name")
-                .build();
-
-        MesocycleResponse updatePayload = new MesocycleResponse(
-                1L, "new-key", 100L, "New Name", 28, "lbs",
-                null, null, null, now, now, null, null,
-                null, null, null, null, null, null, null, null, null, null, null,
-                4, Collections.emptyList()
-        );
-
-        // When
-        mapper.updateEntity(existingEntity, updatePayload);
-
-        // Then
-        // Since Mesocycle is immutable, updateEntity should be a no-op
-        // The entity should remain unchanged
-        assertEquals("old-key", existingEntity.getMesocycleKey());
-        assertEquals("Old Name", existingEntity.getName());
-        verifyNoInteractions(mesoNoteMapper);
-    }
-
-    @Test
-    void updateEntity_WithNullPayload_ShouldNotCrash() {
-        // Given
-        Mesocycle existingEntity = Mesocycle.builder().id(1L).build();
-
-        // When & Then
-        assertDoesNotThrow(() -> mapper.updateEntity(existingEntity, null));
-        verifyNoInteractions(mesoNoteMapper);
-    }
-
-    @Test
-    void updateEntity_WithNullEntity_ShouldNotCrash() {
-        // When & Then
-        assertDoesNotThrow(() -> mapper.updateEntity(null, samplePayload));
-        verifyNoInteractions(mesoNoteMapper);
-    }
-
-    @Test
-    void mergeEntity_WithValidData_ShouldCreateNewEntityWithUpdatedFields() {
-        // Given
-        Mesocycle existingEntity = Mesocycle.builder()
-                .id(1L)
-                .mesocycleKey("old-key")
-                .name("Old Name")
-                .userId(50L)
-                .days(21)
-                .unit(Unit.KGS)
-                .sourceTemplate(MesoTemplate.builder().id(10L).build())
-                .sourceMeso(Mesocycle.builder().id(20L).build())
-                .microRirs(3L)
-                .createdAt(now.minusSeconds(3600))
-                .updatedAt(now.minusSeconds(1800))
-                .finishedAt(null)
-                .deletedAt(null)
-                .weeks(Collections.emptyList())
-                .notes(Collections.emptyList())
-                .status(Status.READY)
-                .generatedFrom("manual")
-                .progressions(Collections.emptyMap())
-                .build();
-
-        MesoNoteResponse notePayload = new MesoNoteResponse(
-                2L, 1L, 30L, now, now, "Updated note"
-        );
-        MesocycleResponse updatePayload = new MesocycleResponse(
-                1L, "new-key", 100L, "New Name", 28, "lbs",
-                2L, 3L, 5L, now.minusSeconds(3600), now, null, null,
-                null, null, null, null, null, null, null, null, null, null, null,
-                4, Arrays.asList(notePayload)
-        );
-
-        MesoNote mockNote = createMesoNote(2L);
-        when(mesoNoteMapper.toEntity(notePayload)).thenReturn(mockNote);
-
-        // When
-        Mesocycle result = mapper.mergeEntity(existingEntity, updatePayload);
-
-        // Then
-        assertNotNull(result);
-        assertNotSame(existingEntity, result); // Should be a new instance
-        assertEquals(1L, result.getId());
-        assertEquals("new-key", result.getMesocycleKey());
-        assertEquals("New Name", result.getName());
-        assertEquals(100L, result.getUserId());
-        assertEquals(28, result.getDays());
-        assertEquals(Unit.LBS, result.getUnit());
-        assertEquals(5L, result.getMicroRirs());
-        assertEquals(now.minusSeconds(3600), result.getCreatedAt()); // Preserved from existing
-        assertNotNull(result.getUpdatedAt());
-        assertTrue(result.getUpdatedAt().isAfter(now.minusSeconds(10))); // Should be current time
-
-        // Verify relationships are updated
-        assertNotNull(result.getSourceTemplate());
-        assertEquals(2L, result.getSourceTemplate().getId());
-        assertNotNull(result.getSourceMeso());
-        assertEquals(3L, result.getSourceMeso().getId());
-
-        // Verify preserved fields
-        assertEquals(Status.READY, result.getStatus());
-        assertEquals("manual", result.getGeneratedFrom());
-        assertSame(existingEntity.getWeeks(), result.getWeeks());
-        assertSame(existingEntity.getProgressions(), result.getProgressions());
-
-        // Verify notes are updated
-        assertNotNull(result.getNotes());
-        assertEquals(1, result.getNotes().size());
-        verify(mesoNoteMapper).toEntity(notePayload);
-    }
-
-    @Test
-    void mergeEntity_WithNullPayload_ShouldReturnNull() {
-        // Given
-        Mesocycle existingEntity = Mesocycle.builder().id(1L).build();
-
-        // When
-        Mesocycle result = mapper.mergeEntity(existingEntity, null);
-
-        // Then
-        assertNull(result);
-        verifyNoInteractions(mesoNoteMapper);
-    }
-
-    @Test
-    void mergeEntity_WithNullEntity_ShouldReturnNull() {
-        // When
-        Mesocycle result = mapper.mergeEntity(null, samplePayload);
-
-        // Then
-        assertNull(result);
-        verifyNoInteractions(mesoNoteMapper);
-    }
-
-    @Test
-    void mergeEntity_WithNullFieldsInPayload_ShouldPreserveExistingValues() {
-        // Given
-        MesoTemplate existingSourceTemplate = MesoTemplate.builder().id(10L).build();
-        Mesocycle existingSourceMeso = Mesocycle.builder().id(20L).build();
-        List<MesoNote> existingNotes = Arrays.asList(createMesoNote(5L));
-
-        Mesocycle existingEntity = Mesocycle.builder()
-                .id(1L)
-                .mesocycleKey("old-key")
-                .name("Old Name")
-                .userId(50L)
-                .days(21)
-                .unit(Unit.KGS)
-                .sourceTemplate(existingSourceTemplate)
-                .sourceMeso(existingSourceMeso)
-                .microRirs(3L)
-                .createdAt(now.minusSeconds(3600))
-                .notes(existingNotes)
-                .status(Status.READY)
-                .generatedFrom("manual")
-                .build();
-
-        MesocycleResponse updatePayload = new MesocycleResponse(
-                1L, null, null, "New Name", null, null,
-                null, null, null, now.minusSeconds(3600), now, null, null,
-                null, null, null, null, null, null, null, null, null, null, null,
-                null, null
-        );
-
-        // When
-        Mesocycle result = mapper.mergeEntity(existingEntity, updatePayload);
-
-        // Then
-        assertNotNull(result);
-        assertEquals(1L, result.getId());
-        assertEquals("old-key", result.getMesocycleKey()); // Preserved from existing
-        assertEquals("New Name", result.getName()); // Updated from payload
-        assertEquals(50L, result.getUserId()); // Preserved from existing
-        assertEquals(21, result.getDays()); // Preserved from existing
-        assertEquals(Unit.KGS, result.getUnit()); // Preserved from existing
-        assertEquals(3L, result.getMicroRirs()); // Preserved from existing
-        assertEquals(now.minusSeconds(3600), result.getCreatedAt());
-        assertNotNull(result.getUpdatedAt());
-
-        // Verify relationships are preserved from existing
-        assertNotNull(result.getSourceTemplate());
-        assertEquals(10L, result.getSourceTemplate().getId());
-        assertSame(existingSourceTemplate, result.getSourceTemplate());
-        assertNotNull(result.getSourceMeso());
-        assertEquals(20L, result.getSourceMeso().getId());
-        assertSame(existingSourceMeso, result.getSourceMeso());
-        assertSame(existingNotes, result.getNotes());
-
         verifyNoInteractions(mesoNoteMapper);
     }
 

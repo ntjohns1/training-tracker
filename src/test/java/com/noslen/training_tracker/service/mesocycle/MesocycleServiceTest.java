@@ -1,5 +1,7 @@
 package com.noslen.training_tracker.service.mesocycle;
 
+import com.noslen.training_tracker.dto.mesocycle.request.CreateMesocycleRequest;
+import com.noslen.training_tracker.dto.mesocycle.request.UpdateMesocycleRequest;
 import com.noslen.training_tracker.dto.mesocycle.response.MesoNoteResponse;
 import com.noslen.training_tracker.dto.mesocycle.response.MesocycleResponse;
 import com.noslen.training_tracker.enums.Status;
@@ -9,6 +11,7 @@ import com.noslen.training_tracker.mapper.mesocycle.MesocycleMapper;
 import com.noslen.training_tracker.model.mesocycle.MesoTemplate;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 import com.noslen.training_tracker.repository.mesocycle.MesocycleRepo;
+import com.noslen.training_tracker.security.UserContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -36,6 +39,9 @@ class MesocycleServiceTest {
     @Mock
     private MesocycleFactory mesocycleFactory;
 
+    @Mock
+    private UserContext userContext;
+
     @InjectMocks
     private MesocycleServiceImpl mesocycleService;
 
@@ -54,7 +60,7 @@ class MesocycleServiceTest {
         );
 
         samplePayload = new MesocycleResponse(
-                1L, "test-key", 100L, "Test Mesocycle", 28, "lbs",
+                1L, "test-key", 100L, "Test Mesocycle", 28, "lb",
                 2L, 3L, 5L, now, now, null, null,
                 null, null, null, null, null, null, null, null, null, null, null,
                 4, Arrays.asList(notePayload)
@@ -66,7 +72,7 @@ class MesocycleServiceTest {
                 .userId(100L)
                 .name("Test Mesocycle")
                 .days(28)
-                .unit(Unit.LBS)
+                .unit(Unit.LB)
                 .sourceTemplate(MesoTemplate.builder().id(2L).build())
                 .sourceMeso(Mesocycle.builder().id(3L).build())
                 .microRirs(5L)
@@ -86,25 +92,35 @@ class MesocycleServiceTest {
     void createMesocycle_Success() {
         // Given
         MesocycleResponse resultPayload = new MesocycleResponse(
-                1L, "test-key", 100L, "Test Mesocycle", 28, "lbs",
+                1L, "test-key", 100L, "Test Mesocycle", 28, "lb",
                 2L, 3L, 5L, now, now, null, null,
                 null, null, null, null, null, null, null, null, null, null, null,
                 4, Arrays.asList(notePayload)
         );
+        CreateMesocycleRequest request = new CreateMesocycleRequest(
+                "Test Mesocycle", 4,
+                List.of(
+                        new CreateMesocycleRequest.DayRequest("Push",
+                                List.of(new CreateMesocycleRequest.DayExerciseRequest(4L))),
+                        new CreateMesocycleRequest.DayRequest("Pull",
+                                List.of(new CreateMesocycleRequest.DayExerciseRequest(42L)))
+                ),
+                "lb", null, null, null);
 
-        when(mesocycleFactory.createFromResponse(any(MesocycleResponse.class))).thenReturn(sampleEntity);
+        when(userContext.getCurrentUserId()).thenReturn(100L);
+        when(mesocycleFactory.createFromRequest(request, 100L)).thenReturn(sampleEntity);
         when(mesocycleRepo.save(any(Mesocycle.class))).thenReturn(sampleEntity);
         when(mesocycleMapper.toPayload(any(Mesocycle.class))).thenReturn(resultPayload);
 
         // When
-        MesocycleResponse result = mesocycleService.createMesocycle(samplePayload);
+        MesocycleResponse result = mesocycleService.createMesocycle(request);
 
         // Then
         assertNotNull(result);
-        assertEquals(samplePayload.key(), result.key());
-        assertEquals(samplePayload.name(), result.name());
+        assertEquals(resultPayload.key(), result.key());
+        assertEquals(resultPayload.name(), result.name());
 
-        verify(mesocycleFactory).createFromResponse(any(MesocycleResponse.class));
+        verify(mesocycleFactory).createFromRequest(request, 100L);
         verify(mesocycleRepo).save(any(Mesocycle.class));
         verify(mesocycleMapper).toPayload(any(Mesocycle.class));
     }
@@ -113,7 +129,7 @@ class MesocycleServiceTest {
     void getMesocycle_Success() {
         // Given
         MesocycleResponse resultPayload = new MesocycleResponse(
-                1L, "test-key", 100L, "Test Mesocycle", 28, "lbs",
+                1L, "test-key", 100L, "Test Mesocycle", 28, "lb",
                 2L, 3L, 5L, now, now, null, null,
                 null, null, null, null, null, null, null, null, null, null, null,
                 4, Arrays.asList(notePayload)
@@ -121,6 +137,7 @@ class MesocycleServiceTest {
 
         when(mesocycleRepo.findById(any(Long.class))).thenReturn(Optional.of(sampleEntity));
         when(mesocycleMapper.toPayload(any(Mesocycle.class))).thenReturn(resultPayload);
+        doNothing().when(userContext).validateUserAccess(100L);
 
         // When
         MesocycleResponse result = mesocycleService.getMesocycle(1L);
@@ -130,6 +147,7 @@ class MesocycleServiceTest {
         assertEquals(samplePayload.name(), result.name());
 
         verify(mesocycleRepo).findById(any(Long.class));
+        verify(userContext).validateUserAccess(100L);
         verify(mesocycleMapper).toPayload(any(Mesocycle.class));
     }
 
@@ -168,29 +186,31 @@ class MesocycleServiceTest {
     @Test
     void updateMesocycle_Success() {
         // Given
+        UpdateMesocycleRequest request = new UpdateMesocycleRequest(1L, "Updated Mesocycle", "lb", "complete");
         MesocycleResponse updatedPayload = new MesocycleResponse(
-                1L, "updated-key", 100L, "Updated Mesocycle", 28, "lbs",
+                1L, "updated-key", 100L, "Updated Mesocycle", 28, "lb",
                 null, null, null, now, now, null, null,
                 null, null, null, null, null, null, null, null, null, null, null,
                 4, Collections.emptyList()
         );
 
-        when(mesocycleRepo.findById(any(Long.class))).thenReturn(Optional.of(sampleEntity));
-        when(mesocycleMapper.mergeEntity(any(Mesocycle.class), any(MesocycleResponse.class))).thenReturn(sampleEntity);
-        when(mesocycleRepo.save(any(Mesocycle.class))).thenReturn(sampleEntity);
-        when(mesocycleMapper.toPayload(any(Mesocycle.class))).thenReturn(updatedPayload);
+        when(mesocycleRepo.findById(1L)).thenReturn(Optional.of(sampleEntity));
+        when(mesocycleRepo.save(sampleEntity)).thenReturn(sampleEntity);
+        when(mesocycleMapper.toPayload(sampleEntity)).thenReturn(updatedPayload);
 
         // When
-        MesocycleResponse result = mesocycleService.updateMesocycle(1L, samplePayload);
+        MesocycleResponse result = mesocycleService.updateMesocycle(1L, request);
 
         // Then
-        assertEquals(1L, result.id());
         assertEquals("Updated Mesocycle", result.name());
+        // Fields applied directly to the managed entity
+        assertEquals("Updated Mesocycle", sampleEntity.getName());
+        assertEquals(Unit.LB, sampleEntity.getUnit());
+        assertEquals(Status.COMPLETE, sampleEntity.getStatus());
 
-        verify(mesocycleRepo).findById(any(Long.class));
-        verify(mesocycleMapper).mergeEntity(any(Mesocycle.class), any(MesocycleResponse.class));
-        verify(mesocycleRepo).save(any(Mesocycle.class));
-        verify(mesocycleMapper).toPayload(any(Mesocycle.class));
+        verify(mesocycleRepo).findById(1L);
+        verify(mesocycleRepo).save(sampleEntity);
+        verify(mesocycleMapper).toPayload(sampleEntity);
     }
 
     @Test
@@ -199,9 +219,9 @@ class MesocycleServiceTest {
         when(mesocycleRepo.findById(any(Long.class))).thenReturn(Optional.empty());
 
         // When & Then
-        RuntimeException exception = assertThrows(RuntimeException.class, 
-                () -> mesocycleService.updateMesocycle(1L, samplePayload));
-        
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> mesocycleService.updateMesocycle(1L, new UpdateMesocycleRequest(1L, "x", null, null)));
+
         assertEquals("Mesocycle not found with id: 1", exception.getMessage());
         verify(mesocycleRepo).findById(any(Long.class));
     }
@@ -306,6 +326,7 @@ class MesocycleServiceTest {
         when(mesocycleFactory.createForFinish(any(Mesocycle.class))).thenReturn(sampleEntity);
         when(mesocycleRepo.save(any(Mesocycle.class))).thenReturn(sampleEntity);
         when(mesocycleMapper.toPayload(any(Mesocycle.class))).thenReturn(finishedPayload);
+        doNothing().when(userContext).validateUserAccess(100L);
 
         // When
         MesocycleResponse result = mesocycleService.finishMesocycle(1L);
@@ -315,6 +336,7 @@ class MesocycleServiceTest {
         assertNotNull(result.finishedAt());
 
         verify(mesocycleRepo).findById(any(Long.class));
+        verify(userContext).validateUserAccess(100L);
         verify(mesocycleFactory).createForFinish(any(Mesocycle.class));
         verify(mesocycleRepo).save(any(Mesocycle.class));
         verify(mesocycleMapper).toPayload(any(Mesocycle.class));

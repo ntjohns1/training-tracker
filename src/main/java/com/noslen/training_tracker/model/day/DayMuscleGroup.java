@@ -24,21 +24,27 @@ public class DayMuscleGroup {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @ManyToOne
     @JoinColumn(name = "day_id")
     @JsonBackReference(value = "musclegroup-day")
     private Day day;
 
+    @Setter
     @ManyToOne
     @JoinColumn(name = "muscle_group_id")
     @JsonBackReference(value = "musclegroup-musclegroup")
     private MuscleGroup muscleGroup;
-    
+
+    @Setter
     private Integer pump;
+    @Setter
     private Integer soreness;
+    @Setter
     private Integer workload;
     
     @Column(name = "recommended_sets")
+    @Setter
     private Integer recommendedSets;
     
 
@@ -48,7 +54,8 @@ public class DayMuscleGroup {
     
     @Column(name = "created_at")
     private Instant createdAt;
-    
+
+    @Setter
     @Column(name = "updated_at")
     private Instant updatedAt;
 

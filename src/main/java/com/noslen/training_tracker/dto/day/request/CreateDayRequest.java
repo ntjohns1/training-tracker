@@ -1,4 +1,14 @@
 package com.noslen.training_tracker.dto.day.request;
 
-public record CreateDayRequest() {
+import java.time.Instant;
+
+public record CreateDayRequest(
+        Long mesoId,
+        Integer week,
+        Integer position,
+        Instant createdAt,
+        Instant updatedAt,
+        String unit,
+        String label
+) {
 }

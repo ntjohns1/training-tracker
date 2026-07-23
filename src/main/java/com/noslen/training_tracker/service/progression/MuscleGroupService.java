@@ -10,10 +10,4 @@ public interface MuscleGroupService {
 
     MuscleGroupResponse getMuscleGroupById(Long id);
 
-    MuscleGroupResponse createMuscleGroup(MuscleGroupResponse muscleGroupResponse);
-
-    MuscleGroupResponse updateMuscleGroup(Long id, MuscleGroupResponse muscleGroupResponse);
-
-    void deleteMuscleGroup(Long id);
-
 }

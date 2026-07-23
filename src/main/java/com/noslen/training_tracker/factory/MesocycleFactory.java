@@ -30,11 +30,12 @@ import java.util.UUID;
 @Component
 public class MesocycleFactory {
     
+//    TODO: use services or EntityManager instead of repos for all instance
     private final ExerciseRepo exerciseRepo;
     private final DayMuscleGroupRepo dayMuscleGroupRepo;
     private final MuscleGroupRepo muscleGroupRepo;
     private final DayFactory dayFactory;
-    
+
     public MesocycleFactory(ExerciseRepo exerciseRepo, DayMuscleGroupRepo dayMuscleGroupRepo, MuscleGroupRepo muscleGroupRepo, DayFactory dayFactory) {
         this.exerciseRepo = exerciseRepo;
         this.dayMuscleGroupRepo = dayMuscleGroupRepo;
@@ -67,7 +68,7 @@ public class MesocycleFactory {
                     MesoTemplate.builder().id(request.sourceTemplateId()).build() : null)
                 .sourceMeso(request.sourceMesoId() != null ? 
                     Mesocycle.builder().id(request.sourceMesoId()).build() : null)
-                .microRirs(0L) // Default value since not in DTO
+                .microRirs(microRirsFor(request.weeks())) // Per-week RIR digits; last digit 8 = deload
                 .createdAt(now)
                 .updatedAt(now)
                 .finishedAt(null)
@@ -90,44 +91,15 @@ public class MesocycleFactory {
                 .progressions(new HashMap<>()) // Will be populated below
                 .build();
         
-        // Create Days using DayFactory
+        // Build Days and Progressions referencing THIS Mesocycle instance, then populate its
+        // (mutable) collections in place. Returning this same instance keeps the whole graph
+        // pointing at one Mesocycle, so a cascading save doesn't hit a transient copy.
         List<Day> daysList = createDaysFromRequest(request, mesocycle, now);
-        
-        // Create Progressions
         Map<Long, Progression> progressionsMap = createProgressionsFromRequest(request, mesocycle, now);
-        
-        // Since Mesocycle doesn't have setters, we need to rebuild it with the populated collections
-        return Mesocycle.builder()
-                .id(mesocycle.getId())
-                .mesocycleKey(mesocycle.getMesocycleKey())
-                .userId(mesocycle.getUserId())
-                .name(mesocycle.getName())
-                .days(mesocycle.getDays())
-                .unit(mesocycle.getUnit())
-                .sourceTemplate(mesocycle.getSourceTemplate())
-                .sourceMeso(mesocycle.getSourceMeso())
-                .microRirs(mesocycle.getMicroRirs())
-                .createdAt(mesocycle.getCreatedAt())
-                .updatedAt(mesocycle.getUpdatedAt())
-                .finishedAt(mesocycle.getFinishedAt())
-                .deletedAt(mesocycle.getDeletedAt())
-                .firstMicroCompletedAt(mesocycle.getFirstMicroCompletedAt())
-                .firstWorkoutCompletedAt(mesocycle.getFirstWorkoutCompletedAt())
-                .firstExerciseCompletedAt(mesocycle.getFirstExerciseCompletedAt())
-                .firstSetCompletedAt(mesocycle.getFirstSetCompletedAt())
-                .lastMicroFinishedAt(mesocycle.getLastMicroFinishedAt())
-                .lastSetCompletedAt(mesocycle.getLastSetCompletedAt())
-                .lastSetSkippedAt(mesocycle.getLastSetSkippedAt())
-                .lastWorkoutCompletedAt(mesocycle.getLastWorkoutCompletedAt())
-                .lastWorkoutFinishedAt(mesocycle.getLastWorkoutFinishedAt())
-                .lastWorkoutSkippedAt(mesocycle.getLastWorkoutSkippedAt())
-                .lastWorkoutPartialedAt(mesocycle.getLastWorkoutPartialedAt())
-                .weeks(daysList)
-                .notes(mesocycle.getNotes())
-                .status(mesocycle.getStatus())
-                .generatedFrom(mesocycle.getGeneratedFrom())
-                .progressions(progressionsMap)
-                .build();
+
+        mesocycle.getWeeks().addAll(daysList);
+        mesocycle.getProgressions().putAll(progressionsMap);
+        return mesocycle;
     }
     
     /**
@@ -156,24 +128,16 @@ public class MesocycleFactory {
                         .createdAt(now)
                         .updatedAt(now)
                         .build();
-                
-                // Create the nested entities
+
+                // Build the nested entities against THIS day and populate its collections in place,
+                // so the persisted graph shares one Day instance (mappedBy back-references resolve).
                 List<DayExercise> dayExercises = createDayExercisesForDay(day, dayRequest, now);
                 Set<DayMuscleGroup> dayMuscleGroups = createDayMuscleGroupsForDay(day, dayExercises, now);
-                
-                // Rebuild Day with populated collections
-                Day dayWithCollections = Day.builder()
-                        .id(day.getId())
-                        .mesocycle(mesocycle)
-                        .week(week)
-                        .position(dayIndex + 1)
-                        .createdAt(now)
-                        .updatedAt(now)
-                        .exercises(new ArrayList<>(dayExercises))
-                        .muscleGroups(new ArrayList<>(dayMuscleGroups))
-                        .build();
-                
-                allDays.add(dayWithCollections);
+
+                day.getExercises().addAll(dayExercises);
+                day.getMuscleGroups().addAll(dayMuscleGroups);
+
+                allDays.add(day);
             }
         }
         
@@ -210,20 +174,23 @@ public class MesocycleFactory {
             CreateMesocycleRequest.DayExerciseRequest exerciseRequest = dayRequest.exercises().get(i);
             Exercise exercise = exerciseRepo.findById(exerciseRequest.exerciseId())
                     .orElseThrow(() -> new IllegalArgumentException("Exercise not found with ID: " + exerciseRequest.exerciseId()));
-            
+
+            // The DayExercise carries its muscle group (from the exercise) so progression queries
+            // that filter exercises/sets by muscle group can resolve it.
+            MuscleGroup muscleGroup = exercise.getMuscleGroupId() != null
+                    ? muscleGroupRepo.findById(exercise.getMuscleGroupId())
+                        .orElseThrow(() -> new IllegalArgumentException("MuscleGroup not found with ID: " + exercise.getMuscleGroupId()))
+                    : null;
+
             DayExercise dayExercise = DayExercise.builder()
                     .day(day)
                     .exercise(exercise)
+                    .muscleGroup(muscleGroup)
                     .position(i + 1) // 1-indexed position
                     .createdAt(now)
                     .updatedAt(now)
                     .build();
-            
-            // Use setter for createdAt since it has @Setter annotation
-            dayExercise.setCreatedAt(now);
-            dayExercise.setDay(day);
-            dayExercise.setExercise(exercise);
-            
+
             dayExercises.add(dayExercise);
         }
         return dayExercises;
@@ -232,29 +199,31 @@ public class MesocycleFactory {
     private Set<DayMuscleGroup> createDayMuscleGroupsForDay(Day day, List<DayExercise> dayExercises, Instant now) {
         Set<DayMuscleGroup> dayMuscleGroups = new HashSet<>();
         Set<Long> processedMuscleGroups = new HashSet<>();
-        
+
         for (DayExercise dayExercise : dayExercises) {
-            // Note: Need to check if Exercise has getMuscleGroup() method
-            // For now, we'll create a placeholder implementation
-            Long muscleGroupId = 1L; // This should come from the exercise or request
-            
-            if (!processedMuscleGroups.contains(muscleGroupId)) {
-                MuscleGroup muscleGroup = muscleGroupRepo.findById(muscleGroupId)
-                        .orElseThrow(() -> new IllegalArgumentException("MuscleGroup not found with ID: " + muscleGroupId));
-                
-                DayMuscleGroup dayMuscleGroup = DayMuscleGroup.builder()
-                        .day(day)
-                        .muscleGroup(muscleGroup)
-                        .createdAt(now)
-                        .updatedAt(now)
-                        .build();
-                
-                // Use setter for status since it has @Setter annotation
-                dayMuscleGroup.setStatus(Status.UNPROGRAMMED);
-                
-                dayMuscleGroups.add(dayMuscleGroup);
-                processedMuscleGroups.add(muscleGroupId);
+            // Derive the muscle group from the exercise's catalog muscleGroupId; one
+            // DayMuscleGroup per distinct muscle group trained on this day.
+            Exercise exercise = dayExercise.getExercise();
+            Long muscleGroupId = exercise != null ? exercise.getMuscleGroupId() : null;
+
+            if (muscleGroupId == null || !processedMuscleGroups.add(muscleGroupId)) {
+                continue;
             }
+
+            MuscleGroup muscleGroup = muscleGroupRepo.findById(muscleGroupId)
+                    .orElseThrow(() -> new IllegalArgumentException("MuscleGroup not found with ID: " + muscleGroupId));
+
+            DayMuscleGroup dayMuscleGroup = DayMuscleGroup.builder()
+                    .day(day)
+                    .muscleGroup(muscleGroup)
+                    .createdAt(now)
+                    .updatedAt(now)
+                    .build();
+
+            // Use setter for status since it has @Setter annotation
+            dayMuscleGroup.setStatus(Status.UNPROGRAMMED);
+
+            dayMuscleGroups.add(dayMuscleGroup);
         }
         return dayMuscleGroups;
     }
@@ -390,6 +359,23 @@ public class MesocycleFactory {
                 .build();
     }
     
+    /**
+     * The per-microcycle RIR scheme, packed as decimal digits (read left→right, one per week;
+     * final {@code 8} = deload). RP derives this from the total week count (4–8). E.g. a 5-week
+     * meso is {@code 32108} = RIR 3,2,1,0 then deload.
+     */
+    private long microRirsFor(int weeks) {
+        return switch (weeks) {
+            case 4 -> 2108L;
+            case 5 -> 32108L;
+            case 6 -> 332108L;
+            case 7 -> 3322108L;
+            case 8 -> 33221108L;
+            default -> throw new IllegalArgumentException(
+                    "Mesocycle weeks must be between 4 and 8, was: " + weeks);
+        };
+    }
+
     private Unit stringToUnit(String unitString) {
         if (unitString == null) {
             return null;

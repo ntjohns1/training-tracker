@@ -1,5 +1,8 @@
 package com.noslen.training_tracker.service.mesocycle;
 
+import com.noslen.training_tracker.dto.mesocycle.request.CreateMesocycleRequest;
+import com.noslen.training_tracker.dto.mesocycle.request.UpdateMesocycleRequest;
+import com.noslen.training_tracker.dto.mesocycle.response.CurrentMesoResponse;
 import com.noslen.training_tracker.dto.mesocycle.response.MesocycleResponse;
 
 import java.util.List;
@@ -10,11 +13,12 @@ import java.util.List;
 public interface MesocycleService {
 
     /**
-     * Creates a new mesocycle
-     * @param mesocycleResponse the mesocycle data to create
+     * Creates a new mesocycle (with its full week/day/exercise/progression structure) for the
+     * current user from a builder request.
+     * @param request the mesocycle builder request
      * @return the created mesocycle as DTO
      */
-    MesocycleResponse createMesocycle(MesocycleResponse mesocycleResponse);
+    MesocycleResponse createMesocycle(CreateMesocycleRequest request);
 
     /**
      * Retrieves a mesocycle by its ID
@@ -23,6 +27,15 @@ public interface MesocycleService {
      * @throws RuntimeException if mesocycle not found
      */
     MesocycleResponse getMesocycle(Long id);
+
+    /**
+     * Retrieves a mesocycle by ID as the full nested structure (weeks → days → exercises/sets),
+     * the payload the workout/dashboard UI renders.
+     * @param id the mesocycle ID
+     * @return the mesocycle as a CurrentMesoResponse
+     * @throws RuntimeException if mesocycle not found
+     */
+    CurrentMesoResponse getCurrentMeso(Long id);
 
     /**
      * Retrieves all mesocycles for a specific user
@@ -38,8 +51,9 @@ public interface MesocycleService {
      * @return the updated mesocycle as DTO
      * @throws RuntimeException if mesocycle not found
      */
-    MesocycleResponse updateMesocycle(Long id, MesocycleResponse mesocycleResponse);
+    MesocycleResponse updateMesocycle(Long id, UpdateMesocycleRequest request);
 
+//    void progressMesocycle(Long mesocycleId, Long dayId);
     /**
      * Soft deletes a mesocycle by setting deletedAt timestamp
      * @param id the mesocycle ID to delete

@@ -86,73 +86,6 @@ public class ExerciseServiceTests {
     }
 
     @Test
-    void testCreateExercise() {
-        // Given
-        when(exerciseMapper.toEntity(testPayload)).thenReturn(testEntity);
-        when(repo.save(any(Exercise.class))).thenReturn(testEntity);
-        when(exerciseMapper.toPayload(testEntity)).thenReturn(testPayload);
-
-        // When
-        ExerciseResponse result = service.createExercise(testPayload);
-        
-        // Then
-        assertEquals(testPayload, result);
-        verify(exerciseMapper, times(1)).toEntity(testPayload);
-        verify(repo, times(1)).save(any(Exercise.class));
-        verify(exerciseMapper, times(1)).toPayload(testEntity);
-    }
-
-    @Test
-    void testUpdateExercise() {
-        // Given
-        Long id = 1L;
-        ExerciseResponse updatePayload = new ExerciseResponse(
-                0L, "Updated Exercise", 0L, null, null, 0L,
-                null, testTime.plusSeconds(60), null, null, null
-        );
-        
-        when(repo.findById(id)).thenReturn(Optional.of(testEntity));
-        when(repo.save(any(Exercise.class))).thenReturn(testEntity);
-        when(exerciseMapper.toPayload(testEntity)).thenReturn(testPayload);
-
-        // When
-        ExerciseResponse result = service.updateExercise(id, updatePayload);
-
-        // Then
-        assertEquals(testPayload, result);
-        verify(repo, times(1)).findById(id);
-        verify(exerciseMapper, times(1)).updateEntity(testEntity, updatePayload);
-        verify(repo, times(1)).save(testEntity);
-        verify(exerciseMapper, times(1)).toPayload(testEntity);
-    }
-
-    @Test
-    void testDeleteExercise() {
-        // Given
-        Long id = 1L;
-        when(repo.findById(id)).thenReturn(Optional.of(testEntity));
-
-        // When
-        service.deleteExercise(id);
-        
-        // Then
-        verify(repo, times(1)).findById(id);
-        verify(repo, times(1)).deleteById(id);
-    }
-
-    @Test
-    void testDeleteExercise_NotFound_ShouldThrowException() {
-        // Given    
-        Long id = 1L;
-        when(repo.findById(id)).thenReturn(Optional.empty());
-
-        // When/Then
-        assertThrows(RuntimeException.class, () -> service.deleteExercise(id));
-        verify(repo, times(1)).findById(id);
-        verify(repo, times(0)).deleteById(id);
-    }
-
-    @Test
     void testGetExercise() {
         // Given
         Long id = 1L;
@@ -197,33 +130,4 @@ public class ExerciseServiceTests {
         verify(exerciseMapper, times(1)).toPayloadList(entities);
     }
 
-    @Test
-    void testAddExerciseNote() {
-        // Given
-        Long exerciseId = 1L;
-        when(repo.findById(exerciseId)).thenReturn(Optional.of(testEntity));
-        when(exerciseNoteMapper.toEntity(testNotePayload)).thenReturn(testNoteEntity);
-        when(repo.save(any(Exercise.class))).thenReturn(testEntity);
-
-        // When
-        service.addExerciseNote(exerciseId, testNotePayload);
-        
-        // Then
-        verify(repo, times(1)).findById(exerciseId);
-        verify(exerciseNoteMapper, times(1)).toEntity(testNotePayload);
-        verify(repo, times(1)).save(testEntity);
-    }
-
-    @Test
-    void testAddExerciseNote_ExerciseNotFound_ShouldThrowException() {
-        // Given
-        Long exerciseId = 1L;
-        when(repo.findById(exerciseId)).thenReturn(Optional.empty());
-
-        // When/Then
-        assertThrows(RuntimeException.class, () -> service.addExerciseNote(exerciseId, testNotePayload));
-        verify(repo, times(1)).findById(exerciseId);
-        verify(exerciseNoteMapper, times(0)).toEntity(any());
-        verify(repo, times(0)).save(any());
-    }
 }

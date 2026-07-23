@@ -8,8 +8,8 @@ spring:
     default-property-inclusion: always
   datasource:
     url: jdbc:postgresql://localhost:5432/training_tracker
-    username: postgres
-    password: postgres
+    username: noslen
+    password:
     driver-class-name: org.postgresql.Driver
   jpa:
     show-sql: true
@@ -26,6 +26,13 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: https://auth.nelsonjohns.com/realms/admin
+  kafka:
+    bootstrap-servers: localhost:9092
+# Kafka consumer container startup is opt-in; enabled in the dev profile (which runs a broker).
+app:
+  kafka:
+    consumer:
+      auto-startup: false
 management:
   endpoints:
     web:

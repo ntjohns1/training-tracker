@@ -1,4 +1,12 @@
 package com.noslen.training_tracker.dto.day.request;
 
-public record CreateDayMuscleGroupRequest() {
+import java.time.Instant;
+
+public record CreateDayMuscleGroupRequest(
+        Long dayId,
+        Long muscleGroupId,
+        Instant createdAt,
+        Instant updatedAt,
+        Integer recommendedSets
+) {
 }

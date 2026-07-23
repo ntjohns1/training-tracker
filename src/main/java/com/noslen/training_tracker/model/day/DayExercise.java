@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.noslen.training_tracker.model.progression.MuscleGroup;
 import jakarta.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -40,8 +41,10 @@ public class DayExercise {
     @JoinColumn(name = "exercise_id")
     private Exercise exercise;
     
+    @Setter
     private Integer position;
-    
+
+    @Setter
     @Column(name = "joint_pain")
     private Integer jointPain;
 
@@ -53,6 +56,7 @@ public class DayExercise {
     @Column(name = "updated_at")
     private Instant updatedAt;
     
+    @Setter
     @Column(name = "source_day_exercise_id")
     private Long sourceDayExerciseId;
     
@@ -60,7 +64,7 @@ public class DayExercise {
     @ManyToOne
     @JsonBackReference(value = "dayexercise-musclegroup")
     @JoinColumn(name = "muscle_group_id")
-    private DayMuscleGroup muscleGroup;
+    private MuscleGroup muscleGroup;
 
     @Setter
     @Enumerated(EnumType.STRING)
