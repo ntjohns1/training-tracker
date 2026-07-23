@@ -1,5 +1,7 @@
 package com.noslen.training_tracker.service.mesocycle;
 
+import com.noslen.training_tracker.dto.mesocycle.request.CreateMesoNoteRequest;
+import com.noslen.training_tracker.dto.mesocycle.request.UpdateMesoNoteRequest;
 import com.noslen.training_tracker.dto.mesocycle.response.MesoNoteResponse;
 
 import java.util.List;
@@ -12,7 +14,7 @@ public interface MesoNoteService {
     /**
      * Create a new MesoNote
      */
-    MesoNoteResponse createMesoNote(MesoNoteResponse mesoNoteResponse);
+    MesoNoteResponse createMesoNote(CreateMesoNoteRequest request);
 
     /**
      * Get MesoNote by ID
@@ -27,7 +29,7 @@ public interface MesoNoteService {
     /**
      * Update an existing MesoNote
      */
-    MesoNoteResponse updateMesoNote(Long id, MesoNoteResponse mesoNoteResponse);
+    MesoNoteResponse updateMesoNote(Long id, UpdateMesoNoteRequest request);
 
     /**
      * Delete a MesoNote

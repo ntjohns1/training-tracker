@@ -72,9 +72,10 @@ public class MesocycleProgressionServiceImpl implements MesocycleProgressionServ
                     ? deloadSetCount(previousDmg)
                     : computeRecommendedSets(currentDmg, previousDmg);
 
-            // Locate next week's matching DayMuscleGroup and mark it programmed.
+            // Locate next week's matching DayMuscleGroup (the week AFTER the one just completed)
+            // and mark it programmed.
             DayMuscleGroupResponse nextDmg =
-                    dayMuscleGroupService.getDayMuscleGroupForNextWeek(previousDmg.id());
+                    dayMuscleGroupService.getDayMuscleGroupForNextWeek(currentDmgId);
 
             // Idempotency: Kafka delivers at least once, so reprocessing an already-programmed
             // next week must be a no-op.
@@ -164,11 +165,14 @@ public class MesocycleProgressionServiceImpl implements MesocycleProgressionServ
                 exerciseSetService.countExerciseSetsByMuscleGroupId(previousDmg.dayId(),
                                                                     previousDmg.muscleGroupId());
 
-        return ProgressionCalculator.calculateRecommendedSets(totalExerciseSets,
-                                                              maxJointPain,
-                                                              previousDmg.pump(),
-                                                              currentDmg.soreness(),
-                                                              previousDmg.workload());
+        // Missing feedback/history degrades to neutral values rather than crashing:
+        // no joint pain reported, no prior sets, no pump/workload feedback.
+        return ProgressionCalculator.calculateRecommendedSets(
+                totalExerciseSets != null ? totalExerciseSets : 0,
+                maxJointPain != null ? maxJointPain : 0,
+                previousDmg.pump() != null ? previousDmg.pump() : 0,
+                currentDmg.soreness() != null ? currentDmg.soreness() : 0,
+                previousDmg.workload() != null ? previousDmg.workload() : 0);
     }
 
     /**

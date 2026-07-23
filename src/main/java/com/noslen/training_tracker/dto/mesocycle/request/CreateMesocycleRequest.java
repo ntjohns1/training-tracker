@@ -28,7 +28,7 @@ public record CreateMesocycleRequest(
         List<DayRequest> days,
         
         @NotBlank(message = "Unit is required")
-        @Pattern(regexp = "^(lbs|kgs)$", message = "Unit must be either 'lbs' or 'kgs'")
+        @Pattern(regexp = "^(lb|kg)$", message = "Unit must be either 'lb' or 'kg'")
         String unit,
         
         @Valid

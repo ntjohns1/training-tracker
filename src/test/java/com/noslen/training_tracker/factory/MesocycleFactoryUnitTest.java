@@ -60,7 +60,7 @@ class MesocycleFactoryUnitTest {
             "Test Mesocycle",
             4,
             List.of(), // Empty days list means no days per week
-            "kgs",
+            "kg",
             Map.of(),
             null,
             null
@@ -74,7 +74,7 @@ class MesocycleFactoryUnitTest {
         assertThat(result.getName()).isEqualTo("Test Mesocycle");
         assertThat(result.getWeeks()).isEmpty(); // Empty days list results in no weeks created
         assertThat(result.getDays()).isEqualTo(0); // 0 days total (empty days list * 4 weeks = 0)
-        assertThat(result.getUnit()).isEqualTo(Unit.KGS);
+        assertThat(result.getUnit()).isEqualTo(Unit.KG);
         assertThat(result.getCreatedAt()).isNotNull();
         assertThat(result.getUpdatedAt()).isNotNull();
         assertThat(result.getSourceTemplateId()).isNull();
@@ -87,9 +87,9 @@ class MesocycleFactoryUnitTest {
         // Given
         CreateMesocycleRequest request = new CreateMesocycleRequest(
             "Minimal Mesocycle",
-            1,
+            4,
             null, // null days
-            "lbs",
+            "lb",
             null, // null progressions
             null,
             null
@@ -102,7 +102,7 @@ class MesocycleFactoryUnitTest {
         assertThat(result).isNotNull();
         assertThat(result.getName()).isEqualTo("Minimal Mesocycle");
         assertThat(result.getWeeks()).isEmpty(); // Should handle null days gracefully
-        assertThat(result.getUnit()).isEqualTo(Unit.LBS);
+        assertThat(result.getUnit()).isEqualTo(Unit.LB);
         assertThat(result.getProgressions()).isEmpty(); // Should handle null progressions gracefully
     }
 
@@ -120,11 +120,11 @@ class MesocycleFactoryUnitTest {
         
         CreateMesocycleRequest request = new CreateMesocycleRequest(
             "Test Mesocycle",
-            1,
+            4,
             List.of(new CreateMesocycleRequest.DayRequest(null, List.of(
                 new CreateMesocycleRequest.DayExerciseRequest(999L)
             ))),
-            "lbs",
+            "lb",
             Map.of(),
             null,
             null
@@ -144,9 +144,9 @@ class MesocycleFactoryUnitTest {
         
         CreateMesocycleRequest request = new CreateMesocycleRequest(
             "Test Mesocycle",
-            1,
+            4,
             List.of(),
-            "lbs",
+            "lb",
             Map.of("999", new CreateMesocycleRequest.ProgressionRequest("regular", 999L)),
             null,
             null
@@ -169,11 +169,11 @@ class MesocycleFactoryUnitTest {
         
         CreateMesocycleRequest request = new CreateMesocycleRequest(
             "Test Mesocycle",
-            1,
+            4,
             List.of(new CreateMesocycleRequest.DayRequest(null, List.of(
                 new CreateMesocycleRequest.DayExerciseRequest(1L)
             ))),
-            "lbs",
+            "lb",
             Map.of(),
             null,
             null
@@ -182,8 +182,8 @@ class MesocycleFactoryUnitTest {
         // When
         mesocycleFactory.createFromRequest(request, TEST_USER_ID);
         
-        // Then
-        verify(exerciseRepo, times(1)).findById(1L);
+        // Then (one lookup per week)
+        verify(exerciseRepo, times(4)).findById(1L);
     }
 
     @Test
@@ -197,9 +197,9 @@ class MesocycleFactoryUnitTest {
         
         CreateMesocycleRequest request = new CreateMesocycleRequest(
             "Test Mesocycle",
-            1,
+            4,
             List.of(),
-            "lbs",
+            "lb",
             Map.of("1", new CreateMesocycleRequest.ProgressionRequest("regular", 1L)),
             null,
             null
@@ -236,7 +236,7 @@ class MesocycleFactoryUnitTest {
         
         CreateMesocycleRequest request = new CreateMesocycleRequest(
             "Complex Mesocycle",
-            2,
+            4,
             List.of(
                 new CreateMesocycleRequest.DayRequest("Day 1", List.of(
                     new CreateMesocycleRequest.DayExerciseRequest(1L),
@@ -246,7 +246,7 @@ class MesocycleFactoryUnitTest {
                     new CreateMesocycleRequest.DayExerciseRequest(1L)
                 ))
             ),
-            "kgs",
+            "kg",
             Map.of("1", new CreateMesocycleRequest.ProgressionRequest("regular", 1L)),
             123L,
             456L
@@ -258,15 +258,16 @@ class MesocycleFactoryUnitTest {
         // Then
         assertThat(result).isNotNull();
         assertThat(result.getName()).isEqualTo("Complex Mesocycle");
-        assertThat(result.getWeeks()).hasSize(4); // 2 weeks * 2 day patterns = 4 total days
-        assertThat(result.getDays()).isEqualTo(4); // Total days calculation: 2 day patterns * 2 weeks = 4
-        assertThat(result.getUnit()).isEqualTo(Unit.KGS);
+        assertThat(result.getWeeks()).hasSize(8); // 4 weeks * 2 day patterns = 8 total days
+        assertThat(result.getDays()).isEqualTo(8); // Total days calculation: 2 day patterns * 4 weeks = 8
+        assertThat(result.getUnit()).isEqualTo(Unit.KG);
         assertThat(result.getSourceTemplateId()).isEqualTo(123L);
         assertThat(result.getSourceMesoId()).isEqualTo(456L);
-        
+
         // Verify repository interactions
-        verify(exerciseRepo, times(6)).findById(anyLong()); // 2 weeks × (2 + 1) exercises = 6 total lookups
-        verify(muscleGroupRepo, times(5)).findById(1L); // 4 days × 1 muscle group + 1 progression = 5 total lookups
+        verify(exerciseRepo, times(12)).findById(anyLong()); // 4 weeks × (2 + 1) exercises = 12 total lookups
+        // Muscle group lookups: 12 (one per DayExercise) + 8 (one per distinct MG per day) + 1 progression = 21
+        verify(muscleGroupRepo, times(21)).findById(1L);
     }
 
     @Test
@@ -276,7 +277,7 @@ class MesocycleFactoryUnitTest {
         Mesocycle existingMesocycle = Mesocycle.builder()
             .id(1L)
             .name("Existing Mesocycle")
-            .unit(Unit.LBS)
+            .unit(Unit.LB)
             .weeks(List.of()) // Initialize with empty list instead of null
             .progressions(Map.of()) // Initialize with empty map
             .build();
@@ -289,7 +290,7 @@ class MesocycleFactoryUnitTest {
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getName()).isEqualTo("Existing Mesocycle");
         assertThat(result.getWeeks()).isEmpty();
-        assertThat(result.getUnit()).isEqualTo(Unit.LBS);
+        assertThat(result.getUnit()).isEqualTo(Unit.LB);
         assertThat(result.getDeletedAt()).isNotNull();
         assertThat(result.getUpdatedAt()).isNotNull();
     }
@@ -301,7 +302,7 @@ class MesocycleFactoryUnitTest {
         Mesocycle existingMesocycle = Mesocycle.builder()
             .id(1L)
             .name("Existing Mesocycle")
-            .unit(Unit.LBS)
+            .unit(Unit.LB)
             .weeks(List.of()) // Initialize with empty list instead of null
             .progressions(Map.of()) // Initialize with empty map
             .build();
@@ -314,7 +315,7 @@ class MesocycleFactoryUnitTest {
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getName()).isEqualTo("Existing Mesocycle");
         assertThat(result.getWeeks()).isEmpty();
-        assertThat(result.getUnit()).isEqualTo(Unit.LBS);
+        assertThat(result.getUnit()).isEqualTo(Unit.LB);
         assertThat(result.getFinishedAt()).isNotNull();
         assertThat(result.getUpdatedAt()).isNotNull();
     }

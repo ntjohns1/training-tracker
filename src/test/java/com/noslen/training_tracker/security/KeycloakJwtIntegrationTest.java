@@ -41,10 +41,10 @@ public class KeycloakJwtIntegrationTest {
     @Test
     @WithMockUser(username = "testuser", roles = {"USER"})
     public void testAuthenticatedAccessToProtectedEndpoint_ShouldBeAllowed() throws Exception {
-        // Test that authenticated users can access protected endpoints
-        // Note: This will fail until we have actual endpoints, but tests the security config
-        mockMvc.perform(get("/api/mesocycles"))
-                .andExpect(status().isNotFound()); // 404 because endpoint doesn't exist yet, not 401
+        // Probe a routed-but-unmapped /api path: an authenticated request should reach the
+        // dispatcher and 404 (no handler) rather than being rejected with 401.
+        mockMvc.perform(get("/api/security-probe"))
+                .andExpect(status().isNotFound()); // 404 = authenticated + routed, not 401
     }
 
     @Test

@@ -1,6 +1,8 @@
 package com.noslen.training_tracker.service.mesocycle;
 
 import com.noslen.training_tracker.dto.mesocycle.request.CreateMesocycleRequest;
+import com.noslen.training_tracker.dto.mesocycle.request.UpdateMesocycleRequest;
+import com.noslen.training_tracker.dto.mesocycle.response.CurrentMesoResponse;
 import com.noslen.training_tracker.dto.mesocycle.response.MesocycleResponse;
 
 import java.util.List;
@@ -27,6 +29,15 @@ public interface MesocycleService {
     MesocycleResponse getMesocycle(Long id);
 
     /**
+     * Retrieves a mesocycle by ID as the full nested structure (weeks → days → exercises/sets),
+     * the payload the workout/dashboard UI renders.
+     * @param id the mesocycle ID
+     * @return the mesocycle as a CurrentMesoResponse
+     * @throws RuntimeException if mesocycle not found
+     */
+    CurrentMesoResponse getCurrentMeso(Long id);
+
+    /**
      * Retrieves all mesocycles for a specific user
      * @param userId the user ID
      * @return list of mesocycles as DTOs
@@ -40,7 +51,7 @@ public interface MesocycleService {
      * @return the updated mesocycle as DTO
      * @throws RuntimeException if mesocycle not found
      */
-    MesocycleResponse updateMesocycle(Long id, MesocycleResponse mesocycleResponse);
+    MesocycleResponse updateMesocycle(Long id, UpdateMesocycleRequest request);
 
 //    void progressMesocycle(Long mesocycleId, Long dayId);
     /**

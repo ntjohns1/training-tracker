@@ -1,11 +1,14 @@
 package com.noslen.training_tracker.service.mesocycle;
 
+import com.noslen.training_tracker.dto.mesocycle.request.CreateMesoNoteRequest;
+import com.noslen.training_tracker.dto.mesocycle.request.UpdateMesoNoteRequest;
 import com.noslen.training_tracker.dto.mesocycle.response.MesoNoteResponse;
 import com.noslen.training_tracker.mapper.mesocycle.MesoNoteMapper;
 import com.noslen.training_tracker.model.mesocycle.MesoNote;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 import com.noslen.training_tracker.repository.mesocycle.MesoNoteRepo;
 import com.noslen.training_tracker.security.UserContext;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -23,6 +26,9 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 class MesoNoteServiceTest {
+
+    @Mock
+    private EntityManager entityManager;
 
     @Mock
     private MesoNoteRepo mesoNoteRepo;
@@ -67,17 +73,14 @@ class MesoNoteServiceTest {
     @Test
     void createMesoNote_Success() {
         // Given
-        MesoNote entityToSave = new MesoNote();
-        entityToSave.setMesocycle(Mesocycle.builder().id(10L).build());
-        entityToSave.setNoteId(20L);
-        entityToSave.setText("Test meso note");
+        CreateMesoNoteRequest request = new CreateMesoNoteRequest(10L, 20L, "Test meso note");
 
-        when(mesoNoteMapper.toEntity(samplePayload)).thenReturn(entityToSave);
+        when(entityManager.getReference(Mesocycle.class, 10L)).thenReturn(sampleMesocycle);
         when(mesoNoteRepo.save(any(MesoNote.class))).thenReturn(sampleEntity);
         when(mesoNoteMapper.toPayload(sampleEntity)).thenReturn(samplePayload);
 
         // When
-        MesoNoteResponse result = mesoNoteService.createMesoNote(samplePayload);
+        MesoNoteResponse result = mesoNoteService.createMesoNote(request);
 
         // Then
         assertNotNull(result);
@@ -85,7 +88,7 @@ class MesoNoteServiceTest {
         assertEquals(samplePayload.mesoId(), result.mesoId());
         assertEquals(samplePayload.text(), result.text());
 
-        verify(mesoNoteMapper).toEntity(samplePayload);
+        verify(entityManager).getReference(Mesocycle.class, 10L);
         verify(mesoNoteRepo).save(any(MesoNote.class));
         verify(mesoNoteMapper).toPayload(sampleEntity);
     }
@@ -157,28 +160,29 @@ class MesoNoteServiceTest {
         updatedEntity.setCreatedAt(now);
         updatedEntity.setUpdatedAt(now);
 
+        UpdateMesoNoteRequest request = new UpdateMesoNoteRequest(1L, "Updated text");
         MesoNoteResponse updatedPayload = new MesoNoteResponse(
                 1L, 10L, 20L, now, now, "Updated text");
 
         when(mesoNoteRepo.findById(1L)).thenReturn(Optional.of(sampleEntity));
-        when(mesoNoteMapper.mergeEntity(sampleEntity, samplePayload)).thenReturn(updatedEntity);
-        when(mesoNoteRepo.save(updatedEntity)).thenReturn(updatedEntity);
-        when(mesoNoteMapper.toPayload(updatedEntity)).thenReturn(updatedPayload);
+        when(mesoNoteRepo.save(sampleEntity)).thenReturn(sampleEntity);
+        when(mesoNoteMapper.toPayload(sampleEntity)).thenReturn(updatedPayload);
         doNothing().when(userContext).validateUserAccess(100L);
 
         // When
-        MesoNoteResponse result = mesoNoteService.updateMesoNote(1L, samplePayload);
+        MesoNoteResponse result = mesoNoteService.updateMesoNote(1L, request);
 
         // Then
         assertNotNull(result);
         assertEquals(1L, result.id());
         assertEquals("Updated text", result.text());
+        // Text applied directly to the managed entity
+        assertEquals("Updated text", sampleEntity.getText());
 
         verify(mesoNoteRepo).findById(1L);
         verify(userContext).validateUserAccess(100L);
-        verify(mesoNoteMapper).mergeEntity(sampleEntity, samplePayload);
-        verify(mesoNoteRepo).save(updatedEntity);
-        verify(mesoNoteMapper).toPayload(updatedEntity);
+        verify(mesoNoteRepo).save(sampleEntity);
+        verify(mesoNoteMapper).toPayload(sampleEntity);
     }
 
     @Test
@@ -188,7 +192,7 @@ class MesoNoteServiceTest {
 
         // When & Then
         RuntimeException exception = assertThrows(RuntimeException.class,
-                () -> mesoNoteService.updateMesoNote(1L, samplePayload));
+                () -> mesoNoteService.updateMesoNote(1L, new UpdateMesoNoteRequest(1L, "x")));
 
         assertEquals("MesoNote not found with id: 1", exception.getMessage());
         verify(mesoNoteRepo).findById(1L);

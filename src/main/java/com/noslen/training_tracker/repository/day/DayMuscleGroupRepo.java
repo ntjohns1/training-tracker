@@ -85,12 +85,16 @@ public interface DayMuscleGroupRepo extends JpaRepository<DayMuscleGroup, Long> 
     }
 
     @Query("""
-            SELECT dmg
-            FROM DayMuscleGroup dmg
-            JOIN dmg.day day
-            WHERE day.week = day.week + 1
-              AND day.position = day.position
+            SELECT dmgNext
+            FROM DayMuscleGroup dmgCurrent
+                 JOIN dmgCurrent.day currentDay
+                 JOIN DayMuscleGroup dmgNext ON dmgNext.muscleGroup.id = dmgCurrent.muscleGroup.id
+                 JOIN dmgNext.day nextDay
+            WHERE dmgCurrent.id = :currentDmgId
+              AND nextDay.mesocycle.id = currentDay.mesocycle.id
+              AND nextDay.week = currentDay.week + 1
+              AND nextDay.position = currentDay.position
             """)
-    Optional<DayMuscleGroup> findNextDayMuscleGroupForNextWeek(Long currentDmgId);
+    Optional<DayMuscleGroup> findNextDayMuscleGroupForNextWeek(@Param("currentDmgId") Long currentDmgId);
 
 }

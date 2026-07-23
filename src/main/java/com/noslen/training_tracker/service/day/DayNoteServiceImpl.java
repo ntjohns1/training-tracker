@@ -1,5 +1,7 @@
 package com.noslen.training_tracker.service.day;
 
+import com.noslen.training_tracker.dto.day.request.CreateDayNoteRequest;
+import com.noslen.training_tracker.dto.day.request.UpdateDayNoteRequest;
 import com.noslen.training_tracker.dto.day.response.DayNoteResponse;
 import com.noslen.training_tracker.mapper.day.DayNoteMapper;
 import com.noslen.training_tracker.model.day.Day;
@@ -35,9 +37,9 @@ public class DayNoteServiceImpl implements DayNoteService {
     }
 
     @Override
-    public DayNoteResponse createDayNote(DayNoteResponse dayNoteResponse) {
-        if (dayNoteResponse == null) {
-            throw new IllegalArgumentException("DayNoteResponse cannot be null");
+    public DayNoteResponse createDayNote(CreateDayNoteRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("CreateDayNoteRequest cannot be null");
         }
 
         // Note: User access validation for create operations should be handled
@@ -45,12 +47,12 @@ public class DayNoteServiceImpl implements DayNoteService {
 
         Instant now = Instant.now();
         DayNote dayNote = new DayNote();
-        dayNote.setDay(dayNoteResponse.dayId() != null
-                ? entityManager.getReference(Day.class, dayNoteResponse.dayId())
+        dayNote.setDay(request.dayId() != null
+                ? entityManager.getReference(Day.class, request.dayId())
                 : null);
-        dayNote.setNoteId(dayNoteResponse.noteId());
-        dayNote.setPinned(dayNoteResponse.pinned());
-        dayNote.setText(dayNoteResponse.text());
+        dayNote.setNoteId(request.noteId());
+        dayNote.setPinned(request.pinned());
+        dayNote.setText(request.text());
         dayNote.setCreatedAt(now);
         dayNote.setUpdatedAt(now);
 
@@ -59,35 +61,25 @@ public class DayNoteServiceImpl implements DayNoteService {
     }
 
     @Override
-    public DayNoteResponse updateDayNote(Long id, DayNoteResponse dayNoteResponse) {
+    public DayNoteResponse updateDayNote(Long id, UpdateDayNoteRequest request) {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
-        if (dayNoteResponse == null) {
-            throw new IllegalArgumentException("DayNoteResponse cannot be null");
+        if (request == null) {
+            throw new IllegalArgumentException("UpdateDayNoteRequest cannot be null");
         }
 
-        Optional<DayNote> dayNoteOptional = repo.findById(id);
-        if (dayNoteOptional.isEmpty()) {
-            throw new RuntimeException("DayNote not found with id: " + id);
-        }
-
-        DayNote existing = dayNoteOptional.get();
+        DayNote existing = repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("DayNote not found with id: " + id));
 
         // Validate that the current user owns the mesocycle this day note belongs to
         userContext.validateUserAccess(existing.getDay().getMesocycle().getUserId());
 
-        if (dayNoteResponse.dayId() != null) {
-            existing.setDay(entityManager.getReference(Day.class, dayNoteResponse.dayId()));
+        if (request.pinned() != null) {
+            existing.setPinned(request.pinned());
         }
-        if (dayNoteResponse.noteId() != null) {
-            existing.setNoteId(dayNoteResponse.noteId());
-        }
-        if (dayNoteResponse.pinned() != null) {
-            existing.setPinned(dayNoteResponse.pinned());
-        }
-        if (dayNoteResponse.text() != null) {
-            existing.setText(dayNoteResponse.text());
+        if (request.text() != null) {
+            existing.setText(request.text());
         }
 
         existing.setUpdatedAt(Instant.now());

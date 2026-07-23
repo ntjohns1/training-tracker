@@ -28,8 +28,10 @@ public class Mesocycle {
     @Column(name = "meso_key")
     private String mesocycleKey;
     private Long userId;
+    @Setter
     private String name;
     private Integer days;
+    @Setter
     private Unit unit;
 
     @ManyToOne
@@ -52,6 +54,7 @@ public class Mesocycle {
 
     private Long microRirs;
     private Instant createdAt;
+    @Setter
     private Instant updatedAt;
     private Instant finishedAt;
     private Instant deletedAt;
@@ -67,12 +70,12 @@ public class Mesocycle {
     private Instant lastWorkoutSkippedAt;
     private Instant lastWorkoutPartialedAt;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference(value = "day-mesocycle")
     @JoinColumn(name = "meso_id")
     private List<Day> weeks;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference(value = "mesocycle-notes")
     @JoinColumn(name = "mesocycle_id")
     @JsonProperty("notes")

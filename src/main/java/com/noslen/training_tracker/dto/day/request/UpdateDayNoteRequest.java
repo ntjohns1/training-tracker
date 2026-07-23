@@ -1,11 +1,11 @@
 package com.noslen.training_tracker.dto.day.request;
 
-import java.time.Instant;
-
+/**
+ * Request DTO for editing a day note (text and/or pin state).
+ */
 public record UpdateDayNoteRequest(
         Long id,
-        Long dayId,
-        String content,
-        Instant updatedAt
+        Boolean pinned,
+        String text
 ) {
 }

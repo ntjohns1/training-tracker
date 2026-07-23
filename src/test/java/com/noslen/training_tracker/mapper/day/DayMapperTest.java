@@ -71,7 +71,7 @@ class DayMapperTest {
                 now,
                 70,
                 now,
-                "kgs",
+                "kg",
                 now,
                 "Test Day",
                 List.of(notePayload),
@@ -130,7 +130,7 @@ class DayMapperTest {
                 .position(1)
                 .week(1)
                 .bodyweight(70.0)
-                .unit(Unit.KGS)
+                .unit(Unit.KG)
                 .bodyweightAt(now)
                 .createdAt(now)
                 .updatedAt(now)
@@ -153,7 +153,7 @@ class DayMapperTest {
         assertEquals(samplePayload.position().intValue(), result.getPosition()); // DTO uses Long, Entity uses Integer
         assertEquals(samplePayload.week().intValue(), result.getWeek()); // DTO uses Long, Entity uses Integer
         assertEquals(samplePayload.bodyweight().doubleValue(), result.getBodyweight()); // DTO uses Integer, Entity uses Double
-        assertEquals(Unit.KGS, result.getUnit());
+        assertEquals(Unit.KG, result.getUnit());
         assertEquals(samplePayload.bodyweightAt(), result.getBodyweightAt());
         assertEquals(samplePayload.createdAt(), result.getCreatedAt());
         assertEquals(samplePayload.updatedAt(), result.getUpdatedAt());
@@ -180,7 +180,7 @@ class DayMapperTest {
     void toEntity_WithEmptyCollections_ShouldHandleGracefully() {
         // Given
         DayResponse payloadWithEmptyCollections = new DayResponse(
-                1L, 1L, 1L, 1L, now, now, 70, now, "kgs", now,
+                1L, 1L, 1L, 1L, now, now, 70, now, "kg", now,
                 "Test", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),"active"
         );
 
@@ -198,7 +198,7 @@ class DayMapperTest {
     void toEntity_WithNullCollections_ShouldHandleGracefully() {
         // Given
         DayResponse payloadWithNullCollections = new DayResponse(
-                1L, 1L, 1L, 1L, now, now, 70, now, "kgs", now,
+                1L, 1L, 1L, 1L, now, now, 70, now, "kg", now,
                 "Test", null, null, null,"active"
         );
 
@@ -270,7 +270,7 @@ class DayMapperTest {
                 .position(1)
                 .week(1)
                 .bodyweight(70.0)
-                .unit(Unit.KGS)
+                .unit(Unit.KG)
                 .bodyweightAt(now)
                 .createdAt(now)
                 .updatedAt(now)
@@ -299,7 +299,7 @@ class DayMapperTest {
                 .position(1)
                 .week(1)
                 .bodyweight(70.0)
-                .unit(Unit.KGS)
+                .unit(Unit.KG)
                 .bodyweightAt(now)
                 .createdAt(now)
                 .updatedAt(now)

@@ -11,26 +11,6 @@ import java.util.stream.Collectors;
 public class ProgressionMapper {
 
     /**
-     * Converts ProgressionResponse to Progression entity
-     * Note: MuscleGroup entity must be set separately in the service layer
-     */
-    public Progression toEntity(ProgressionResponse payload) {
-        if (payload == null) {
-            return null;
-        }
-
-        // Create entity with null MuscleGroup - service layer will set this
-        Progression entity = new Progression(
-                payload.id(),
-                null, // MuscleGroup will be set by service layer
-                payload.mgProgressionType(),
-                null // mesocycle - would need to be handled separately if needed
-        );
-
-        return entity;
-    }
-
-    /**
      * Converts Progression entity to ProgressionResponse
      */
     public ProgressionResponse toPayload(Progression entity) {
@@ -42,24 +22,6 @@ public class ProgressionMapper {
                 entity.getId(),
                 entity.getMuscleGroupId(),
                 entity.getMgProgressionType()
-        );
-    }
-
-    /**
-     * Updates an existing Progression entity with data from ProgressionResponse
-     * Note: MuscleGroup changes must be handled in the service layer
-     */
-    public Progression updateEntity(Progression existing, ProgressionResponse payload) {
-        if (existing == null || payload == null) {
-            return existing;
-        }
-
-        // Create new entity using constructor since fields don't have setters
-        return new Progression(
-                existing.getId(), // Keep existing ID
-                existing.getMuscleGroup(), // Keep existing MuscleGroup - service handles changes
-                payload.mgProgressionType() != null ? payload.mgProgressionType() : existing.getMgProgressionType(),
-                existing.getMesocycle() // Keep existing mesocycle relationship
         );
     }
 

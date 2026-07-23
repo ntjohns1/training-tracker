@@ -49,7 +49,7 @@ class ExerciseSetMapperTest {
         testEntity.setReps(10);
         testEntity.setRepsTarget(12);
         testEntity.setBodyweight(80.0f);
-        testEntity.setUnit(exerciseSetMapper.stringToUnit("kgs"));
+        testEntity.setUnit(exerciseSetMapper.stringToUnit("kg"));
         testEntity.setCreatedAt(testTime);
         testEntity.setFinishedAt(testTime);
         testEntity.setStatus(Status.COMPLETE);
@@ -73,7 +73,7 @@ class ExerciseSetMapperTest {
         assertThat(result.reps()).isEqualTo(10);
         assertThat(result.repsTarget()).isEqualTo(12);
         assertThat(result.bodyweight()).isEqualTo(80.0f);
-        assertThat(result.unit()).isEqualTo("kgs");
+        assertThat(result.unit()).isEqualTo("kg");
         assertThat(result.createdAt()).isEqualTo(testTime);
         assertThat(result.finishedAt()).isEqualTo(testTime);
         assertThat(result.status()).isEqualTo("complete");
@@ -97,7 +97,7 @@ class ExerciseSetMapperTest {
         entityWithNullDayExercise.setSetType(SetType.REGULAR);
         entityWithNullDayExercise.setWeight(100.0f);
         entityWithNullDayExercise.setReps(10);
-        entityWithNullDayExercise.setUnit(exerciseSetMapper.stringToUnit("kgs"));
+        entityWithNullDayExercise.setUnit(exerciseSetMapper.stringToUnit("kg"));
         entityWithNullDayExercise.setCreatedAt(testTime);
         entityWithNullDayExercise.setStatus(Status.COMPLETE);
         entityWithNullDayExercise.setDayExercise(null);

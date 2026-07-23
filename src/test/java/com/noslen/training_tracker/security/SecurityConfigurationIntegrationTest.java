@@ -60,8 +60,8 @@ public class SecurityConfigurationIntegrationTest {
     @Test
     @WithMockUser(username = "testuser", roles = {"USER"})
     public void testCompleteSecurityFlow_AuthenticatedRequest() throws Exception {
-        // Test complete flow with authentication
-        mockMvc.perform(post("/api/mesocycles")
+        // Test complete flow with authentication against a routed-but-unmapped /api path
+        mockMvc.perform(post("/api/security-probe")
                 .header("Origin", "http://localhost:3000")
                 .contentType("application/json")
                 .content("{\"name\": \"Test Mesocycle\"}"))
@@ -114,7 +114,7 @@ public class SecurityConfigurationIntegrationTest {
     @WithMockUser
     public void testNoSessionCreatedForAuthenticatedUser() throws Exception {
         // Even with authentication, no session should be created
-        mockMvc.perform(get("/api/mesocycles"))
+        mockMvc.perform(get("/api/security-probe"))
                 .andExpect(status().isNotFound())
                 .andExpect(request().sessionAttribute("SPRING_SECURITY_CONTEXT", org.hamcrest.Matchers.nullValue()));
     }
@@ -135,7 +135,7 @@ public class SecurityConfigurationIntegrationTest {
     @WithMockUser
     public void testCSRFDisabled_AuthenticatedPostShouldWork() throws Exception {
         // With authentication, CSRF should still be disabled
-        mockMvc.perform(post("/api/mesocycles")
+        mockMvc.perform(post("/api/security-probe")
                 .contentType("application/json")
                 .content("{}"))
                 .andExpect(status().isNotFound()) // Should be 404 (not found), not 403 (CSRF)
@@ -211,11 +211,11 @@ public class SecurityConfigurationIntegrationTest {
             }
             """;
 
-        mockMvc.perform(post("/api/mesocycles")
+        mockMvc.perform(post("/api/security-probe")
                 .header("Origin", "http://localhost:3000")
                 .contentType("application/json")
                 .content(mesocycleRequest))
-                .andExpect(status().isNotFound()) // Endpoint doesn't exist yet, but security should work
+                .andExpect(status().isNotFound()) // routed + authenticated (no handler), security worked
                 .andExpect(header().string("Access-Control-Allow-Origin", "http://localhost:3000"));
     }
 

@@ -1,12 +1,12 @@
 package com.noslen.training_tracker.dto.day.request;
 
-import java.time.Instant;
-
+/**
+ * Request DTO for adding a note to a day.
+ */
 public record CreateDayNoteRequest(
         Long dayId,
-        String content,
-        Instant createdAt,
-        Instant updatedAt,
-        String status
+        Long noteId,
+        Boolean pinned,
+        String text
 ) {
 }

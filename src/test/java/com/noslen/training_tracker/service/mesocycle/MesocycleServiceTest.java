@@ -1,6 +1,7 @@
 package com.noslen.training_tracker.service.mesocycle;
 
 import com.noslen.training_tracker.dto.mesocycle.request.CreateMesocycleRequest;
+import com.noslen.training_tracker.dto.mesocycle.request.UpdateMesocycleRequest;
 import com.noslen.training_tracker.dto.mesocycle.response.MesoNoteResponse;
 import com.noslen.training_tracker.dto.mesocycle.response.MesocycleResponse;
 import com.noslen.training_tracker.enums.Status;
@@ -59,7 +60,7 @@ class MesocycleServiceTest {
         );
 
         samplePayload = new MesocycleResponse(
-                1L, "test-key", 100L, "Test Mesocycle", 28, "lbs",
+                1L, "test-key", 100L, "Test Mesocycle", 28, "lb",
                 2L, 3L, 5L, now, now, null, null,
                 null, null, null, null, null, null, null, null, null, null, null,
                 4, Arrays.asList(notePayload)
@@ -71,7 +72,7 @@ class MesocycleServiceTest {
                 .userId(100L)
                 .name("Test Mesocycle")
                 .days(28)
-                .unit(Unit.LBS)
+                .unit(Unit.LB)
                 .sourceTemplate(MesoTemplate.builder().id(2L).build())
                 .sourceMeso(Mesocycle.builder().id(3L).build())
                 .microRirs(5L)
@@ -91,7 +92,7 @@ class MesocycleServiceTest {
     void createMesocycle_Success() {
         // Given
         MesocycleResponse resultPayload = new MesocycleResponse(
-                1L, "test-key", 100L, "Test Mesocycle", 28, "lbs",
+                1L, "test-key", 100L, "Test Mesocycle", 28, "lb",
                 2L, 3L, 5L, now, now, null, null,
                 null, null, null, null, null, null, null, null, null, null, null,
                 4, Arrays.asList(notePayload)
@@ -104,7 +105,7 @@ class MesocycleServiceTest {
                         new CreateMesocycleRequest.DayRequest("Pull",
                                 List.of(new CreateMesocycleRequest.DayExerciseRequest(42L)))
                 ),
-                "lbs", null, null, null);
+                "lb", null, null, null);
 
         when(userContext.getCurrentUserId()).thenReturn(100L);
         when(mesocycleFactory.createFromRequest(request, 100L)).thenReturn(sampleEntity);
@@ -128,7 +129,7 @@ class MesocycleServiceTest {
     void getMesocycle_Success() {
         // Given
         MesocycleResponse resultPayload = new MesocycleResponse(
-                1L, "test-key", 100L, "Test Mesocycle", 28, "lbs",
+                1L, "test-key", 100L, "Test Mesocycle", 28, "lb",
                 2L, 3L, 5L, now, now, null, null,
                 null, null, null, null, null, null, null, null, null, null, null,
                 4, Arrays.asList(notePayload)
@@ -185,29 +186,31 @@ class MesocycleServiceTest {
     @Test
     void updateMesocycle_Success() {
         // Given
+        UpdateMesocycleRequest request = new UpdateMesocycleRequest(1L, "Updated Mesocycle", "lb", "complete");
         MesocycleResponse updatedPayload = new MesocycleResponse(
-                1L, "updated-key", 100L, "Updated Mesocycle", 28, "lbs",
+                1L, "updated-key", 100L, "Updated Mesocycle", 28, "lb",
                 null, null, null, now, now, null, null,
                 null, null, null, null, null, null, null, null, null, null, null,
                 4, Collections.emptyList()
         );
 
-        when(mesocycleRepo.findById(any(Long.class))).thenReturn(Optional.of(sampleEntity));
-        when(mesocycleMapper.mergeEntity(any(Mesocycle.class), any(MesocycleResponse.class))).thenReturn(sampleEntity);
-        when(mesocycleRepo.save(any(Mesocycle.class))).thenReturn(sampleEntity);
-        when(mesocycleMapper.toPayload(any(Mesocycle.class))).thenReturn(updatedPayload);
+        when(mesocycleRepo.findById(1L)).thenReturn(Optional.of(sampleEntity));
+        when(mesocycleRepo.save(sampleEntity)).thenReturn(sampleEntity);
+        when(mesocycleMapper.toPayload(sampleEntity)).thenReturn(updatedPayload);
 
         // When
-        MesocycleResponse result = mesocycleService.updateMesocycle(1L, samplePayload);
+        MesocycleResponse result = mesocycleService.updateMesocycle(1L, request);
 
         // Then
-        assertEquals(1L, result.id());
         assertEquals("Updated Mesocycle", result.name());
+        // Fields applied directly to the managed entity
+        assertEquals("Updated Mesocycle", sampleEntity.getName());
+        assertEquals(Unit.LB, sampleEntity.getUnit());
+        assertEquals(Status.COMPLETE, sampleEntity.getStatus());
 
-        verify(mesocycleRepo).findById(any(Long.class));
-        verify(mesocycleMapper).mergeEntity(any(Mesocycle.class), any(MesocycleResponse.class));
-        verify(mesocycleRepo).save(any(Mesocycle.class));
-        verify(mesocycleMapper).toPayload(any(Mesocycle.class));
+        verify(mesocycleRepo).findById(1L);
+        verify(mesocycleRepo).save(sampleEntity);
+        verify(mesocycleMapper).toPayload(sampleEntity);
     }
 
     @Test
@@ -216,9 +219,9 @@ class MesocycleServiceTest {
         when(mesocycleRepo.findById(any(Long.class))).thenReturn(Optional.empty());
 
         // When & Then
-        RuntimeException exception = assertThrows(RuntimeException.class, 
-                () -> mesocycleService.updateMesocycle(1L, samplePayload));
-        
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> mesocycleService.updateMesocycle(1L, new UpdateMesocycleRequest(1L, "x", null, null)));
+
         assertEquals("Mesocycle not found with id: 1", exception.getMessage());
         verify(mesocycleRepo).findById(any(Long.class));
     }

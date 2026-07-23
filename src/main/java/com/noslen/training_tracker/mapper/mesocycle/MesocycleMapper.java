@@ -1,14 +1,27 @@
 package com.noslen.training_tracker.mapper.mesocycle;
 
+import com.noslen.training_tracker.dto.day.response.DayResponse;
+import com.noslen.training_tracker.dto.mesocycle.response.CurrentMesoResponse;
+import com.noslen.training_tracker.dto.mesocycle.response.MesoNoteResponse;
 import com.noslen.training_tracker.dto.mesocycle.response.MesocycleResponse;
+import com.noslen.training_tracker.dto.mesocycle.response.Week;
+import com.noslen.training_tracker.dto.progression.response.ProgressionResponse;
 import com.noslen.training_tracker.enums.Unit;
-import com.noslen.training_tracker.model.mesocycle.MesoTemplate;
+import com.noslen.training_tracker.mapper.day.DayMapper;
+import com.noslen.training_tracker.mapper.progression.ProgressionMapper;
+import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 import com.noslen.training_tracker.util.EnumConverter;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -18,55 +31,79 @@ import java.util.stream.Collectors;
 public class MesocycleMapper {
 
     private final MesoNoteMapper mesoNoteMapper;
+    private final DayMapper dayMapper;
+    private final ProgressionMapper progressionMapper;
 
-    public MesocycleMapper(MesoNoteMapper mesoNoteMapper) {
+    public MesocycleMapper(MesoNoteMapper mesoNoteMapper, DayMapper dayMapper,
+                           ProgressionMapper progressionMapper) {
         this.mesoNoteMapper = mesoNoteMapper;
+        this.dayMapper = dayMapper;
+        this.progressionMapper = progressionMapper;
     }
 
     /**
-     * Converts MesocycleResponse DTO to Mesocycle entity
+     * Converts a Mesocycle entity to the full nested CurrentMesoResponse: its flat day list is
+     * grouped by week number (ordered by week, then day position) into {@link Week}s, and its
+     * progressions are mapped to response DTOs. This is the payload the workout/dashboard UI
+     * renders (mirrors RP's current_meso structure).
      */
-    public Mesocycle toEntity(MesocycleResponse payload) {
-        if (payload == null) {
+    public CurrentMesoResponse toCurrentMeso(Mesocycle entity) {
+        if (entity == null) {
             return null;
         }
 
-        return Mesocycle.builder()
-                .id(payload.id())
-                .mesocycleKey(payload.key())
-                .userId(payload.userId())
-                .name(payload.name())
-                .days(payload.days())
-                .unit(stringToUnit(payload.unit()))
-                .sourceTemplate(payload.sourceTemplateId() != null ? 
-                    MesoTemplate.builder().id(payload.sourceTemplateId()).build() : null)
-                .sourceMeso(payload.sourceMesoId() != null ? 
-                    Mesocycle.builder().id(payload.sourceMesoId()).build() : null)
-                .microRirs(payload.microRirs())
-                .createdAt(payload.createdAt())
-                .updatedAt(payload.updatedAt())
-                .finishedAt(payload.finishedAt())
-                .deletedAt(payload.deletedAt())
-                .firstMicroCompletedAt(payload.firstMicroCompletedAt())
-                .firstWorkoutCompletedAt(payload.firstWorkoutCompletedAt())
-                .firstExerciseCompletedAt(payload.firstExerciseCompletedAt())
-                .firstSetCompletedAt(payload.firstSetCompletedAt())
-                .lastMicroFinishedAt(payload.lastMicroFinishedAt())
-                .lastSetCompletedAt(payload.lastSetCompletedAt())
-                .lastSetSkippedAt(payload.lastSetSkippedAt())
-                .lastWorkoutCompletedAt(payload.lastWorkoutCompletedAt())
-                .lastWorkoutFinishedAt(payload.lastWorkoutFinishedAt())
-                .lastWorkoutSkippedAt(payload.lastWorkoutSkippedAt())
-                .lastWorkoutPartialedAt(payload.lastWorkoutPartialedAt())
-                .weeks(Collections.emptyList()) // Will be populated separately if needed
-                .notes(payload.notes() != null ? 
-                    payload.notes().stream()
-                        .map(mesoNoteMapper::toEntity)
-                        .collect(Collectors.toList()) : Collections.emptyList())
-                .status(null) // Not included in DTO
-                .generatedFrom(null) // Not included in DTO
-                .progressions(Collections.emptyMap()) // Will be populated separately if needed
-                .build();
+        Map<Integer, List<DayResponse>> daysByWeek = new LinkedHashMap<>();
+        if (entity.getWeeks() != null) {
+            entity.getWeeks().stream()
+                    .sorted(Comparator.comparing(Day::getWeek, Comparator.nullsLast(Comparator.naturalOrder()))
+                            .thenComparing(Day::getPosition, Comparator.nullsLast(Comparator.naturalOrder())))
+                    .forEach(day -> daysByWeek
+                            .computeIfAbsent(day.getWeek(), k -> new ArrayList<>())
+                            .add(dayMapper.toPayload(day)));
+        }
+        List<Week> weeks = daysByWeek.values().stream().map(Week::new).collect(Collectors.toList());
+
+        Map<Long, ProgressionResponse> progressions = new LinkedHashMap<>();
+        if (entity.getProgressions() != null) {
+            entity.getProgressions().forEach((key, value) ->
+                    progressions.put(key, progressionMapper.toPayload(value)));
+        }
+
+        Set<MesoNoteResponse> notes = entity.getNotes() != null
+                ? entity.getNotes().stream().map(mesoNoteMapper::toPayload)
+                    .collect(Collectors.toCollection(LinkedHashSet::new))
+                : new LinkedHashSet<>();
+
+        return new CurrentMesoResponse(
+                entity.getId(),
+                entity.getMesocycleKey(),
+                entity.getUserId(),
+                entity.getName(),
+                entity.getDays(),
+                unitToString(entity.getUnit()),
+                entity.getSourceTemplateId(),
+                entity.getSourceMesoId(),
+                entity.getMicroRirs(),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt(),
+                entity.getFinishedAt(),
+                entity.getDeletedAt(),
+                entity.getFirstMicroCompletedAt(),
+                entity.getFirstWorkoutCompletedAt(),
+                entity.getFirstExerciseCompletedAt(),
+                entity.getFirstSetCompletedAt(),
+                entity.getLastMicroFinishedAt(),
+                entity.getLastSetCompletedAt(),
+                entity.getLastSetSkippedAt(),
+                entity.getLastWorkoutCompletedAt(),
+                entity.getLastWorkoutFinishedAt(),
+                entity.getLastWorkoutSkippedAt(),
+                entity.getLastWorkoutPartialedAt(),
+                weeks,
+                notes,
+                EnumConverter.enumToString(entity.getStatus()),
+                entity.getGeneratedFrom(),
+                progressions);
     }
 
     /**
@@ -108,86 +145,6 @@ public class MesocycleMapper {
                         .map(mesoNoteMapper::toPayload)
                         .collect(Collectors.toList()) : Collections.emptyList()
         );
-    }
-
-    /**
-     * Updates mutable fields of an existing Mesocycle entity with values from MesocycleResponse.
-     * Since Mesocycle is immutable (uses @Builder), this method is a no-op.
-     * Use mergeEntity() instead for creating updated entities.
-     */
-    public void updateEntity(Mesocycle existingEntity, MesocycleResponse payload) {
-        // No-op since Mesocycle is immutable
-        // Use mergeEntity() to create a new entity with updated values
-    }
-
-    /**
-     * Creates a new Mesocycle entity by merging an existing entity with values from MesocycleResponse.
-     * This is used for updates since the entity is immutable.
-     */
-    public Mesocycle mergeEntity(Mesocycle existingEntity, MesocycleResponse payload) {
-        if (existingEntity == null || payload == null) {
-            return null;
-        }
-
-        return Mesocycle.builder()
-                .id(existingEntity.getId()) // Preserve existing ID
-                .mesocycleKey(payload.key() != null ? payload.key() : existingEntity.getMesocycleKey())
-                .userId(payload.userId() != null ? payload.userId() : existingEntity.getUserId())
-                .name(payload.name() != null ? payload.name() : existingEntity.getName())
-                .days(payload.days() != null ? payload.days() : existingEntity.getDays())
-                .unit(stringToUnit(payload.unit() != null ? payload.unit() :
-                                           unitToString(existingEntity.getUnit())))
-                .sourceTemplate(payload.sourceTemplateId() != null ? 
-                    MesoTemplate.builder().id(payload.sourceTemplateId()).build() : existingEntity.getSourceTemplate())
-                .sourceMeso(payload.sourceMesoId() != null ? 
-                    Mesocycle.builder().id(payload.sourceMesoId()).build() : existingEntity.getSourceMeso())
-                .microRirs(payload.microRirs() != null ? payload.microRirs() : existingEntity.getMicroRirs())
-                .createdAt(existingEntity.getCreatedAt()) // Preserve original creation time
-                .updatedAt(Instant.now()) // Set current time for update
-                .finishedAt(payload.finishedAt() != null ? payload.finishedAt() : existingEntity.getFinishedAt())
-                .deletedAt(payload.deletedAt() != null ? payload.deletedAt() : existingEntity.getDeletedAt())
-                .firstMicroCompletedAt(payload.firstMicroCompletedAt() != null ? 
-                    payload.firstMicroCompletedAt() : existingEntity.getFirstMicroCompletedAt())
-                .firstWorkoutCompletedAt(payload.firstWorkoutCompletedAt() != null ? 
-                    payload.firstWorkoutCompletedAt() : existingEntity.getFirstWorkoutCompletedAt())
-                .firstExerciseCompletedAt(payload.firstExerciseCompletedAt() != null ? 
-                    payload.firstExerciseCompletedAt() : existingEntity.getFirstExerciseCompletedAt())
-                .firstSetCompletedAt(payload.firstSetCompletedAt() != null ? 
-                    payload.firstSetCompletedAt() : existingEntity.getFirstSetCompletedAt())
-                .lastMicroFinishedAt(payload.lastMicroFinishedAt() != null ? 
-                    payload.lastMicroFinishedAt() : existingEntity.getLastMicroFinishedAt())
-                .lastSetCompletedAt(payload.lastSetCompletedAt() != null ? 
-                    payload.lastSetCompletedAt() : existingEntity.getLastSetCompletedAt())
-                .lastSetSkippedAt(payload.lastSetSkippedAt() != null ? 
-                    payload.lastSetSkippedAt() : existingEntity.getLastSetSkippedAt())
-                .lastWorkoutCompletedAt(payload.lastWorkoutCompletedAt() != null ? 
-                    payload.lastWorkoutCompletedAt() : existingEntity.getLastWorkoutCompletedAt())
-                .lastWorkoutFinishedAt(payload.lastWorkoutFinishedAt() != null ? 
-                    payload.lastWorkoutFinishedAt() : existingEntity.getLastWorkoutFinishedAt())
-                .lastWorkoutSkippedAt(payload.lastWorkoutSkippedAt() != null ? 
-                    payload.lastWorkoutSkippedAt() : existingEntity.getLastWorkoutSkippedAt())
-                .lastWorkoutPartialedAt(payload.lastWorkoutPartialedAt() != null ? 
-                    payload.lastWorkoutPartialedAt() : existingEntity.getLastWorkoutPartialedAt())
-                .weeks(existingEntity.getWeeks()) // Preserve existing weeks
-                .notes(payload.notes() != null ? 
-                    payload.notes().stream()
-                        .map(mesoNoteMapper::toEntity)
-                        .collect(Collectors.toList()) : existingEntity.getNotes())
-                .status(existingEntity.getStatus()) // Preserve existing status
-                .generatedFrom(existingEntity.getGeneratedFrom()) // Preserve existing generatedFrom
-                .progressions(existingEntity.getProgressions()) // Preserve existing progressions
-                .build();
-    }
-
-    public Unit stringToUnit(String unitString) {
-        if (unitString == null) {
-            return null;
-        }
-        try {
-            return EnumConverter.stringToEnum(Unit.class, unitString);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid unit string: " + unitString);
-        }
     }
 
     public String unitToString(Unit unit) {

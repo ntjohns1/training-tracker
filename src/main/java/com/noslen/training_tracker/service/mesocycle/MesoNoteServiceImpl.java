@@ -1,16 +1,19 @@
 package com.noslen.training_tracker.service.mesocycle;
 
+import com.noslen.training_tracker.dto.mesocycle.request.CreateMesoNoteRequest;
+import com.noslen.training_tracker.dto.mesocycle.request.UpdateMesoNoteRequest;
 import com.noslen.training_tracker.dto.mesocycle.response.MesoNoteResponse;
 import com.noslen.training_tracker.mapper.mesocycle.MesoNoteMapper;
 import com.noslen.training_tracker.model.mesocycle.MesoNote;
+import com.noslen.training_tracker.model.mesocycle.Mesocycle;
 import com.noslen.training_tracker.repository.mesocycle.MesoNoteRepo;
 import com.noslen.training_tracker.security.UserContext;
+import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -21,40 +24,37 @@ import java.util.stream.Collectors;
 @Transactional
 public class MesoNoteServiceImpl implements MesoNoteService {
 
+    private final EntityManager entityManager;
     private final MesoNoteRepo repo;
     private final MesoNoteMapper mapper;
     private final UserContext userContext;
 
-    public MesoNoteServiceImpl(MesoNoteRepo repo, MesoNoteMapper mapper, UserContext userContext) {
+    public MesoNoteServiceImpl(EntityManager entityManager, MesoNoteRepo repo, MesoNoteMapper mapper, UserContext userContext) {
+        this.entityManager = entityManager;
         this.repo = repo;
         this.mapper = mapper;
         this.userContext = userContext;
     }
 
     @Override
-    public MesoNoteResponse createMesoNote(MesoNoteResponse mesoNoteResponse) {
-        if (mesoNoteResponse == null) {
-            throw new IllegalArgumentException("MesoNoteResponse cannot be null");
+    public MesoNoteResponse createMesoNote(CreateMesoNoteRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("CreateMesoNoteRequest cannot be null");
         }
 
-        // Convert payload to entity
-        MesoNote mesoNote = mapper.toEntity(mesoNoteResponse);
-        
-        // Note: User access validation for create operations should be handled 
-        // at the controller level since meso notes are typically created as part of mesocycle operations
-        
-        // Set timestamps
+        // Note: user access for create is handled at the controller level; meso notes are
+        // created as part of mesocycle operations.
         Instant now = Instant.now();
-        if (mesoNote.getCreatedAt() == null) {
-            mesoNote.setCreatedAt(now);
-        }
+        MesoNote mesoNote = new MesoNote();
+        mesoNote.setMesocycle(request.mesoId() != null
+                ? entityManager.getReference(Mesocycle.class, request.mesoId())
+                : null);
+        mesoNote.setNoteId(request.noteId());
+        mesoNote.setText(request.text());
+        mesoNote.setCreatedAt(now);
         mesoNote.setUpdatedAt(now);
 
-        // Save entity
-        MesoNote savedMesoNote = repo.save(mesoNote);
-        
-        // Convert back to payload and return
-        return mapper.toPayload(savedMesoNote);
+        return mapper.toPayload(repo.save(mesoNote));
     }
 
     @Override
@@ -93,29 +93,26 @@ public class MesoNoteServiceImpl implements MesoNoteService {
     }
 
     @Override
-    public MesoNoteResponse updateMesoNote(Long id, MesoNoteResponse mesoNoteResponse) {
+    public MesoNoteResponse updateMesoNote(Long id, UpdateMesoNoteRequest request) {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
-        if (mesoNoteResponse == null) {
-            throw new IllegalArgumentException("MesoNoteResponse cannot be null");
+        if (request == null) {
+            throw new IllegalArgumentException("UpdateMesoNoteRequest cannot be null");
         }
 
-        // Find existing entity
-        MesoNote existingMesoNote = repo.findById(id)
+        MesoNote existing = repo.findById(id)
                 .orElseThrow(() -> new RuntimeException("MesoNote not found with id: " + id));
 
         // Validate that the current user owns the mesocycle this meso note belongs to
-        userContext.validateUserAccess(existingMesoNote.getMesocycle().getUserId());
+        userContext.validateUserAccess(existing.getMesocycle().getUserId());
 
-        // Since MesoNote is immutable, create a new entity with updated values
-        MesoNote updatedMesoNote = mapper.mergeEntity(existingMesoNote, mesoNoteResponse);
-        
-        // Save the updated entity
-        MesoNote savedMesoNote = repo.save(updatedMesoNote);
-        
-        // Convert back to payload and return
-        return mapper.toPayload(savedMesoNote);
+        if (request.text() != null) {
+            existing.setText(request.text());
+        }
+        existing.setUpdatedAt(Instant.now());
+
+        return mapper.toPayload(repo.save(existing));
     }
 
     @Override

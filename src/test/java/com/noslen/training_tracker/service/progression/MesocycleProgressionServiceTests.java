@@ -92,7 +92,7 @@ public class MesocycleProgressionServiceTests {
                                Integer maxJointPain, Integer previousSetCount) {
         when(dayMuscleGroupService.getDayMuscleGroup(CURRENT_DMG_ID)).thenReturn(current);
         when(dayMuscleGroupService.getMostRecentWithSameMuscleGroup(CURRENT_DMG_ID)).thenReturn(previous);
-        when(dayMuscleGroupService.getDayMuscleGroupForNextWeek(previous.id()))
+        when(dayMuscleGroupService.getDayMuscleGroupForNextWeek(CURRENT_DMG_ID))
                 .thenReturn(dmg(NEXT_DMG_ID, 110L, null, null, null));
         when(dayExerciseService.getDayExerciseMaxJointPain(previous.dayId(), previous.muscleGroupId()))
                 .thenReturn(maxJointPain);
