@@ -3,14 +3,11 @@ package com.noslen.training_tracker.model.mesocycle;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.noslen.training_tracker.enums.Status;
-import com.noslen.training_tracker.model.day.Day;
-import com.noslen.training_tracker.model.muscle_group.Progression;
 import com.noslen.training_tracker.enums.Unit;
+import com.noslen.training_tracker.model.day.Day;
+import com.noslen.training_tracker.model.progression.Progression;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.List;
@@ -27,20 +24,20 @@ public class Mesocycle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @Column(name = "meso_key")
     private String mesocycleKey;
     private Long userId;
+    @Setter
     private String name;
     private Integer days;
+    @Setter
     private Unit unit;
 
-//    TODO: fix this relation
     @ManyToOne
     @JoinColumn(name = "source_template_id")
     private MesoTemplate sourceTemplate;
 
-//    TODO: fix this relation
     @ManyToOne
     @JoinColumn(name = "source_meso_id")
     private Mesocycle sourceMeso;
@@ -57,6 +54,7 @@ public class Mesocycle {
 
     private Long microRirs;
     private Instant createdAt;
+    @Setter
     private Instant updatedAt;
     private Instant finishedAt;
     private Instant deletedAt;
@@ -72,24 +70,55 @@ public class Mesocycle {
     private Instant lastWorkoutSkippedAt;
     private Instant lastWorkoutPartialedAt;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference(value = "day-mesocycle")
     @JoinColumn(name = "meso_id")
     private List<Day> weeks;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference(value = "mesocycle-notes")
     @JoinColumn(name = "mesocycle_id")
     @JsonProperty("notes")
     private List<MesoNote> notes;
 
+    @Setter
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private Status status;
     private String generatedFrom;
 
     @OneToMany(mappedBy = "mesocycle", cascade = CascadeType.ALL, orphanRemoval = true)
-    @MapKey(name = "muscleGroupId")
+    @MapKeyJoinColumn(name = "muscle_group_id")
     @JsonProperty("progressions")
     private Map<Long, Progression> progressions;
+
+    private int pow10(int k) {
+        int p = 1;
+        for (int i = 0; i < k; i++)
+            p *= 10;
+        return p;
+    }
+
+    int digits(long n) {
+        n = Math.abs(n);
+        int count = 1;
+        while (n >= 10) {
+            n /= 10;
+            count++;
+        }
+        return count;
+    }
+
+    public long getRirForWeek(int week) {
+
+            int len = digits(this.microRirs);
+            if (week < 0 || week >= len)
+                throw new IndexOutOfBoundsException();
+
+            int shift = len - 1 - week;
+            return (microRirs / pow10(shift)) % 10;
+
+    }
 
     @Override
     public boolean equals(Object o) {

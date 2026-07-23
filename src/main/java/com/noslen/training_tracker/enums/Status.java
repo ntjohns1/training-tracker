@@ -8,6 +8,7 @@ public enum Status implements CustomSerializableEnum {
     EMPTY,
     PARTIAL,
     PENDING,
+    PENDING_CONFIRMATION,
     PENDING_FEEDBACK,
     PENDING_WEIGHT,
     PROGRAMMED,
@@ -18,6 +19,7 @@ public enum Status implements CustomSerializableEnum {
     @JsonValue
     public String toValue() {
         return switch (this) {
+            case PENDING_CONFIRMATION -> "pendingConfirmation";
             case PENDING_FEEDBACK -> "pendingFeedback";
             case PENDING_WEIGHT -> "pendingWeight";
             default -> name().toLowerCase();

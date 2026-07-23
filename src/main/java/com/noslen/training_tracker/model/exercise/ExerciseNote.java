@@ -6,38 +6,45 @@ import com.noslen.training_tracker.model.day.DayExercise;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.Instant;
 import java.util.Objects;
 
 @Getter
 @Entity
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "exercise_notes")
 public class ExerciseNote {
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @ManyToOne
     @JsonBackReference(value = "exercisenote-exercise")
     @JoinColumn(name = "exercise_id")
     private Exercise exercise;
 
+    @Setter
     private Long userId;
+    @Setter
     private Long noteId;
 
+    @Setter
     @ManyToOne
     @JsonBackReference(value = "exercisenote-dayexercise")
     @JoinColumn(name = "day_exercise_id")
     private DayExercise dayExercise;
+    @Setter
     private Instant createdAt;
+    @Setter
     private Instant updatedAt;
+    @Setter
     private String text;
 
     @JsonProperty("exerciseId")
@@ -48,13 +55,6 @@ public class ExerciseNote {
     @JsonProperty("dayExerciseId")
     public Long getDayExerciseId() {
         return dayExercise != null ? dayExercise.getId() : null;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     @Override

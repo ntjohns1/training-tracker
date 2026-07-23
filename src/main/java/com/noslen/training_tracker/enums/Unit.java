@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import com.noslen.training_tracker.util.CustomSerializableEnum;
 
 public enum Unit implements CustomSerializableEnum {
-    KGS, LBS;
+    KG, LB;
 
     @JsonValue
     public String toValue() {

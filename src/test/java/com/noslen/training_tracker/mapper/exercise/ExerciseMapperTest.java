@@ -1,7 +1,7 @@
 package com.noslen.training_tracker.mapper.exercise;
 
-import com.noslen.training_tracker.dto.exercise.ExercisePayload;
-import com.noslen.training_tracker.dto.exercise.ExerciseNotePayload;
+import com.noslen.training_tracker.dto.exercise.response.ExerciseNoteResponse;
+import com.noslen.training_tracker.dto.exercise.response.ExerciseResponse;
 import com.noslen.training_tracker.enums.ExerciseType;
 import com.noslen.training_tracker.enums.MgSubType;
 import com.noslen.training_tracker.model.exercise.Exercise;
@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 
@@ -32,107 +31,42 @@ class ExerciseMapperTest {
     @InjectMocks
     private ExerciseMapper exerciseMapper;
 
-    private ExercisePayload testPayload;
     private Exercise testEntity;
     private Instant testTime;
-    private ExerciseNotePayload testNotePayload;
-    private ExerciseNote testNoteEntity;
+    private ExerciseNoteResponse testNotePayload;
 
     @BeforeEach
     void setUp() {
         testTime = Instant.now();
-        
-        testNotePayload = new ExerciseNotePayload(
+
+        testNotePayload = new ExerciseNoteResponse(
                 1L, 2L, 3L, 4L, 5L, testTime, testTime, "Test note"
         );
-        
-        testNoteEntity = ExerciseNote.builder()
-                .id(1L)
-                .userId(3L)
-                .noteId(4L)
-                .createdAt(testTime)
-                .updatedAt(testTime)
-                .text("Test note")
-                .build();
 
-        testPayload = new ExercisePayload(
-                1L, "Test Exercise", 2L, "youtube123", "barbell", 3L,
-                testTime, testTime, null, "vertical",
-                Collections.singletonList(testNotePayload)
-        );
+        ExerciseNote testNoteEntity = new ExerciseNote();
+        testNoteEntity.setId(1L);
+        testNoteEntity.setText("Test note");
 
-        testEntity = Exercise.builder()
-                .id(1L)
-                .name("Test Exercise")
-                .muscleGroupId(2L)
-                .youtubeId("youtube123")
-                .exerciseType(ExerciseType.BARBELL)
-                .userId(3L)
-                .createdAt(testTime)
-                .updatedAt(testTime)
-                .deletedAt(null)
-                .mgSubType(MgSubType.VERTICAL)
-                .notes(Collections.singletonList(testNoteEntity))
-                .build();
-    }
-
-    @Test
-    void toEntity_WithValidPayload_ShouldMapCorrectly() {
-        // Given
-        when(exerciseNoteMapper.toEntity(any(ExerciseNotePayload.class))).thenReturn(testNoteEntity);
-
-        // When
-        Exercise result = exerciseMapper.toEntity(testPayload);
-
-        // Then
-        assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo(1L);
-        assertThat(result.getName()).isEqualTo("Test Exercise");
-        assertThat(result.getMuscleGroupId()).isEqualTo(2L);
-        assertThat(result.getYoutubeId()).isEqualTo("youtube123");
-        assertThat(result.getExerciseType()).isEqualTo(ExerciseType.BARBELL);
-        assertThat(result.getUserId()).isEqualTo(3L);
-        assertThat(result.getCreatedAt()).isEqualTo(testTime);
-        assertThat(result.getUpdatedAt()).isEqualTo(testTime);
-        assertThat(result.getDeletedAt()).isNull();
-        assertThat(result.getMgSubType()).isEqualTo(MgSubType.VERTICAL);
-        assertThat(result.getNotes()).hasSize(1);
-    }
-
-    @Test
-    void toEntity_WithNullPayload_ShouldReturnNull() {
-        // When
-        Exercise result = exerciseMapper.toEntity(null);
-
-        // Then
-        assertThat(result).isNull();
-    }
-
-    @Test
-    void toEntity_WithNullNotes_ShouldHandleGracefully() {
-        // Given
-        ExercisePayload payloadWithoutNotes = new ExercisePayload(
-                1L, "Test Exercise", 2L, "youtube123", "barbell", 3L,
-                testTime, testTime, null, "non-heavy-axial", null
-        );
-
-        // When
-        Exercise result = exerciseMapper.toEntity(payloadWithoutNotes);
-
-        // Then
-        assertThat(result).isNotNull();
-        assertThat(result.getNotes()).isNull();
+        testEntity = new Exercise();
+        testEntity.setId(1L);
+        testEntity.setName("Test Exercise");
+        testEntity.setMuscleGroupId(2L);
+        testEntity.setYoutubeId("youtube123");
+        testEntity.setExerciseType(ExerciseType.BARBELL);
+        testEntity.setUserId(3L);
+        testEntity.setCreatedAt(testTime);
+        testEntity.setUpdatedAt(testTime);
+        testEntity.setDeletedAt(null);
+        testEntity.setMgSubType(MgSubType.VERTICAL);
+        testEntity.setNotes(Collections.singletonList(testNoteEntity));
     }
 
     @Test
     void toPayload_WithValidEntity_ShouldMapCorrectly() {
-        // Given
         when(exerciseNoteMapper.toPayloadList(anyList())).thenReturn(Collections.singletonList(testNotePayload));
 
-        // When
-        ExercisePayload result = exerciseMapper.toPayload(testEntity);
+        ExerciseResponse result = exerciseMapper.toPayload(testEntity);
 
-        // Then
         assertThat(result).isNotNull();
         assertThat(result.id()).isEqualTo(1L);
         assertThat(result.name()).isEqualTo("Test Exercise");
@@ -149,184 +83,16 @@ class ExerciseMapperTest {
 
     @Test
     void toPayload_WithNullEntity_ShouldReturnNull() {
-        // When
-        ExercisePayload result = exerciseMapper.toPayload(null);
-
-        // Then
-        assertThat(result).isNull();
-    }
-
-    @Test
-    void updateEntity_WithValidData_ShouldUpdateMutableFields() {
-        // Given
-        Exercise existing = Exercise.builder()
-                .id(1L)
-                .name("Original Exercise")
-                .muscleGroupId(2L)
-                .youtubeId("original123")
-                .exerciseType(ExerciseType.BARBELL)
-                .userId(3L)
-                .createdAt(testTime)
-                .updatedAt(testTime)
-                .mgSubType(MgSubType.HORIZONTAL)
-                .build();
-
-        ExercisePayload updatePayload = new ExercisePayload(
-                0L, "Updated Exercise", 4L, "updated456", "barbell", 5L,
-                null, testTime.plusSeconds(60), testTime.plusSeconds(120), "horizontal", null
-        );
-
-        // When
-        exerciseMapper.updateEntity(existing, updatePayload);
-
-        // Then
-        assertThat(existing.getName()).isEqualTo("Updated Exercise");
-        assertThat(existing.getMuscleGroupId()).isEqualTo(4L);
-        assertThat(existing.getYoutubeId()).isEqualTo("updated456");
-        assertThat(existing.getExerciseType()).isEqualTo(ExerciseType.BARBELL);
-        assertThat(existing.getUserId()).isEqualTo(5L);
-        assertThat(existing.getUpdatedAt()).isEqualTo(testTime.plusSeconds(60));
-        assertThat(existing.getDeletedAt()).isEqualTo(testTime.plusSeconds(120));
-        assertThat(existing.getMgSubType()).isEqualTo(MgSubType.HORIZONTAL);
-        // ID and createdAt should remain unchanged
-        assertThat(existing.getId()).isEqualTo(1L);
-        assertThat(existing.getCreatedAt()).isEqualTo(testTime);
-    }
-
-    @Test
-    void updateEntity_WithNullInputs_ShouldHandleGracefully() {
-        // When/Then - should not throw exceptions
-        exerciseMapper.updateEntity(null, testPayload);
-        exerciseMapper.updateEntity(testEntity, null);
-        exerciseMapper.updateEntity(null, null);
-    }
-
-    @Test
-    void updateEntity_WithZeroValues_ShouldNotUpdate() {
-        // Given
-        Exercise existing = Exercise.builder()
-                .id(1L)
-                .name("Original Exercise")
-                .muscleGroupId(2L)
-                .userId(3L)
-                .createdAt(testTime)
-                .updatedAt(testTime)
-                .build();
-
-        ExercisePayload updatePayload = new ExercisePayload(
-                0L, null, 0L, null, null, 0L,
-                null, null, null, null, null
-        );
-
-        // When
-        exerciseMapper.updateEntity(existing, updatePayload);
-
-        // Then - nothing should change
-        assertThat(existing.getName()).isEqualTo("Original Exercise");
-        assertThat(existing.getMuscleGroupId()).isEqualTo(2L);
-        assertThat(existing.getUserId()).isEqualTo(3L);
-    }
-
-    @Test
-    void mergeEntity_WithValidData_ShouldCreateNewEntityWithUpdatedFields() {
-        // Given
-        Exercise existing = Exercise.builder()
-                .id(1L)
-                .name("Original Exercise")
-                .muscleGroupId(2L)
-                .youtubeId("original123")
-                .exerciseType(ExerciseType.BARBELL)
-                .userId(3L)
-                .createdAt(testTime)
-                .updatedAt(testTime)
-                .mgSubType(MgSubType.HORIZONTAL)
-                .build();
-
-        ExercisePayload updatePayload = new ExercisePayload(
-                0L, "Updated Exercise", 4L, "updated456", "dumbbell", 5L,
-                null, testTime.plusSeconds(60), null, "non-heavy-axial", null
-        );
-
-        // When
-        Exercise result = exerciseMapper.mergeEntity(existing, updatePayload);
-
-        // Then
-        assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo(1L); // preserved from existing
-        assertThat(result.getName()).isEqualTo("Updated Exercise"); // updated from payload
-        assertThat(result.getMuscleGroupId()).isEqualTo(4L); // updated from payload
-        assertThat(result.getYoutubeId()).isEqualTo("updated456"); // updated from payload
-        assertThat(result.getExerciseType()).isEqualTo(ExerciseType.DUMBBELL); // updated from payload
-        assertThat(result.getUserId()).isEqualTo(5L); // updated from payload
-        assertThat(result.getCreatedAt()).isEqualTo(testTime); // preserved from existing
-        assertThat(result.getUpdatedAt()).isEqualTo(testTime.plusSeconds(60)); // updated from payload
-        assertThat(result.getMgSubType()).isEqualTo(MgSubType.NON_HEAVY_AXIAL); // updated from payload
-    }
-
-    @Test
-    void mergeEntity_WithZeroValues_ShouldKeepExistingValues() {
-        // Given
-        Exercise existing = Exercise.builder()
-                .id(1L)
-                .name("Original Exercise")
-                .muscleGroupId(2L)
-                .userId(3L)
-                .createdAt(testTime)
-                .updatedAt(testTime)
-                .build();
-
-        ExercisePayload updatePayload = new ExercisePayload(
-                0L, null, 0L, null, null, 0L,
-                null, null, null, null, null
-        );
-
-        // When
-        Exercise result = exerciseMapper.mergeEntity(existing, updatePayload);
-
-        // Then
-        assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo(1L); // preserved
-        assertThat(result.getName()).isEqualTo("Original Exercise"); // preserved (null means keep existing)
-        assertThat(result.getMuscleGroupId()).isEqualTo(2L); // preserved (0 means keep existing)
-        assertThat(result.getUserId()).isEqualTo(3L); // preserved (0 means keep existing)
-        assertThat(result.getCreatedAt()).isEqualTo(testTime); // preserved
-        assertThat(result.getUpdatedAt()).isEqualTo(testTime); // preserved (null means keep existing)
-    }
-
-    @Test
-    void mergeEntity_WithNullExisting_ShouldReturnNewEntity() {
-        // Given
-        when(exerciseNoteMapper.toEntity(any())).thenReturn(testNoteEntity);
-
-        // When
-        Exercise result = exerciseMapper.mergeEntity(null, testPayload);
-
-        // Then
-        assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo(testPayload.id());
-        assertThat(result.getName()).isEqualTo(testPayload.name());
-        assertThat(result.getMuscleGroupId()).isEqualTo(testPayload.muscleGroupId());
-    }
-
-    @Test
-    void mergeEntity_WithNullPayload_ShouldReturnExisting() {
-        // When
-        Exercise result = exerciseMapper.mergeEntity(testEntity, null);
-
-        // Then
-        assertThat(result).isSameAs(testEntity);
+        assertThat(exerciseMapper.toPayload(null)).isNull();
     }
 
     @Test
     void toPayloadList_WithValidList_ShouldMapAll() {
-        // Given
         List<Exercise> entities = Arrays.asList(testEntity, testEntity);
         when(exerciseNoteMapper.toPayloadList(anyList())).thenReturn(Collections.singletonList(testNotePayload));
 
-        // When
-        List<ExercisePayload> result = exerciseMapper.toPayloadList(entities);
+        List<ExerciseResponse> result = exerciseMapper.toPayloadList(entities);
 
-        // Then
         assertThat(result).hasSize(2);
         assertThat(result.get(0).id()).isEqualTo(1L);
         assertThat(result.get(1).id()).isEqualTo(1L);
@@ -334,32 +100,21 @@ class ExerciseMapperTest {
 
     @Test
     void toPayloadList_WithNullList_ShouldReturnNull() {
-        // When
-        List<ExercisePayload> result = exerciseMapper.toPayloadList(null);
-
-        // Then
-        assertThat(result).isNull();
+        assertThat(exerciseMapper.toPayloadList(null)).isNull();
     }
 
     @Test
     void toPayloadList_WithEmptyList_ShouldReturnEmptyList() {
-        // When
-        List<ExercisePayload> result = exerciseMapper.toPayloadList(Collections.emptyList());
-
-        // Then
-        assertThat(result).isEmpty();
+        assertThat(exerciseMapper.toPayloadList(Collections.emptyList())).isEmpty();
     }
 
     @Test
     void toPayloadList_WithMixedNullEntities_ShouldHandleGracefully() {
-        // Given
         List<Exercise> entitiesWithNull = Arrays.asList(testEntity, null, testEntity);
         when(exerciseNoteMapper.toPayloadList(anyList())).thenReturn(Collections.singletonList(testNotePayload));
 
-        // When
-        List<ExercisePayload> result = exerciseMapper.toPayloadList(entitiesWithNull);
+        List<ExerciseResponse> result = exerciseMapper.toPayloadList(entitiesWithNull);
 
-        // Then
         assertThat(result).hasSize(3);
         assertThat(result.get(0)).isNotNull();
         assertThat(result.get(1)).isNull();

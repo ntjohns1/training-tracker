@@ -36,3 +36,8 @@ src/main/resources/.DS_Store
 src/main/.DS_Store
 .DS_Store
 src/test/resources/example/muscleGroups.md
+.env
+docs/table.md
+#/src/test/resources/example/full_meso/*
+/src/test/resources/example/full_meso/
+*.proxymansessionv2

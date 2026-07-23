@@ -3,24 +3,29 @@ package com.noslen.training_tracker.service.day;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doNothing;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.noslen.training_tracker.dto.day.request.CreateDayNoteRequest;
+import com.noslen.training_tracker.dto.day.request.UpdateDayNoteRequest;
+import com.noslen.training_tracker.dto.day.response.DayNoteResponse;
+import com.noslen.training_tracker.security.UserContext;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.noslen.training_tracker.dto.day.DayNotePayload;
 import com.noslen.training_tracker.mapper.day.DayNoteMapper;
+import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.day.DayNote;
 import com.noslen.training_tracker.repository.day.DayNoteRepo;
 
@@ -28,9 +33,15 @@ public class DayNoteServiceTests {
 
     @Mock
     private DayNoteRepo repo;
-    
+
     @Mock
     private DayNoteMapper mapper;
+
+    @Mock
+    private UserContext userContext;
+
+    @Mock
+    private EntityManager entityManager;
 
     @InjectMocks
     private DayNoteServiceImpl service;
@@ -43,21 +54,23 @@ public class DayNoteServiceTests {
     @Test
     void testCreateDayNote() {
         // Arrange
-        DayNotePayload payload = new DayNotePayload(null, 1L, null, false, Instant.now(), Instant.now(), "Day Note");
-        DayNote entity = DayNote.builder().text("Day Note").build();
-        DayNote savedEntity = DayNote.builder().id(1L).text("Day Note").build();
-        DayNotePayload expectedPayload = new DayNotePayload(1L, 1L, null, false, Instant.now(), Instant.now(), "Day Note");
-        
-        when(mapper.toEntity(payload)).thenReturn(entity);
+        CreateDayNoteRequest request = new CreateDayNoteRequest(1L, null, false, "Day Note");
+        Day day = Day.builder().id(1L).build();
+        DayNote savedEntity = new DayNote();
+        savedEntity.setId(1L);
+        savedEntity.setText("Day Note");
+        DayNoteResponse expectedPayload = new DayNoteResponse(1L, 1L, null, false, Instant.now(), Instant.now(), "Day Note");
+
+        when(entityManager.getReference(Day.class, 1L)).thenReturn(day);
         when(repo.save(any(DayNote.class))).thenReturn(savedEntity);
         when(mapper.toPayload(savedEntity)).thenReturn(expectedPayload);
 
         // Act
-        DayNotePayload result = service.createDayNote(payload);
-        
+        DayNoteResponse result = service.createDayNote(request);
+
         // Assert
         assertEquals(expectedPayload, result);
-        verify(mapper, times(1)).toEntity(payload);
+        verify(entityManager, times(1)).getReference(Day.class, 1L);
         verify(repo, times(1)).save(any(DayNote.class));
         verify(mapper, times(1)).toPayload(savedEntity);
     }
@@ -66,42 +79,81 @@ public class DayNoteServiceTests {
     void testUpdateDayNote() {
         // Arrange
         Long id = 1L;
-        DayNotePayload payload = new DayNotePayload(id, 1L, null, false, Instant.now(), Instant.now(), "Updated Day Note");
-        DayNote existingEntity = DayNote.builder().id(id).text("Existing Day Note").build();
-        DayNote savedEntity = DayNote.builder().id(id).text("Updated Day Note").build();
-        DayNotePayload expectedPayload = new DayNotePayload(id, 1L, null, false, Instant.now(), Instant.now(), "Updated Day Note");
+        UpdateDayNoteRequest request = new UpdateDayNoteRequest(id, false, "Updated Day Note");
+        
+        // Create proper entity relationships for security validation
+        com.noslen.training_tracker.model.mesocycle.Mesocycle mesocycle = 
+            com.noslen.training_tracker.model.mesocycle.Mesocycle.builder()
+                .id(10L)
+                .userId(100L)
+                .build();
+                
+        com.noslen.training_tracker.model.day.Day day = 
+            com.noslen.training_tracker.model.day.Day.builder()
+                .id(5L)
+                .mesocycle(mesocycle)
+                .build();
+        
+        DayNote existingEntity = new DayNote();
+        existingEntity.setId(id);
+        existingEntity.setText("Day Note");
+        existingEntity.setDay(day);
+
+        DayNoteResponse expectedPayload = new DayNoteResponse(id, 1L, null, false, Instant.now(), Instant.now(), "Updated Day Note");
 
         when(repo.findById(id)).thenReturn(Optional.of(existingEntity));
-        when(repo.save(existingEntity)).thenReturn(savedEntity);
-        when(mapper.toPayload(savedEntity)).thenReturn(expectedPayload);
+        doNothing().when(userContext).validateUserAccess(100L);
+        when(repo.save(existingEntity)).thenReturn(existingEntity);
+        when(mapper.toPayload(existingEntity)).thenReturn(expectedPayload);
 
         // Act
-        DayNotePayload result = service.updateDayNote(id, payload);
+        DayNoteResponse result = service.updateDayNote(id, request);
 
         // Assert
         assertEquals(expectedPayload, result);
+        assertEquals("Updated Day Note", existingEntity.getText());
         verify(repo, times(1)).findById(id);
-        verify(mapper, times(1)).updateEntity(existingEntity, payload);
+        verify(userContext, times(1)).validateUserAccess(100L);
         verify(repo, times(1)).save(existingEntity);
-        verify(mapper, times(1)).toPayload(savedEntity);
+        verify(mapper, times(1)).toPayload(existingEntity);
     }
 
     @Test
     void testGetDayNote() {
         // Arrange
         Long id = 1L;
-        DayNote entity = DayNote.builder().id(id).text("Day Note").build();
-        DayNotePayload expectedPayload = new DayNotePayload(id, 1L, null, false, Instant.now(), Instant.now(), "Day Note");
+        
+        // Create proper entity relationships for security validation
+        com.noslen.training_tracker.model.mesocycle.Mesocycle mesocycle = 
+            com.noslen.training_tracker.model.mesocycle.Mesocycle.builder()
+                .id(10L)
+                .userId(100L)
+                .build();
+                
+        com.noslen.training_tracker.model.day.Day day = 
+            com.noslen.training_tracker.model.day.Day.builder()
+                .id(5L)
+                .mesocycle(mesocycle)
+                .build();
+        
+        DayNote entity = new DayNote();
+        entity.setId(id);
+        entity.setText("Day Note");
+        entity.setDay(day);
+        
+        DayNoteResponse expectedPayload = new DayNoteResponse(id, 1L, null, false, Instant.now(), Instant.now(), "Day Note");
         
         when(repo.findById(id)).thenReturn(Optional.of(entity));
+        doNothing().when(userContext).validateUserAccess(100L);
         when(mapper.toPayload(entity)).thenReturn(expectedPayload);
 
         // Act
-        DayNotePayload result = service.getDayNote(id);
-        
+        DayNoteResponse result = service.getDayNote(id);
+
         // Assert
         assertEquals(expectedPayload, result);
         verify(repo, times(1)).findById(id);
+        verify(userContext, times(1)).validateUserAccess(100L);
         verify(mapper, times(1)).toPayload(entity);
     }
 
@@ -109,23 +161,49 @@ public class DayNoteServiceTests {
     void testGetNotesByDayId() {
         // Arrange
         Long dayId = 1L;
-        List<DayNote> entities = new ArrayList<>();
-        entities.add(DayNote.builder().id(1L).text("Day Note 1").build());
-        entities.add(DayNote.builder().id(2L).text("Day Note 2").build());
         
-        List<DayNotePayload> expectedPayloads = new ArrayList<>();
-        expectedPayloads.add(new DayNotePayload(1L, dayId, null, false, Instant.now(), Instant.now(), "Day Note 1"));
-        expectedPayloads.add(new DayNotePayload(2L, dayId, null, false, Instant.now(), Instant.now(), "Day Note 2"));
+        // Create proper entity relationships for security validation
+        com.noslen.training_tracker.model.mesocycle.Mesocycle mesocycle = 
+            com.noslen.training_tracker.model.mesocycle.Mesocycle.builder()
+                .id(10L)
+                .userId(100L)
+                .build();
+                
+        com.noslen.training_tracker.model.day.Day day = 
+            com.noslen.training_tracker.model.day.Day.builder()
+                .id(dayId)
+                .mesocycle(mesocycle)
+                .build();
+        
+        List<DayNote> entities = new ArrayList<>();
+        DayNote entity1 = new DayNote();
+        entity1.setId(1L);
+        entity1.setText("Day Note 1");
+        entity1.setDay(day);
+        entities.add(entity1);
+        
+        DayNote entity2 = new DayNote();
+        entity2.setId(2L);
+        entity2.setText("Day Note 2");
+        entity2.setDay(day);
+        entities.add(entity2);
+        
+        List<DayNoteResponse> expectedPayloads = new ArrayList<>();
+        expectedPayloads.add(new DayNoteResponse(1L, dayId, null, false, Instant.now(), Instant.now(), "Day Note 1"));
+        expectedPayloads.add(new DayNoteResponse(2L, dayId, null, false, Instant.now(), Instant.now(), "Day Note 2"));
         
         when(repo.findByDay_Id(dayId)).thenReturn(entities);
+        doNothing().when(userContext).validateUserAccess(100L);
         when(mapper.toPayloadList(entities)).thenReturn(expectedPayloads);
 
         // Act
-        List<DayNotePayload> result = service.getNotesByDayId(dayId);
-        
+        List<DayNoteResponse> result = service.getNotesByDayId(dayId);
+
         // Assert
+        assertEquals(2, result.size());
         assertEquals(expectedPayloads, result);
         verify(repo, times(1)).findByDay_Id(dayId);
+        verify(userContext, times(1)).validateUserAccess(100L);
         verify(mapper, times(1)).toPayloadList(entities);
     }
     
@@ -144,11 +222,11 @@ public class DayNoteServiceTests {
     void testUpdateDayNoteNotFound() {
         // Arrange
         Long id = 1L;
-        DayNotePayload payload = new DayNotePayload(id, 1L, null, false, Instant.now(), Instant.now(), "Updated Day Note");
+        UpdateDayNoteRequest request = new UpdateDayNoteRequest(id, false, "Updated Day Note");
         when(repo.findById(id)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> service.updateDayNote(id, payload));
+        assertThrows(RuntimeException.class, () -> service.updateDayNote(id, request));
         verify(repo, times(1)).findById(id);
     }
 }

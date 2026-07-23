@@ -11,14 +11,9 @@ import com.noslen.training_tracker.enums.ExerciseType;
 import com.noslen.training_tracker.enums.MgSubType;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
+import lombok.*;
 
 @Getter
-@Builder
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,94 +21,66 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.ALWAYS)
 public class Exercise {
 
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     @JsonProperty("id")
     private Long id;
 
+    @Setter
     @Column(name = "name")
     @JsonProperty("name")
     private String name;
 
-    // TODO: change to MuscleGroup
+    @Setter
     @Column(name = "muscle_group_id")
     @JsonProperty("muscleGroupId")
     private Long muscleGroupId;
     
+    @Setter
     @Column(name = "youtube_id")
     @JsonProperty("youtubeId")
     private String youtubeId;
-    
+
+    @Setter
+    @Enumerated(EnumType.STRING)
     @Column(name = "exercise_type")
     @JsonProperty("exerciseType")
     private ExerciseType exerciseType;
     
+    @Setter
     @Column(name = "user_id")
     @JsonProperty("userId")
     private Long userId;
     
+    @Setter
     @Column(name = "created_at")
     @JsonProperty("createdAt")
     private Instant createdAt;
     
+    @Setter
     @Column(name = "updated_at")
     @JsonProperty("updatedAt")
     private Instant updatedAt;
     
+    @Setter
     @Column(name = "deleted_at")
     @JsonProperty("deletedAt")
     private Instant deletedAt;
-    
+
+    @Setter
+    @Enumerated(EnumType.STRING)
     @Column(name = "mg_sub_type")
     @JsonProperty("mgSubType")
     private MgSubType mgSubType;
     
+    @Setter
     @OneToMany(cascade = CascadeType.ALL)
     @JsonManagedReference(value = "exercisenote-exercise")
     @JoinColumn(name = "exercise_id")
     @JsonProperty("notes")
     private List<ExerciseNote> notes;
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setMuscleGroupId(Long muscleGroupId) {
-        this.muscleGroupId = muscleGroupId;
-    }
-
-    public void setExerciseType(ExerciseType exerciseType) {
-        this.exerciseType = exerciseType;
-    }
-
-    public void setYoutubeId(String youtubeId) {
-        this.youtubeId = youtubeId;
-    }
-
-    public void setMgSubType(MgSubType mgSubType) {
-        this.mgSubType = mgSubType;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public void setNotes(List<ExerciseNote> notes) {
-        this.notes = notes;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public void setDeletedAt(Instant deletedAt) {
-        this.deletedAt = deletedAt;
-    }
 
     @Override
     public boolean equals(Object o) {

@@ -1,9 +1,9 @@
 package com.noslen.training_tracker.mapper.day;
 
-import com.noslen.training_tracker.dto.day.DayExercisePayload;
-import com.noslen.training_tracker.dto.day.DayMuscleGroupPayload;
-import com.noslen.training_tracker.dto.day.DayNotePayload;
-import com.noslen.training_tracker.dto.day.DayPayload;
+import com.noslen.training_tracker.dto.day.response.DayExerciseResponse;
+import com.noslen.training_tracker.dto.day.response.DayMuscleGroupResponse;
+import com.noslen.training_tracker.dto.day.response.DayNoteResponse;
+import com.noslen.training_tracker.dto.day.response.DayResponse;
 import com.noslen.training_tracker.enums.ExerciseType;
 import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.enums.Unit;
@@ -11,7 +11,7 @@ import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.model.day.DayMuscleGroup;
 import com.noslen.training_tracker.model.day.DayNote;
-import com.noslen.training_tracker.model.muscle_group.MuscleGroup;
+import com.noslen.training_tracker.model.progression.MuscleGroup;
 import com.noslen.training_tracker.enums.MgName;
 import com.noslen.training_tracker.enums.MgSubType;
 import com.noslen.training_tracker.model.exercise.Exercise;
@@ -48,7 +48,7 @@ class DayMapperTest {
     @InjectMocks
     private DayMapper dayMapper;
 
-    private DayPayload samplePayload;
+    private DayResponse samplePayload;
     private Day sampleEntity;
     private Instant now;
 
@@ -58,11 +58,11 @@ class DayMapperTest {
         now = Instant.now();
 
         // Sample nested payloads
-        DayNotePayload notePayload = new DayNotePayload(1L, 1L, 1L, true, now, now, "Test note");
-        DayExercisePayload exercisePayload = new DayExercisePayload(1L, 1L, 1L, 1, 0, now, now, null, 1L, Collections.emptyList(), "active");
-        DayMuscleGroupPayload muscleGroupPayload = new DayMuscleGroupPayload(1L, 1L, 1L, 0, 0, 0, now, now, 3, "active");
+        DayNoteResponse notePayload = new DayNoteResponse(1L, 1L, 1L, true, now, now, "Test note");
+        DayExerciseResponse exercisePayload = new DayExerciseResponse(1L, 1L, 1L, 1, 0, now, now, null, 1L, Collections.emptyList(), "active");
+        DayMuscleGroupResponse muscleGroupPayload = new DayMuscleGroupResponse(1L, 1L, 1L, 0, 0, 0, now, now, 3, "active");
 
-        samplePayload = new DayPayload(
+        samplePayload = new DayResponse(
                 1L,
                 1L,
                 1L,
@@ -71,7 +71,7 @@ class DayMapperTest {
                 now,
                 70,
                 now,
-                "kgs",
+                "kg",
                 now,
                 "Test Day",
                 List.of(notePayload),
@@ -81,37 +81,38 @@ class DayMapperTest {
         );
 
         // Sample nested entities
-        DayNote noteEntity = DayNote.builder()
-                .id(1L)
-                .day(Day.builder().id(1L).build())
-                .noteId(1L)
-                .text("Test note")
-                .pinned(true)
-                .createdAt(now)
-                .updatedAt(now)
-                .build();
+        DayNote noteEntity = new DayNote();
+        noteEntity.setId(1L);
+        noteEntity.setDay(Day.builder().id(1L).build());
+        noteEntity.setNoteId(1L);
+        noteEntity.setText("Test note");
+        noteEntity.setPinned(true);
+        noteEntity.setCreatedAt(now);
+        noteEntity.setUpdatedAt(now);
+
+        Exercise exercise = new Exercise();
+        exercise.setId(1L);
+        exercise.setName("Test Exercise");
+        exercise.setMuscleGroupId(1L);
+        exercise.setYoutubeId("Test YouTube ID");
+        exercise.setExerciseType(ExerciseType.BARBELL);
+        exercise.setUserId(1L);
+        exercise.setCreatedAt(now);
+        exercise.setUpdatedAt(now);
+        exercise.setDeletedAt(now);
+        exercise.setMgSubType(MgSubType.VERTICAL);
+        ExerciseNote exerciseNote = new ExerciseNote();
+        exercise.setNotes(List.of(exerciseNote));
 
         DayExercise exerciseEntity = DayExercise.builder()
                 .id(1L)
                 .day(Day.builder().id(1L).build())
-                .exercise(Exercise.builder()
-                        .id(1L)
-                        .name("Test Exercise")
-                        .muscleGroupId(1L)
-                        .youtubeId("Test YouTube ID")
-                        .exerciseType(ExerciseType.BARBELL)
-                        .userId(1L)
-                        .createdAt(now)
-                        .updatedAt(now)
-                        .deletedAt(now)
-                        .mgSubType(MgSubType.VERTICAL)
-                        .notes(List.of(ExerciseNote.builder().build()))
-                        .build())
+                .exercise(exercise)
                 .position(1)
                 .jointPain(0)
                 .createdAt(now)
                 .updatedAt(now)
-                .muscleGroup(DayMuscleGroup.builder().id(1L).build())
+                .muscleGroup(new MuscleGroup(1L, MgName.CHEST, now, now))
                 .status(Status.READY)
                 .build();
 
@@ -129,7 +130,7 @@ class DayMapperTest {
                 .position(1)
                 .week(1)
                 .bodyweight(70.0)
-                .unit(Unit.KGS)
+                .unit(Unit.KG)
                 .bodyweightAt(now)
                 .createdAt(now)
                 .updatedAt(now)
@@ -141,15 +142,6 @@ class DayMapperTest {
 
     @Test
     void toEntity_WithValidPayload_ShouldReturnEntity() {
-        // Given
-        DayNote noteEntity = DayNote.builder().id(1L).build();
-        DayExercise exerciseEntity = DayExercise.builder().id(1L).build();
-        DayMuscleGroup muscleGroupEntity = DayMuscleGroup.builder().id(1L).build();
-
-        when(dayNoteMapper.toEntity(any(DayNotePayload.class))).thenReturn(noteEntity);
-        when(dayExerciseMapper.toEntity(any(DayExercisePayload.class))).thenReturn(exerciseEntity);
-        when(dayMuscleGroupMapper.toEntity(any(DayMuscleGroupPayload.class))).thenReturn(muscleGroupEntity);
-
         // When
         Day result = dayMapper.toEntity(samplePayload);
 
@@ -161,7 +153,7 @@ class DayMapperTest {
         assertEquals(samplePayload.position().intValue(), result.getPosition()); // DTO uses Long, Entity uses Integer
         assertEquals(samplePayload.week().intValue(), result.getWeek()); // DTO uses Long, Entity uses Integer
         assertEquals(samplePayload.bodyweight().doubleValue(), result.getBodyweight()); // DTO uses Integer, Entity uses Double
-        assertEquals(Unit.KGS, result.getUnit());
+        assertEquals(Unit.KG, result.getUnit());
         assertEquals(samplePayload.bodyweightAt(), result.getBodyweightAt());
         assertEquals(samplePayload.createdAt(), result.getCreatedAt());
         assertEquals(samplePayload.updatedAt(), result.getUpdatedAt());
@@ -187,8 +179,8 @@ class DayMapperTest {
     @Test
     void toEntity_WithEmptyCollections_ShouldHandleGracefully() {
         // Given
-        DayPayload payloadWithEmptyCollections = new DayPayload(
-                1L, 1L, 1L, 1L, now, now, 70, now, "kgs", now,
+        DayResponse payloadWithEmptyCollections = new DayResponse(
+                1L, 1L, 1L, 1L, now, now, 70, now, "kg", now,
                 "Test", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),"active"
         );
 
@@ -205,8 +197,8 @@ class DayMapperTest {
     @Test
     void toEntity_WithNullCollections_ShouldHandleGracefully() {
         // Given
-        DayPayload payloadWithNullCollections = new DayPayload(
-                1L, 1L, 1L, 1L, now, now, 70, now, "kgs", now,
+        DayResponse payloadWithNullCollections = new DayResponse(
+                1L, 1L, 1L, 1L, now, now, 70, now, "kg", now,
                 "Test", null, null, null,"active"
         );
 
@@ -223,16 +215,16 @@ class DayMapperTest {
     @Test
     void toPayload_WithValidEntity_ShouldReturnPayload() {
         // Given
-        DayNotePayload notePayload = new DayNotePayload(1L, 1L, 1L, true, now, now, "Test");
-        DayExercisePayload exercisePayload = new DayExercisePayload(1L, 1L, 1L, 1, 0, now, now, null, 1L, Collections.emptyList(), "active");
-        DayMuscleGroupPayload muscleGroupPayload = new DayMuscleGroupPayload(1L, 1L, 1L, 2,2,2, now, now, 2,"active");
+        DayNoteResponse notePayload = new DayNoteResponse(1L, 1L, 1L, true, now, now, "Test");
+        DayExerciseResponse exercisePayload = new DayExerciseResponse(1L, 1L, 1L, 1, 0, now, now, null, 1L, Collections.emptyList(), "active");
+        DayMuscleGroupResponse muscleGroupPayload = new DayMuscleGroupResponse(1L, 1L, 1L, 2, 2, 2, now, now, 2, "active");
 
         when(dayNoteMapper.toPayload(any(DayNote.class))).thenReturn(notePayload);
         when(dayExerciseMapper.toPayload(any(DayExercise.class))).thenReturn(exercisePayload);
         when(dayMuscleGroupMapper.toPayload(any(DayMuscleGroup.class))).thenReturn(muscleGroupPayload);
 
         // When
-        DayPayload result = dayMapper.toPayload(sampleEntity);
+        DayResponse result = dayMapper.toPayload(sampleEntity);
 
         // Then
         assertNotNull(result);
@@ -261,7 +253,7 @@ class DayMapperTest {
     @Test
     void toPayload_WithNullEntity_ShouldReturnNull() {
         // When
-        DayPayload result = dayMapper.toPayload(null);
+        DayResponse result = dayMapper.toPayload(null);
 
         // Then
         assertNull(result);
@@ -278,7 +270,7 @@ class DayMapperTest {
                 .position(1)
                 .week(1)
                 .bodyweight(70.0)
-                .unit(Unit.KGS)
+                .unit(Unit.KG)
                 .bodyweightAt(now)
                 .createdAt(now)
                 .updatedAt(now)
@@ -288,7 +280,7 @@ class DayMapperTest {
                 .build();
 
         // When
-        DayPayload result = dayMapper.toPayload(entityWithEmptyCollections);
+        DayResponse result = dayMapper.toPayload(entityWithEmptyCollections);
 
         // Then
         assertNotNull(result);
@@ -307,7 +299,7 @@ class DayMapperTest {
                 .position(1)
                 .week(1)
                 .bodyweight(70.0)
-                .unit(Unit.KGS)
+                .unit(Unit.KG)
                 .bodyweightAt(now)
                 .createdAt(now)
                 .updatedAt(now)
@@ -317,7 +309,7 @@ class DayMapperTest {
                 .build();
 
         // When
-        DayPayload result = dayMapper.toPayload(entityWithNullCollections);
+        DayResponse result = dayMapper.toPayload(entityWithNullCollections);
 
         // Then
         assertNotNull(result);
@@ -326,117 +318,4 @@ class DayMapperTest {
         assertEquals(Collections.emptyList(), result.muscleGroups()); // Mapper returns empty list, not null
     }
 
-    @Test
-    void updateEntity_WithValidData_ShouldUpdateMutableFields() {
-        // Given
-        Mesocycle mesocycle = Mesocycle.builder().id(1L).createdAt(now).updatedAt(now).build();
-        Day existingEntity = Day.builder()
-                .id(1L)
-                .mesocycle(mesocycle)
-                .label("Old Label")
-                .position(1)
-                .week(1)
-                .bodyweight(65.0)
-                .unit(Unit.LBS)
-                .bodyweightAt(now.minusSeconds(3600))
-                .createdAt(now.minusSeconds(7200))
-                .updatedAt(now.minusSeconds(3600))
-                .build();
-
-        DayPayload updatePayload = new DayPayload(
-                1L, 2L, 2L, 2L, now, now, 70, now, "kgs", now, "New Label", 
-                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "active"
-        );
-
-        // When
-        dayMapper.updateEntity(existingEntity, updatePayload);
-
-        // Then - updateEntity only updates mutable timestamp fields
-        assertEquals("Old Label", existingEntity.getLabel()); // Label is immutable, not updated
-        assertEquals(65.0, existingEntity.getBodyweight()); // Bodyweight is immutable, not updated
-        assertEquals(Unit.LBS, existingEntity.getUnit()); // Unit is immutable, not updated
-        assertNotNull(existingEntity.getUpdatedAt()); // Only updatedAt is modified
-
-        // Verify mesocycle relationship is preserved
-        assertNotNull(existingEntity.getMesocycle());
-        assertEquals(1L, existingEntity.getMesocycle().getId()); // Original mesocycle preserved
-    }
-
-    @Test
-    void updateEntity_WithNullPayload_ShouldNotCrash() {
-        // Given
-        Day existingEntity = Day.builder().id(1L).build();
-
-        // When & Then
-        assertDoesNotThrow(() -> dayMapper.updateEntity(existingEntity, null));
-    }
-
-    @Test
-    void updateEntity_WithNullEntity_ShouldNotCrash() {
-        // When & Then
-        assertDoesNotThrow(() -> dayMapper.updateEntity(null, samplePayload));
-    }
-
-    @Test
-    void mergeEntity_WithValidData_ShouldCreateNewEntityWithUpdatedFields() {
-        // Given
-        Mesocycle mesocycle = Mesocycle.builder().id(1L).createdAt(now).updatedAt(now).build();
-        Day existingEntity = Day.builder()
-                .id(1L)
-                .mesocycle(mesocycle)
-                .label("Old Label")
-                .position(1)
-                .week(1)
-                .bodyweight(65.0)
-                .unit(Unit.LBS)
-                .createdAt(now.minusSeconds(7200))
-                .build();
-
-        DayPayload updatePayload = new DayPayload(
-                1L, 2L, 2L, 2L, now, now, 70, now, "kgs", now, "New Label", 
-                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), "active"
-        );
-
-        // When
-        Day result = dayMapper.mergeEntity(existingEntity, updatePayload);
-
-        // Then
-        assertNotNull(result);
-        assertNotSame(existingEntity, result); // Should be a new instance
-        assertEquals(1L, result.getId());
-        assertNotNull(result.getMesocycle());
-        assertEquals(1L, result.getMesocycle().getId()); // Mesocycle is preserved from existing entity, not updated
-        assertEquals("New Label", result.getLabel());
-        assertEquals(2, (int) result.getPosition());
-        assertEquals(2, (int) result.getWeek());
-        assertEquals(70.0, result.getBodyweight());
-        assertEquals(Unit.KGS, result.getUnit());
-        assertEquals(now, result.getBodyweightAt());
-        assertEquals(now, result.getFinishedAt());
-        assertEquals(now.minusSeconds(7200), result.getCreatedAt()); // Preserved from existing
-        assertNotNull(result.getUpdatedAt());
-    }
-
-    @Test
-    void mergeEntity_WithNullPayload_ShouldReturnNull() {
-        // Given
-        Day existingEntity = Day.builder().id(1L).build();
-
-        // When
-        Day result = dayMapper.mergeEntity(existingEntity, null);
-
-        // Then
-        assertNotNull(result); // mergeEntity returns existing entity when payload is null
-        assertEquals(existingEntity, result);
-    }
-
-    @Test
-    void mergeEntity_WithNullEntity_ShouldReturnNull() {
-        // When
-        Day result = dayMapper.mergeEntity(null, samplePayload);
-
-        // Then
-        assertNotNull(result); // mergeEntity calls toEntity when existing is null
-        assertEquals(1L, result.getId());
-    }
 }

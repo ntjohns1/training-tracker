@@ -2,12 +2,14 @@ package com.noslen.training_tracker.service.day;
 
 import java.util.List;
 
-import com.noslen.training_tracker.dto.day.DayNotePayload;
+import com.noslen.training_tracker.dto.day.request.CreateDayNoteRequest;
+import com.noslen.training_tracker.dto.day.request.UpdateDayNoteRequest;
+import com.noslen.training_tracker.dto.day.response.DayNoteResponse;
 
 public interface DayNoteService {
 
-    DayNotePayload createDayNote(DayNotePayload dayNotePayload);
-    DayNotePayload updateDayNote(Long id, DayNotePayload dayNotePayload);
-    DayNotePayload getDayNote(Long id);
-    List<DayNotePayload> getNotesByDayId(Long dayId);
+    DayNoteResponse createDayNote(CreateDayNoteRequest request);
+    DayNoteResponse updateDayNote(Long id, UpdateDayNoteRequest request);
+    DayNoteResponse getDayNote(Long id);
+    List<DayNoteResponse> getNotesByDayId(Long dayId);
 }

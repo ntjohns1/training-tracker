@@ -1,0 +1,17 @@
+package com.noslen.training_tracker.dto.day.response;
+
+import java.time.Instant;
+
+public record DayMuscleGroupResponse(
+        Long id,
+        Long dayId,
+        Long muscleGroupId,
+        Integer pump,
+        Integer soreness,
+        Integer workload,
+        Instant createdAt,
+        Instant updatedAt,
+        Integer recommendedSets,
+        String status) {
+
+}
