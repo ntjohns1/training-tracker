@@ -21,6 +21,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -63,19 +64,33 @@ public class MesocycleProgressionServiceImpl implements MesocycleProgressionServ
             Long currentDmgId = dmgFinish.id();
 
             DayMuscleGroupResponse currentDmg = dayMuscleGroupService.getDayMuscleGroup(currentDmgId);
-            DayMuscleGroupResponse previousDmg =
-                    dayMuscleGroupService.getMostRecentWithSameMuscleGroup(currentDmgId);
+
+            // Locate next week's matching DayMuscleGroup (the week AFTER the one just completed).
+            // Absent on the final week of the mesocycle - there is simply nothing left to program,
+            // which is a normal end-state, not an error.
+            Optional<DayMuscleGroupResponse> nextDmgOpt =
+                    dayMuscleGroupService.findDayMuscleGroupForNextWeek(currentDmgId);
+            if (nextDmgOpt.isEmpty()) {
+                continue;
+            }
+            DayMuscleGroupResponse nextDmg = nextDmgOpt.get();
+
+            // Absent in week 1: there is no earlier week whose feedback we could progress from.
+            Optional<DayMuscleGroupResponse> previousDmgOpt =
+                    dayMuscleGroupService.findMostRecentWithSameMuscleGroup(currentDmgId);
 
             // Deload weeks ignore feedback and hold the prior volume (their own light rules apply);
-            // normal weeks compute recommended sets from the previous week's feedback.
-            int recommendedSets = nextWeekIsDeload
-                    ? deloadSetCount(previousDmg)
-                    : computeRecommendedSets(currentDmg, previousDmg);
-
-            // Locate next week's matching DayMuscleGroup (the week AFTER the one just completed)
-            // and mark it programmed.
-            DayMuscleGroupResponse nextDmg =
-                    dayMuscleGroupService.getDayMuscleGroupForNextWeek(currentDmgId);
+            // normal weeks compute recommended sets from the previous week's feedback. With no
+            // previous week (week 1) we hold the volume just performed, matching RP's behaviour.
+            int recommendedSets;
+            if (nextWeekIsDeload) {
+                recommendedSets = previousDmgOpt.map(this::deloadSetCount)
+                        .orElseGet(() -> setCountFor(currentDmg));
+            } else if (previousDmgOpt.isEmpty()) {
+                recommendedSets = setCountFor(currentDmg);
+            } else {
+                recommendedSets = computeRecommendedSets(currentDmg, previousDmgOpt.get());
+            }
 
             // Idempotency: Kafka delivers at least once, so reprocessing an already-programmed
             // next week must be a no-op.
@@ -112,10 +127,14 @@ public class MesocycleProgressionServiceImpl implements MesocycleProgressionServ
 
     /** Deload volume: hold the previous week's set count (deloads drop intensity, not volume). */
     private int deloadSetCount(DayMuscleGroupResponse previousDmg) {
-        Integer previousSetCount =
-                exerciseSetService.countExerciseSetsByMuscleGroupId(previousDmg.dayId(),
-                                                                    previousDmg.muscleGroupId());
-        return previousSetCount == null ? 0 : previousSetCount;
+        return setCountFor(previousDmg);
+    }
+
+    /** Sets actually programmed for this muscle group on the given day (the "hold" volume). */
+    private int setCountFor(DayMuscleGroupResponse dmg) {
+        Integer count = exerciseSetService.countExerciseSetsByMuscleGroupId(dmg.dayId(),
+                                                                           dmg.muscleGroupId());
+        return count == null ? 0 : count;
     }
 
     /** Last achieved weight/reps per exercise from the completed day. */
@@ -147,9 +166,10 @@ public class MesocycleProgressionServiceImpl implements MesocycleProgressionServ
     @Override
     public int calculateRecommendedSets(Long dayMuscleGroupId) {
         DayMuscleGroupResponse currentDmg = dayMuscleGroupService.getDayMuscleGroup(dayMuscleGroupId);
-        DayMuscleGroupResponse previousDmg =
-                dayMuscleGroupService.getMostRecentWithSameMuscleGroup(dayMuscleGroupId);
-        return computeRecommendedSets(currentDmg, previousDmg);
+        // Week 1 has no previous week to progress from: hold the volume just performed.
+        return dayMuscleGroupService.findMostRecentWithSameMuscleGroup(dayMuscleGroupId)
+                .map(previousDmg -> computeRecommendedSets(currentDmg, previousDmg))
+                .orElseGet(() -> setCountFor(currentDmg));
     }
 
     /**

@@ -5,6 +5,8 @@ import com.noslen.training_tracker.dto.mesocycle.response.MesocycleResponse;
 import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.model.day.DayMuscleGroup;
+import com.noslen.training_tracker.model.day.ExerciseSet;
+import com.noslen.training_tracker.enums.SetType;
 import com.noslen.training_tracker.model.exercise.Exercise;
 import com.noslen.training_tracker.model.mesocycle.MesoTemplate;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
@@ -29,7 +31,15 @@ import java.util.UUID;
  */
 @Component
 public class MesocycleFactory {
-    
+
+    /**
+     * Week 1 is seeded with a starting number of sets per exercise so the first workout is
+     * loggable; later weeks are programmed by the progression engine once the prior week is
+     * completed. Matches the captured RP behaviour (week 1 ships 2 sets per exercise, later
+     * weeks start empty).
+     */
+    private static final int FIRST_WEEK_SETS_PER_EXERCISE = 2;
+
 //    TODO: use services or EntityManager instead of repos for all instance
     private final ExerciseRepo exerciseRepo;
     private final DayMuscleGroupRepo dayMuscleGroupRepo;
@@ -115,11 +125,14 @@ public class MesocycleFactory {
             return allDays; // Return empty list
         }
         
+        Unit unit = stringToUnit(request.unit());
+
         // Create days for each week
         for (int week = 1; week <= request.weeks(); week++) {
+            boolean firstWeek = (week == 1);
             for (int dayIndex = 0; dayIndex < dayPatterns.size(); dayIndex++) {
                 CreateMesocycleRequest.DayRequest dayRequest = dayPatterns.get(dayIndex);
-                
+
                 // Create Day entity using builder
                 Day day = Day.builder()
                         .mesocycle(mesocycle)
@@ -131,8 +144,10 @@ public class MesocycleFactory {
 
                 // Build the nested entities against THIS day and populate its collections in place,
                 // so the persisted graph shares one Day instance (mappedBy back-references resolve).
-                List<DayExercise> dayExercises = createDayExercisesForDay(day, dayRequest, now);
-                Set<DayMuscleGroup> dayMuscleGroups = createDayMuscleGroupsForDay(day, dayExercises, now);
+                List<DayExercise> dayExercises =
+                        createDayExercisesForDay(day, dayRequest, now, firstWeek, unit);
+                Set<DayMuscleGroup> dayMuscleGroups =
+                        createDayMuscleGroupsForDay(day, dayExercises, now, firstWeek);
 
                 day.getExercises().addAll(dayExercises);
                 day.getMuscleGroups().addAll(dayMuscleGroups);
@@ -168,7 +183,8 @@ public class MesocycleFactory {
         return progressions;
     }
     
-    private List<DayExercise> createDayExercisesForDay(Day day, CreateMesocycleRequest.DayRequest dayRequest, Instant now) {
+    private List<DayExercise> createDayExercisesForDay(Day day, CreateMesocycleRequest.DayRequest dayRequest,
+                                                       Instant now, boolean firstWeek, Unit unit) {
         List<DayExercise> dayExercises = new ArrayList<>();
         for (int i = 0; i < dayRequest.exercises().size(); i++) {
             CreateMesocycleRequest.DayExerciseRequest exerciseRequest = dayRequest.exercises().get(i);
@@ -191,12 +207,35 @@ public class MesocycleFactory {
                     .updatedAt(now)
                     .build();
 
+            // Week 1 ships with starting sets so the first workout can be logged; later weeks
+            // are filled in by the progression engine after the previous week is completed.
+            if (firstWeek) {
+                dayExercise.getSets().addAll(createStartingSets(dayExercise, now, unit));
+            }
+
             dayExercises.add(dayExercise);
         }
         return dayExercises;
     }
+
+    /** The starting sets attached to each week-1 exercise (no targets yet - the user logs them). */
+    private List<ExerciseSet> createStartingSets(DayExercise dayExercise, Instant now, Unit unit) {
+        List<ExerciseSet> sets = new ArrayList<>();
+        for (int position = 0; position < FIRST_WEEK_SETS_PER_EXERCISE; position++) {
+            ExerciseSet set = new ExerciseSet();
+            set.setDayExercise(dayExercise);
+            set.setPosition(position);
+            set.setSetType(SetType.REGULAR);
+            set.setUnit(unit);
+            set.setCreatedAt(now);
+            set.setStatus(Status.PENDING_WEIGHT);
+            sets.add(set);
+        }
+        return sets;
+    }
     
-    private Set<DayMuscleGroup> createDayMuscleGroupsForDay(Day day, List<DayExercise> dayExercises, Instant now) {
+    private Set<DayMuscleGroup> createDayMuscleGroupsForDay(Day day, List<DayExercise> dayExercises,
+                                                            Instant now, boolean firstWeek) {
         Set<DayMuscleGroup> dayMuscleGroups = new HashSet<>();
         Set<Long> processedMuscleGroups = new HashSet<>();
 
@@ -220,8 +259,9 @@ public class MesocycleFactory {
                     .updatedAt(now)
                     .build();
 
-            // Use setter for status since it has @Setter annotation
-            dayMuscleGroup.setStatus(Status.UNPROGRAMMED);
+            // Week 1 already has its sets, so it is programmed from the start; later weeks stay
+            // unprogrammed until the progression engine fills them in.
+            dayMuscleGroup.setStatus(firstWeek ? Status.PROGRAMMED : Status.UNPROGRAMMED);
 
             dayMuscleGroups.add(dayMuscleGroup);
         }

@@ -82,9 +82,9 @@ class ProgressionFlowIntegrationTest {
         Long muscleGroupId = week1Dmg.muscleGroupId();
         Long week1ExerciseId = week1Day.exercises().get(0).id();
 
-        // 2. Week 1 (the "previous" week) was performed: 2 sets, low-risk feedback, marked complete.
-        exerciseSetService.createExerciseSet(new CreateExerciseSetRequest(week1ExerciseId, 0, "regular", null, null, null, null, now));
-        exerciseSetService.createExerciseSet(new CreateExerciseSetRequest(week1ExerciseId, 1, "regular", null, null, null, null, now));
+        // 2. Week 1 (the "previous" week) was performed. It ships with 2 seeded sets from the
+        // factory, so we only record the low-risk feedback and mark it complete.
+        assertEquals(2, exerciseSetService.getExerciseSetsByDayExerciseId(week1ExerciseId).size());
         dayExerciseService.updateDayExercise(week1ExerciseId,
                 new UpdateDayExerciseRequest(week1ExerciseId, null, null, null, 0, now, null, null, "complete"));
         dayMuscleGroupService.updateDayMuscleGroup(week1Dmg.id(),
@@ -115,5 +115,88 @@ class ProgressionFlowIntegrationTest {
                 exerciseSetService.getExerciseSetsByDayExerciseId(week3ExerciseId);
         assertEquals(3, week3Sets.size());
         assertTrue(week3Sets.stream().allMatch(s -> "programmed".equals(programmed.status())));
+    }
+
+    /**
+     * Week 1 has no earlier week to progress from. This used to throw
+     * ("Previous DayMuscleGroup not found"), poisoning the Kafka listener; it must now degrade
+     * to holding the volume just performed.
+     */
+    @Test
+    void completingWeekOneProgramsWeekTwoWithNoPreviousWeek() {
+        Instant now = Instant.now();
+
+        CreateMesocycleRequest request = new CreateMesocycleRequest(
+                "Week One Test", 4,
+                List.of(
+                        new CreateMesocycleRequest.DayRequest("Push",
+                                List.of(new CreateMesocycleRequest.DayExerciseRequest(1L))),
+                        new CreateMesocycleRequest.DayRequest("Pull",
+                                List.of(new CreateMesocycleRequest.DayExerciseRequest(2L)))
+                ),
+                "lb", null, null, null);
+        Long mesoId = mesocycleService.createMesocycle(request).id();
+
+        CurrentMesoResponse meso = mesocycleService.getCurrentMeso(mesoId);
+        DayResponse week1Day = meso.weeks().get(0).days().get(0);
+        DayResponse week2Day = meso.weeks().get(1).days().get(0);
+        DayMuscleGroupResponse week1Dmg = week1Day.muscleGroups().get(0);
+        DayMuscleGroupResponse week2Dmg = week2Day.muscleGroups().get(0);
+        Long week1ExerciseId = week1Day.exercises().get(0).id();
+
+        // Week 1 ships loggable: seeded sets, muscle group already programmed.
+        assertEquals(2, exerciseSetService.getExerciseSetsByDayExerciseId(week1ExerciseId).size());
+        assertEquals("programmed", week1Dmg.status());
+
+        // Finish the FIRST week (0-indexed week 0) - no previous week exists.
+        FinishDayRequest finish = new FinishDayRequest(
+                week1Day.id(), mesoId, 0, 1, now, now, null, null, "lb", now, null,
+                List.of(), List.of(),
+                List.of(new FinishDayRequest.DayMuscleGroupFinishRequest(
+                        week1Dmg.id(), week1Day.id(), week1Dmg.muscleGroupId(),
+                        1, 1, 1, now, now, null, "complete")),
+                "pendingConfirmation");
+
+        progressionService.processCompletedDayandProgramNext(finish);
+
+        // Week 2 is programmed, holding week 1's 2 sets (no previous feedback to progress from).
+        DayMuscleGroupResponse programmed = dayMuscleGroupService.getDayMuscleGroup(week2Dmg.id());
+        assertEquals("programmed", programmed.status());
+        assertEquals(2, programmed.recommendedSets());
+
+        Long week2ExerciseId = week2Day.exercises().get(0).id();
+        assertEquals(2, exerciseSetService.getExerciseSetsByDayExerciseId(week2ExerciseId).size());
+    }
+
+    /** Finishing the final week has no next week to program: it must no-op, not throw. */
+    @Test
+    void completingTheFinalWeekIsANoOp() {
+        Instant now = Instant.now();
+
+        CreateMesocycleRequest request = new CreateMesocycleRequest(
+                "Final Week Test", 4,
+                List.of(
+                        new CreateMesocycleRequest.DayRequest("Push",
+                                List.of(new CreateMesocycleRequest.DayExerciseRequest(1L))),
+                        new CreateMesocycleRequest.DayRequest("Pull",
+                                List.of(new CreateMesocycleRequest.DayExerciseRequest(2L)))
+                ),
+                "lb", null, null, null);
+        Long mesoId = mesocycleService.createMesocycle(request).id();
+
+        CurrentMesoResponse meso = mesocycleService.getCurrentMeso(mesoId);
+        DayResponse lastWeekDay = meso.weeks().get(3).days().get(0);
+        DayMuscleGroupResponse lastDmg = lastWeekDay.muscleGroups().get(0);
+
+        FinishDayRequest finish = new FinishDayRequest(
+                lastWeekDay.id(), mesoId, 3, 1, now, now, null, null, "lb", now, null,
+                List.of(), List.of(),
+                List.of(new FinishDayRequest.DayMuscleGroupFinishRequest(
+                        lastDmg.id(), lastWeekDay.id(), lastDmg.muscleGroupId(),
+                        1, 1, 1, now, now, null, "complete")),
+                "pendingConfirmation");
+
+        // Must not throw - there is simply no following week to program.
+        progressionService.processCompletedDayandProgramNext(finish);
     }
 }

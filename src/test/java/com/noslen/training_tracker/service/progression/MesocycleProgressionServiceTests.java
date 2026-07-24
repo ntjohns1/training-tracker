@@ -22,6 +22,7 @@ import com.noslen.training_tracker.service.day.ExerciseSetService;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -91,9 +92,10 @@ public class MesocycleProgressionServiceTests {
     private void stubHappyPath(DayMuscleGroupResponse current, DayMuscleGroupResponse previous,
                                Integer maxJointPain, Integer previousSetCount) {
         when(dayMuscleGroupService.getDayMuscleGroup(CURRENT_DMG_ID)).thenReturn(current);
-        when(dayMuscleGroupService.getMostRecentWithSameMuscleGroup(CURRENT_DMG_ID)).thenReturn(previous);
-        when(dayMuscleGroupService.getDayMuscleGroupForNextWeek(CURRENT_DMG_ID))
-                .thenReturn(dmg(NEXT_DMG_ID, 110L, null, null, null));
+        when(dayMuscleGroupService.findMostRecentWithSameMuscleGroup(CURRENT_DMG_ID))
+                .thenReturn(Optional.of(previous));
+        when(dayMuscleGroupService.findDayMuscleGroupForNextWeek(CURRENT_DMG_ID))
+                .thenReturn(Optional.of(dmg(NEXT_DMG_ID, 110L, null, null, null)));
         when(dayExerciseService.getDayExerciseMaxJointPain(previous.dayId(), previous.muscleGroupId()))
                 .thenReturn(maxJointPain);
         when(exerciseSetService.countExerciseSetsByMuscleGroupId(previous.dayId(), previous.muscleGroupId()))
@@ -173,14 +175,19 @@ public class MesocycleProgressionServiceTests {
         }
 
         @Test
-        @DisplayName("propagates RuntimeException when previous day muscle group is not found")
-        void previousDmgNotFound() {
+        @DisplayName("week 1 (no previous week) holds the volume just performed instead of throwing")
+        void previousDmgAbsentHoldsCurrentVolume() {
             when(dayMuscleGroupService.getDayMuscleGroup(CURRENT_DMG_ID))
                     .thenReturn(dmg(CURRENT_DMG_ID, CURRENT_DAY_ID, null, 1, null));
-            when(dayMuscleGroupService.getMostRecentWithSameMuscleGroup(CURRENT_DMG_ID))
-                    .thenThrow(new RuntimeException("Previous DayMuscleGroup not found for: " + CURRENT_DMG_ID));
+            when(dayMuscleGroupService.findMostRecentWithSameMuscleGroup(CURRENT_DMG_ID))
+                    .thenReturn(Optional.empty());
+            when(exerciseSetService.countExerciseSetsByMuscleGroupId(CURRENT_DAY_ID, MUSCLE_GROUP_ID))
+                    .thenReturn(2);
 
-            assertThrows(RuntimeException.class, () -> service.calculateRecommendedSets(CURRENT_DMG_ID));
+            int result = service.calculateRecommendedSets(CURRENT_DMG_ID);
+
+            // No previous week to compare against -> hold this week's 2 sets.
+            assertEquals(2, result);
         }
     }
 
@@ -209,7 +216,7 @@ public class MesocycleProgressionServiceTests {
             service.processCompletedDayandProgramNext(finishDayRequest(List.of(dmgFinish(CURRENT_DMG_ID))));
 
             verify(dayMuscleGroupService).getDayMuscleGroup(CURRENT_DMG_ID);
-            verify(dayMuscleGroupService).getMostRecentWithSameMuscleGroup(CURRENT_DMG_ID);
+            verify(dayMuscleGroupService).findMostRecentWithSameMuscleGroup(CURRENT_DMG_ID);
         }
 
         @Test

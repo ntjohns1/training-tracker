@@ -283,7 +283,12 @@ class MesocycleFactoryIntegrationTest {
                 for (DayMuscleGroup dayMuscleGroup : day.getMuscleGroups()) {
                     assertThat(dayMuscleGroup.getDay().getId()).isEqualTo(day.getId());
                     assertThat(dayMuscleGroup.getMuscleGroup()).isNotNull();
-                    assertThat(dayMuscleGroup.getStatus()).isEqualTo(Status.UNPROGRAMMED);
+                    // Week 1 ships programmed (it has starting sets); later weeks wait for the
+                    // progression engine to fill them in.
+                    assertThat(dayMuscleGroup.getStatus()).isEqualTo(
+                            day.getWeek() != null && day.getWeek() == 1
+                                    ? Status.PROGRAMMED
+                                    : Status.UNPROGRAMMED);
                     assertThat(dayMuscleGroup.getCreatedAt()).isNotNull();
                     assertThat(dayMuscleGroup.getUpdatedAt()).isNotNull();
 

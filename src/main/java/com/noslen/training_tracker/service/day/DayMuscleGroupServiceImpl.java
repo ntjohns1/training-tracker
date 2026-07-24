@@ -163,6 +163,18 @@ public class DayMuscleGroupServiceImpl implements DayMuscleGroupService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Optional<DayMuscleGroupResponse> findMostRecentWithSameMuscleGroup(Long currentDmgId) {
+        return repo.findMostRecentWithSameMuscleGroup(currentDmgId).map(mapper::toPayload);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<DayMuscleGroupResponse> findDayMuscleGroupForNextWeek(Long currentDmgId) {
+        return repo.findNextDayMuscleGroupForNextWeek(currentDmgId).map(mapper::toPayload);
+    }
+
+    @Override
     public DayMuscleGroupResponse getDayMuscleGroupAt(Integer week, Integer position,
             Long muscleGroupId) {
         Optional<DayMuscleGroup> dayMuscleGroupOpt =
