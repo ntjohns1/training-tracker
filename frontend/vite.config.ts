@@ -9,12 +9,19 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      includeAssets: ['icon.svg'],
       manifest: {
         name: 'Training Tracker',
         short_name: 'Training',
+        description: 'Mesocycle-based hypertrophy training tracker',
         theme_color: '#e03131',
         background_color: '#1a1b1e',
         display: 'standalone',
+        start_url: '/',
+        icons: [
+          { src: 'icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
+          { src: 'icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'maskable' },
+        ],
       },
     }),
   ],

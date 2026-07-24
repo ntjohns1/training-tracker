@@ -139,7 +139,16 @@ public class MesocycleMapper {
                 entity.getLastWorkoutFinishedAt(),
                 entity.getLastWorkoutSkippedAt(),
                 entity.getLastWorkoutPartialedAt(),
-                entity.getWeeks() != null ? entity.getWeeks().size() : null, // Convert List<Day> to count
+                // getWeeks() is a flat List<Day> across all weeks; the week count is the number of
+                // distinct week numbers (NOT the day count).
+                entity.getWeeks() != null
+                        ? (int) entity.getWeeks().stream()
+                            .filter(day -> day != null)
+                            .map(Day::getWeek)
+                            .filter(w -> w != null)
+                            .distinct()
+                            .count()
+                        : null,
                 entity.getNotes() != null ? 
                     entity.getNotes().stream()
                         .map(mesoNoteMapper::toPayload)

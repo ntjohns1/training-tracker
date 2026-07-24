@@ -4,6 +4,7 @@ import com.noslen.training_tracker.dto.mesocycle.response.MesoNoteResponse;
 import com.noslen.training_tracker.dto.mesocycle.response.MesocycleResponse;
 import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.enums.Unit;
+import com.noslen.training_tracker.model.day.Day;
 import com.noslen.training_tracker.model.mesocycle.MesoNote;
 import com.noslen.training_tracker.model.mesocycle.MesoTemplate;
 import com.noslen.training_tracker.model.mesocycle.Mesocycle;
@@ -189,19 +190,23 @@ class MesocycleMapperTest {
     }
 
     @Test
-    void toPayload_WithWeeksCount_ShouldReturnCorrectCount() {
-        // Given
+    void toPayload_WithWeeksCount_ShouldReturnDistinctWeekCount() {
+        // Given: 4 Days spanning 3 distinct week numbers (weeks is a flat List<Day>).
         Mesocycle entityWithWeeks = Mesocycle.builder()
                 .id(1L)
                 .mesocycleKey("test-key")
-                .weeks(Arrays.asList(null, null, null)) // 3 weeks
+                .weeks(Arrays.asList(
+                        Day.builder().week(1).position(1).build(),
+                        Day.builder().week(1).position(2).build(),
+                        Day.builder().week(2).position(1).build(),
+                        Day.builder().week(3).position(1).build()))
                 .notes(Collections.emptyList())
                 .build();
 
         // When
         MesocycleResponse result = mapper.toPayload(entityWithWeeks);
 
-        // Then
+        // Then: 3 distinct weeks, not 4 days
         assertNotNull(result);
         assertEquals(3, result.weeks());
         verifyNoInteractions(mesoNoteMapper);
