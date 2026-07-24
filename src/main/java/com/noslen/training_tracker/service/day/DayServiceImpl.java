@@ -2,6 +2,8 @@ package com.noslen.training_tracker.service.day;
 
 import com.noslen.training_tracker.dto.day.request.CreateDayRequest;
 import com.noslen.training_tracker.dto.day.request.FinishDayRequest;
+import com.noslen.training_tracker.dto.day.request.UpdateDayExerciseRequest;
+import com.noslen.training_tracker.dto.day.request.UpdateDayMuscleGroupRequest;
 import com.noslen.training_tracker.dto.day.request.UpdateDayRequest;
 import com.noslen.training_tracker.dto.day.response.DayResponse;
 import com.noslen.training_tracker.event.DayCompletedEvent;
@@ -30,14 +32,19 @@ public class DayServiceImpl implements DayService {
     private final DayFactory dayFactory;
     private final UserContext userContext;
     private final ApplicationEventPublisher eventPublisher;
+    private final DayExerciseService dayExerciseService;
+    private final DayMuscleGroupService dayMuscleGroupService;
 
     public DayServiceImpl(DayRepo repo, DayMapper dayMapper, DayFactory dayFactory,
-            UserContext userContext, ApplicationEventPublisher eventPublisher) {
+            UserContext userContext, ApplicationEventPublisher eventPublisher,
+            DayExerciseService dayExerciseService, DayMuscleGroupService dayMuscleGroupService) {
         this.repo = repo;
         this.dayMapper = dayMapper;
         this.dayFactory = dayFactory;
         this.userContext = userContext;
         this.eventPublisher = eventPublisher;
+        this.dayExerciseService = dayExerciseService;
+        this.dayMuscleGroupService = dayMuscleGroupService;
     }
 
     @Override
@@ -168,6 +175,11 @@ public class DayServiceImpl implements DayService {
         userContext.validateUserAccess(existingDay.getMesocycle()
                                                .getUserId());
 
+        // Persist the feedback carried in the finish payload so progression (which reads the
+        // DayMuscleGroup/DayExercise rows) sees consistent state. jointPain per exercise;
+        // pump/soreness/workload per muscle group. Values are null-guarded in the update services.
+        persistFinishFeedback(finishDayRequest);
+
         // Mark day as completed by setting finishedAt timestamp
         existingDay.setFinishedAt(Instant.now());
 
@@ -183,5 +195,26 @@ public class DayServiceImpl implements DayService {
         return dayMapper.toPayload(savedDay);
     }
 
+    /** Writes the joint-pain and pump/soreness/workload feedback from a finish payload to the DB. */
+    private void persistFinishFeedback(FinishDayRequest finishDayRequest) {
+        if (finishDayRequest.exercises() != null) {
+            for (FinishDayRequest.DayExerciseFinishRequest ex : finishDayRequest.exercises()) {
+                if (ex.id() != null && ex.jointPain() != null) {
+                    dayExerciseService.updateDayExercise(ex.id(),
+                            new UpdateDayExerciseRequest(ex.id(), null, null, null, ex.jointPain(),
+                                    null, null, null, ex.status()));
+                }
+            }
+        }
+        if (finishDayRequest.muscleGroups() != null) {
+            for (FinishDayRequest.DayMuscleGroupFinishRequest dmg : finishDayRequest.muscleGroups()) {
+                if (dmg.id() != null) {
+                    dayMuscleGroupService.updateDayMuscleGroup(dmg.id(),
+                            new UpdateDayMuscleGroupRequest(dmg.id(), null, null, dmg.pump(),
+                                    dmg.soreness(), dmg.workload(), null, null, dmg.status()));
+                }
+            }
+        }
+    }
 
 }

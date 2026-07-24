@@ -4,6 +4,7 @@ import com.noslen.training_tracker.dto.day.request.CreateExerciseSetRequest;
 import com.noslen.training_tracker.dto.day.request.UpdateExerciseSetRequest;
 import com.noslen.training_tracker.dto.day.response.ExerciseSetResponse;
 import com.noslen.training_tracker.enums.SetType;
+import com.noslen.training_tracker.enums.Status;
 import com.noslen.training_tracker.mapper.day.ExerciseSetMapper;
 import com.noslen.training_tracker.model.day.DayExercise;
 import com.noslen.training_tracker.model.day.ExerciseSet;
@@ -88,6 +89,19 @@ public class ExerciseSetServiceImpl implements ExerciseSetService {
         }
         if (exerciseSetRequest.reps() != null) {
             existing.setReps(exerciseSetRequest.reps());
+        }
+
+        // Logged state (LOG checkbox): "complete" stamps finishedAt, anything else clears it.
+        if (exerciseSetRequest.status() != null) {
+            Status status = EnumConverter.stringToEnum(Status.class, exerciseSetRequest.status());
+            existing.setStatus(status);
+            if (status == Status.COMPLETE) {
+                existing.setFinishedAt(exerciseSetRequest.finishedAt() != null
+                        ? exerciseSetRequest.finishedAt()
+                        : Instant.now());
+            } else {
+                existing.setFinishedAt(null);
+            }
         }
 
         // Save updated entity and convert back to payload

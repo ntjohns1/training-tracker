@@ -100,7 +100,7 @@ public class ExerciseSetServiceTests {
                 .day(day)
                 .build();
         
-        UpdateExerciseSetRequest request = new UpdateExerciseSetRequest(105.0f, 12, Instant.now());
+        UpdateExerciseSetRequest request = new UpdateExerciseSetRequest(105.0f, 12, null, null);
 
         ExerciseSet existingEntity = new ExerciseSet();
         existingEntity.setId(id);
@@ -126,6 +126,72 @@ public class ExerciseSetServiceTests {
         verify(userContext, times(1)).validateUserAccess(100L);
         verify(repo, times(1)).save(existingEntity);
         verify(mapper, times(1)).toPayload(existingEntity);
+    }
+
+    @Test
+    void updateExerciseSet_LogStampsFinishedAt() {
+        // Arrange — logging a set: status "complete" should stamp finishedAt + set status
+        Long id = 1L;
+        com.noslen.training_tracker.model.mesocycle.Mesocycle mesocycle =
+            com.noslen.training_tracker.model.mesocycle.Mesocycle.builder().id(10L).userId(100L).build();
+        com.noslen.training_tracker.model.day.Day day =
+            com.noslen.training_tracker.model.day.Day.builder().id(5L).mesocycle(mesocycle).build();
+        com.noslen.training_tracker.model.day.DayExercise dayExercise =
+            com.noslen.training_tracker.model.day.DayExercise.builder().id(3L).day(day).build();
+
+        ExerciseSet existingEntity = new ExerciseSet();
+        existingEntity.setId(id);
+        existingEntity.setDayExercise(dayExercise);
+
+        UpdateExerciseSetRequest request = new UpdateExerciseSetRequest(100.0f, 8, null, "complete");
+
+        when(repo.findById(id)).thenReturn(Optional.of(existingEntity));
+        doNothing().when(userContext).validateUserAccess(100L);
+        when(repo.save(existingEntity)).thenReturn(existingEntity);
+        when(mapper.toPayload(existingEntity)).thenReturn(
+            new ExerciseSetResponse(id, 3L, 1, "regular", 100.0f, null, null, null, 8, null, null,
+                                    "kg", Instant.now(), Instant.now(), "complete"));
+
+        // Act
+        service.updateExerciseSet(id, request);
+
+        // Assert — finishedAt stamped, status COMPLETE
+        assertEquals(com.noslen.training_tracker.enums.Status.COMPLETE, existingEntity.getStatus());
+        org.junit.jupiter.api.Assertions.assertNotNull(existingEntity.getFinishedAt());
+    }
+
+    @Test
+    void updateExerciseSet_UnlogClearsFinishedAt() {
+        // Arrange — unlogging: any non-complete status clears finishedAt
+        Long id = 1L;
+        com.noslen.training_tracker.model.mesocycle.Mesocycle mesocycle =
+            com.noslen.training_tracker.model.mesocycle.Mesocycle.builder().id(10L).userId(100L).build();
+        com.noslen.training_tracker.model.day.Day day =
+            com.noslen.training_tracker.model.day.Day.builder().id(5L).mesocycle(mesocycle).build();
+        com.noslen.training_tracker.model.day.DayExercise dayExercise =
+            com.noslen.training_tracker.model.day.DayExercise.builder().id(3L).day(day).build();
+
+        ExerciseSet existingEntity = new ExerciseSet();
+        existingEntity.setId(id);
+        existingEntity.setDayExercise(dayExercise);
+        existingEntity.setFinishedAt(Instant.now());
+        existingEntity.setStatus(com.noslen.training_tracker.enums.Status.COMPLETE);
+
+        UpdateExerciseSetRequest request = new UpdateExerciseSetRequest(null, null, null, "pending");
+
+        when(repo.findById(id)).thenReturn(Optional.of(existingEntity));
+        doNothing().when(userContext).validateUserAccess(100L);
+        when(repo.save(existingEntity)).thenReturn(existingEntity);
+        when(mapper.toPayload(existingEntity)).thenReturn(
+            new ExerciseSetResponse(id, 3L, 1, "regular", null, null, null, null, null, null, null,
+                                    "kg", Instant.now(), null, "pending"));
+
+        // Act
+        service.updateExerciseSet(id, request);
+
+        // Assert
+        assertEquals(com.noslen.training_tracker.enums.Status.PENDING, existingEntity.getStatus());
+        org.junit.jupiter.api.Assertions.assertNull(existingEntity.getFinishedAt());
     }
 
     @Test
@@ -278,7 +344,7 @@ public class ExerciseSetServiceTests {
     void testUpdateExerciseSetNotFound() {
         // Arrange
         Long id = 1L;
-        UpdateExerciseSetRequest request = new UpdateExerciseSetRequest(105.0f, 12, Instant.now());
+        UpdateExerciseSetRequest request = new UpdateExerciseSetRequest(105.0f, 12, null, null);
         when(repo.findById(id)).thenReturn(Optional.empty());
 
         // Act & Assert

@@ -50,6 +50,12 @@ public class DayServiceTests {
     @Mock
     private EntityManager entityManager;
 
+    @Mock
+    private DayExerciseService dayExerciseService;
+
+    @Mock
+    private DayMuscleGroupService dayMuscleGroupService;
+
     @InjectMocks
     private DayServiceImpl service;
 
