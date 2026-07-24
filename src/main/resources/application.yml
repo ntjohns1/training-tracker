@@ -14,13 +14,20 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: update
+      # Flyway owns the schema now; Hibernate only validates the entity model against it.
+      ddl-auto: validate
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     properties:
       hibernate:
         format_sql: true
         jdbc:
           time_zone: UTC
+  flyway:
+    enabled: true
+    # Adopt the existing (non-empty) dev DB by marking it at V1 without re-running the baseline;
+    # fresh databases get V1 applied normally.
+    baseline-on-migrate: true
+    baseline-version: 1
   security:
     oauth2:
       resourceserver:

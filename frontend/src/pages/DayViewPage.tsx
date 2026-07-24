@@ -105,7 +105,7 @@ export function DayViewPage() {
               <Stack gap={6}>
                 <Group gap="md" px={4}>
                   <Text size="xs" c="dimmed" w={120}>
-                    WEIGHT ({day.unit})
+                    WEIGHT{day.unit ? ` (${day.unit})` : ''}
                   </Text>
                   <Text size="xs" c="dimmed" w={100}>
                     REPS

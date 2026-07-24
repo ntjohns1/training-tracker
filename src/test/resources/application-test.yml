@@ -4,6 +4,9 @@ spring:
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
+  flyway:
+    # Tests build the schema via Hibernate create-drop; Flyway must not run in tests.
+    enabled: false
   jpa:
     hibernate:
       ddl-auto: create-drop
