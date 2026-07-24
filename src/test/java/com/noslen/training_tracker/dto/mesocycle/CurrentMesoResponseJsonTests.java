@@ -134,7 +134,8 @@ public class CurrentMesoResponseJsonTests {
                                 notes,
                                 "ready",
                                 "Thor Workout",
-                                progressions);
+                                progressions,
+                                null);
 
                 resource = new ClassPathResource("example/current_meso.json");
 

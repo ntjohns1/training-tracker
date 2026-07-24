@@ -133,6 +133,47 @@ export function useFinishDay() {
   });
 }
 
+/**
+ * Day-exercise mutations for editing a saved mesocycle: add an exercise to a day, reorder
+ * within a day (position), or remove one. Days themselves are fixed once a meso is built.
+ */
+export function useDayExerciseMutations(mesoId: number | undefined) {
+  const qc = useQueryClient();
+  const invalidate = () => {
+    if (mesoId != null) qc.invalidateQueries({ queryKey: qk.mesocycle(mesoId) });
+    qc.invalidateQueries({ queryKey: ['day'] });
+  };
+
+  const add = useMutation({
+    mutationFn: async (body: {
+      dayId: number;
+      exerciseId: number;
+      position: number;
+      muscleGroupId: number;
+    }) => (await api.post('/day-exercises', body)).data,
+    onSuccess: invalidate,
+  });
+
+  const reorder = useMutation({
+    mutationFn: async (items: { id: number; position: number }[]) => {
+      // No bulk endpoint; PATCH each moved row's position.
+      await Promise.all(
+        items.map((it) => api.patch(`/day-exercises/${it.id}`, { id: it.id, position: it.position })),
+      );
+    },
+    onSuccess: invalidate,
+  });
+
+  const remove = useMutation({
+    mutationFn: async (id: number) => {
+      await api.delete(`/day-exercises/${id}`);
+    },
+    onSuccess: invalidate,
+  });
+
+  return { add, reorder, remove };
+}
+
 /** PATCH /api/sets/{id}. Refreshes the parent day so logged badges/values stay in sync. */
 export function useUpdateSet(dayId: number | undefined) {
   const qc = useQueryClient();

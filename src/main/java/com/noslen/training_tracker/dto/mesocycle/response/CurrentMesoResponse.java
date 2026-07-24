@@ -36,5 +36,10 @@ public record CurrentMesoResponse(
         Set<MesoNoteResponse> notes,
         String status,
         String generatedFrom,
-        Map<Long, ProgressionResponse> progressions) {
+        Map<Long, ProgressionResponse> progressions,
+        /**
+         * The day the app should open on: the earliest unfinished day (by week, then position).
+         * Null once every day in the mesocycle is finished.
+         */
+        Long currentDayId) {
 }

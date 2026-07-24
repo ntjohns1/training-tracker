@@ -74,6 +74,14 @@ public class MesocycleMapper {
                     .collect(Collectors.toCollection(LinkedHashSet::new))
                 : new LinkedHashSet<>();
 
+        // The day the client should open on: earliest unfinished day, in (week, position) order.
+        Long currentDayId = entity.getWeeks() == null ? null : entity.getWeeks().stream()
+                .filter(day -> day != null && day.getFinishedAt() == null)
+                .min(Comparator.comparing(Day::getWeek, Comparator.nullsLast(Comparator.naturalOrder()))
+                        .thenComparing(Day::getPosition, Comparator.nullsLast(Comparator.naturalOrder())))
+                .map(Day::getId)
+                .orElse(null);
+
         return new CurrentMesoResponse(
                 entity.getId(),
                 entity.getMesocycleKey(),
@@ -103,7 +111,8 @@ public class MesocycleMapper {
                 notes,
                 EnumConverter.enumToString(entity.getStatus()),
                 entity.getGeneratedFrom(),
-                progressions);
+                progressions,
+                currentDayId);
     }
 
     /**

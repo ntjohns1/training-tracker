@@ -113,6 +113,8 @@ export interface CurrentMeso extends Omit<Mesocycle, 'weeks' | 'notes'> {
   notes: MesoNote[];
   status: string | null;
   generatedFrom: string | null;
+  /** Server-designated day the app should open on (earliest unfinished). Null when all done. */
+  currentDayId: number | null;
 }
 
 export interface Exercise {

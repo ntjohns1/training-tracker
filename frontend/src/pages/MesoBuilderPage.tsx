@@ -1,5 +1,6 @@
 import {
   ActionIcon,
+  Box,
   Button,
   Card,
   Group,
@@ -10,43 +11,49 @@ import {
   TextInput,
   Title,
 } from '@mantine/core';
+import { DragDropContext, Draggable, Droppable, type DropResult } from '@hello-pangea/dnd';
 import { IconGripVertical, IconTrash, IconX } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBootstrap, useCreateMeso } from '../api/hooks';
 import type { CreateMesoBody } from '../api/hooks';
+import { muscleColor } from '../lib/muscleColors';
 
 interface DayDraft {
+  key: string;
   label: string;
   exerciseIds: number[];
 }
 
 const WEEK_OPTIONS = ['4', '5', '6', '7', '8'].map((w) => ({ value: w, label: `${w} weeks` }));
+const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(
+  (d) => ({ value: d, label: d }),
+);
 
+/**
+ * Planning board for a NEW mesocycle. Day columns and exercise cells both drag to reorder;
+ * it is all local state until Create, so nothing needs persisting here.
+ */
 export function MesoBuilderPage() {
   const { data: boot, isLoading } = useBootstrap();
   const createMeso = useCreateMeso();
   const navigate = useNavigate();
+  const nextKey = useRef(2);
 
   const [name, setName] = useState('');
   const [weeks, setWeeks] = useState('5');
   const [unit, setUnit] = useState('lb');
   const [days, setDays] = useState<DayDraft[]>([
-    { label: 'Day 1', exerciseIds: [] },
-    { label: 'Day 2', exerciseIds: [] },
+    { key: 'd0', label: 'Monday', exerciseIds: [] },
+    { key: 'd1', label: 'Tuesday', exerciseIds: [] },
   ]);
 
-  const exById = useMemo(
-    () => new Map((boot?.exercises ?? []).map((e) => [e.id, e])),
-    [boot],
-  );
+  const exById = useMemo(() => new Map((boot?.exercises ?? []).map((e) => [e.id, e])), [boot]);
   const mgById = useMemo(
     () => new Map((boot?.muscleGroups ?? []).map((mg) => [mg.id, mg.name])),
     [boot],
   );
-
-  // Exercise picker options, grouped by muscle group.
   const exerciseOptions = useMemo(() => {
     const groups = new Map<string, { value: string; label: string }[]>();
     for (const e of boot?.exercises ?? []) {
@@ -57,23 +64,50 @@ export function MesoBuilderPage() {
     }
     return Array.from(groups.entries())
       .sort((a, b) => a[0].localeCompare(b[0]))
-      .map(([group, items]) => ({
-        group,
-        items: items.sort((a, b) => a.label.localeCompare(b.label)),
-      }));
+      .map(([group, items]) => ({ group, items: items.sort((a, b) => a.label.localeCompare(b.label)) }));
   }, [boot, mgById]);
 
   if (isLoading) return <Loader />;
 
-  const setDay = (i: number, patch: Partial<DayDraft>) =>
-    setDays((prev) => prev.map((d, idx) => (idx === i ? { ...d, ...patch } : d)));
+  const setDay = (key: string, patch: Partial<DayDraft>) =>
+    setDays((prev) => prev.map((d) => (d.key === key ? { ...d, ...patch } : d)));
   const addDay = () =>
-    setDays((prev) => [...prev, { label: `Day ${prev.length + 1}`, exerciseIds: [] }]);
-  const removeDay = (i: number) => setDays((prev) => prev.filter((_, idx) => idx !== i));
-  const addExercise = (i: number, exId: number) =>
-    setDay(i, { exerciseIds: [...days[i].exerciseIds, exId] });
-  const removeExercise = (i: number, pos: number) =>
-    setDay(i, { exerciseIds: days[i].exerciseIds.filter((_, idx) => idx !== pos) });
+    setDays((prev) => [
+      ...prev,
+      { key: `d${nextKey.current++}`, label: WEEKDAYS[prev.length % 7].value, exerciseIds: [] },
+    ]);
+  const removeDay = (key: string) => setDays((prev) => prev.filter((d) => d.key !== key));
+
+  const onDragEnd = (result: DropResult) => {
+    const { source, destination, type } = result;
+    if (!destination) return;
+
+    if (type === 'COLUMN') {
+      if (destination.index === source.index) return;
+      setDays((prev) => {
+        const next = [...prev];
+        const [moved] = next.splice(source.index, 1);
+        next.splice(destination.index, 0, moved);
+        return next;
+      });
+      return;
+    }
+
+    // Exercise cell: reorder within a day, or move between days.
+    const fromKey = source.droppableId;
+    const toKey = destination.droppableId;
+    if (fromKey === toKey && destination.index === source.index) return;
+
+    setDays((prev) => {
+      const next = prev.map((d) => ({ ...d, exerciseIds: [...d.exerciseIds] }));
+      const from = next.find((d) => d.key === fromKey);
+      const to = next.find((d) => d.key === toKey);
+      if (!from || !to) return prev;
+      const [movedId] = from.exerciseIds.splice(source.index, 1);
+      to.exerciseIds.splice(destination.index, 0, movedId);
+      return next;
+    });
+  };
 
   const problems: string[] = [];
   if (!name.trim()) problems.push('name');
@@ -82,41 +116,48 @@ export function MesoBuilderPage() {
   const valid = problems.length === 0;
 
   const submit = () => {
-    // Derive progressions from the distinct muscle groups across all chosen exercises.
     const progressions: CreateMesoBody['progressions'] = {};
     for (const d of days) {
       for (const exId of d.exerciseIds) {
         const mgId = exById.get(exId)?.muscleGroupId;
         if (mgId != null) {
-          const key = mgById.get(mgId) ?? String(mgId);
-          progressions[key] = { mgProgressionType: 'regular', muscleGroupId: mgId };
+          progressions[mgById.get(mgId) ?? String(mgId)] = {
+            mgProgressionType: 'regular',
+            muscleGroupId: mgId,
+          };
         }
       }
     }
-    const body: CreateMesoBody = {
-      name: name.trim(),
-      weeks: Number(weeks),
-      unit,
-      days: days.map((d) => ({
-        label: d.label,
-        exercises: d.exerciseIds.map((exerciseId) => ({ exerciseId })),
-      })),
-      progressions,
-    };
-
-    createMeso.mutate(body, {
-      onSuccess: (created) => {
-        notifications.show({ message: `Created "${name}".`, color: 'green' });
-        navigate(`/mesocycles/${created.id}`);
+    createMeso.mutate(
+      {
+        name: name.trim(),
+        weeks: Number(weeks),
+        unit,
+        days: days.map((d) => ({
+          label: d.label,
+          exercises: d.exerciseIds.map((exerciseId) => ({ exerciseId })),
+        })),
+        progressions,
       },
-      onError: (e) =>
-        notifications.show({ message: `Create failed: ${(e as Error).message}`, color: 'red' }),
-    });
+      {
+        onSuccess: (created) => {
+          notifications.show({ message: `Created "${name}".`, color: 'green' });
+          navigate(`/mesocycles/${created.id}`);
+        },
+        onError: (e) =>
+          notifications.show({ message: `Create failed: ${(e as Error).message}`, color: 'red' }),
+      },
+    );
   };
 
   return (
     <Stack>
-      <Title order={2}>New mesocycle</Title>
+      <Group justify="space-between" align="flex-start">
+        <Title order={2}>New mesocycle</Title>
+        <Button color="red" disabled={!valid} loading={createMeso.isPending} onClick={submit}>
+          Create mesocycle
+        </Button>
+      </Group>
 
       <Group align="flex-end" wrap="wrap">
         <TextInput
@@ -139,69 +180,161 @@ export function MesoBuilderPage() {
         />
       </Group>
 
-      <Group align="flex-start" wrap="wrap">
-        {days.map((day, i) => (
-          <Card key={i} withBorder padding="sm" w={300}>
-            <Group justify="space-between" mb="xs">
-              <TextInput
-                variant="unstyled"
-                fw={600}
-                value={day.label}
-                onChange={(e) => setDay(i, { label: e.currentTarget.value })}
-              />
-              <ActionIcon color="red" variant="subtle" onClick={() => removeDay(i)}>
-                <IconTrash size={16} />
-              </ActionIcon>
-            </Group>
+      {!valid && (
+        <Text size="sm" c="dimmed">
+          Needs: {problems.join(', ')}
+        </Text>
+      )}
 
-            <Stack gap={4} mb="xs">
-              {day.exerciseIds.map((exId, pos) => {
-                const ex = exById.get(exId);
-                return (
-                  <Group key={pos} gap={4} wrap="nowrap" justify="space-between">
-                    <Group gap={4} wrap="nowrap">
-                      <IconGripVertical size={14} opacity={0.4} />
-                      <div>
-                        <Text size="sm">{ex?.name ?? exId}</Text>
-                        <Text size="xs" c="dimmed">
-                          {ex?.muscleGroupId ? mgById.get(ex.muscleGroupId) : ''}
-                        </Text>
-                      </div>
-                    </Group>
-                    <ActionIcon size="sm" variant="subtle" color="gray" onClick={() => removeExercise(i, pos)}>
-                      <IconX size={14} />
-                    </ActionIcon>
-                  </Group>
-                );
-              })}
-            </Stack>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId="board" direction="horizontal" type="COLUMN">
+          {(boardProvided) => (
+            /* Native overflow (not Mantine ScrollArea) so the DnD library can track scroll. */
+            <Box style={{ overflowX: 'auto' }}>
+              <Group
+                align="flex-start"
+                wrap="nowrap"
+                gap="md"
+                pb="sm"
+                ref={boardProvided.innerRef}
+                {...boardProvided.droppableProps}
+              >
+                {days.map((day, colIndex) => (
+                  <Draggable key={day.key} draggableId={`col-${day.key}`} index={colIndex}>
+                    {(colProvided, colSnapshot) => (
+                      <Card
+                        withBorder
+                        padding="sm"
+                        w={300}
+                        style={{
+                          ...colProvided.draggableProps.style,
+                          flexShrink: 0,
+                          opacity: colSnapshot.isDragging ? 0.9 : 1,
+                        }}
+                        ref={colProvided.innerRef}
+                        {...colProvided.draggableProps}
+                      >
+                        <Group justify="space-between" mb="xs" wrap="nowrap">
+                          <Group gap={4} wrap="nowrap" style={{ flex: 1 }}>
+                            <Box {...colProvided.dragHandleProps} style={{ cursor: 'grab' }}>
+                              <IconGripVertical size={16} opacity={0.5} />
+                            </Box>
+                            <Select
+                              size="xs"
+                              data={WEEKDAYS}
+                              value={day.label}
+                              onChange={(v) => setDay(day.key, { label: v ?? day.label })}
+                              allowDeselect={false}
+                              style={{ flex: 1 }}
+                            />
+                          </Group>
+                          <ActionIcon
+                            color="red"
+                            variant="subtle"
+                            onClick={() => removeDay(day.key)}
+                            aria-label="Remove day"
+                          >
+                            <IconTrash size={16} />
+                          </ActionIcon>
+                        </Group>
 
-            <Select
-              placeholder="Add exercise"
-              searchable
-              clearable
-              data={exerciseOptions}
-              value={null}
-              onChange={(v) => v && addExercise(i, Number(v))}
-              nothingFoundMessage="No match"
-            />
-          </Card>
-        ))}
-        <Button variant="light" onClick={addDay} h={60} w={140}>
-          + Add day
-        </Button>
-      </Group>
+                        <Droppable droppableId={day.key} type="EXERCISE">
+                          {(listProvided) => (
+                            <Stack
+                              gap={6}
+                              mih={24}
+                              ref={listProvided.innerRef}
+                              {...listProvided.droppableProps}
+                            >
+                              {day.exerciseIds.map((exId, index) => {
+                                const ex = exById.get(exId);
+                                const mg = ex?.muscleGroupId ? mgById.get(ex.muscleGroupId) : undefined;
+                                return (
+                                  <Draggable
+                                    key={`${day.key}-${exId}-${index}`}
+                                    draggableId={`${day.key}-${exId}-${index}`}
+                                    index={index}
+                                  >
+                                    {(cellProvided, cellSnapshot) => (
+                                      <Card
+                                        withBorder
+                                        padding="xs"
+                                        radius="sm"
+                                        ref={cellProvided.innerRef}
+                                        {...cellProvided.draggableProps}
+                                        style={{
+                                          ...cellProvided.draggableProps.style,
+                                          opacity: cellSnapshot.isDragging ? 0.85 : 1,
+                                        }}
+                                      >
+                                        <Group gap={6} wrap="nowrap" justify="space-between">
+                                          <Group gap={6} wrap="nowrap" style={{ minWidth: 0 }}>
+                                            <Box
+                                              {...cellProvided.dragHandleProps}
+                                              style={{ cursor: 'grab' }}
+                                            >
+                                              <IconGripVertical size={14} opacity={0.5} />
+                                            </Box>
+                                            <div style={{ minWidth: 0 }}>
+                                              <Text size="xs" fw={700} c={muscleColor(mg)}>
+                                                ||| {mg ?? '—'}
+                                              </Text>
+                                              <Text size="sm" truncate>
+                                                {ex?.name ?? exId}
+                                              </Text>
+                                            </div>
+                                          </Group>
+                                          <ActionIcon
+                                            size="sm"
+                                            variant="subtle"
+                                            color="gray"
+                                            onClick={() =>
+                                              setDay(day.key, {
+                                                exerciseIds: day.exerciseIds.filter(
+                                                  (_, i) => i !== index,
+                                                ),
+                                              })
+                                            }
+                                            aria-label="Remove exercise"
+                                          >
+                                            <IconX size={14} />
+                                          </ActionIcon>
+                                        </Group>
+                                      </Card>
+                                    )}
+                                  </Draggable>
+                                );
+                              })}
+                              {listProvided.placeholder}
+                            </Stack>
+                          )}
+                        </Droppable>
 
-      <Group>
-        <Button color="red" disabled={!valid} loading={createMeso.isPending} onClick={submit}>
-          Create mesocycle
-        </Button>
-        {!valid && (
-          <Text size="sm" c="dimmed">
-            Needs: {problems.join(', ')}
-          </Text>
-        )}
-      </Group>
+                        <Select
+                          mt="xs"
+                          size="xs"
+                          placeholder="Add exercise"
+                          searchable
+                          data={exerciseOptions}
+                          value={null}
+                          nothingFoundMessage="No match"
+                          onChange={(v) =>
+                            v && setDay(day.key, { exerciseIds: [...day.exerciseIds, Number(v)] })
+                          }
+                        />
+                      </Card>
+                    )}
+                  </Draggable>
+                ))}
+                {boardProvided.placeholder}
+                <Button variant="light" onClick={addDay} h={60} w={140} style={{ flexShrink: 0 }}>
+                  + Add day
+                </Button>
+              </Group>
+            </Box>
+          )}
+        </Droppable>
+      </DragDropContext>
     </Stack>
   );
 }
