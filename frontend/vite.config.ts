@@ -22,7 +22,8 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        // Override with BACKEND_PORT when 8080 is taken (e.g. Jenkins).
+        target: `http://localhost:${process.env.BACKEND_PORT ?? '8080'}`,
         changeOrigin: true,
       },
     },
