@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { useBootstrap, useDay, useMesocycle } from '../api/hooks';
 import { DayView } from '../components/DayView';
 import { FinishWorkoutModal } from '../components/FinishWorkoutModal';
+import { PageContainer } from '../components/PageContainer';
 
 /**
  * Default landing screen. The server designates which day to open via
@@ -47,30 +48,34 @@ export function CurrentWorkoutPage() {
 
   if (!currentMesoId || !meso) {
     return (
-      <Stack>
-        <Text fw={700} size="lg">
-          No active mesocycle
-        </Text>
-        <Text c="dimmed" size="sm">
-          Create one to start training.
-        </Text>
-        <Button component={Link} to="/mesocycles/new" w="fit-content">
-          New mesocycle
-        </Button>
-      </Stack>
+      <PageContainer>
+        <Stack>
+          <Text fw={700} size="lg">
+            No active mesocycle
+          </Text>
+          <Text c="dimmed" size="sm">
+            Create one to start training.
+          </Text>
+          <Button component={Link} to="/mesocycles/new" w="fit-content">
+            New mesocycle
+          </Button>
+        </Stack>
+      </PageContainer>
     );
   }
 
   if (!dayId) {
     return (
-      <Stack>
-        <Text fw={700} size="lg">
-          {meso.name} is complete
-        </Text>
-        <Text c="dimmed" size="sm">
-          Every day in this mesocycle is finished.
-        </Text>
-      </Stack>
+      <PageContainer>
+        <Stack>
+          <Text fw={700} size="lg">
+            {meso.name} is complete
+          </Text>
+          <Text c="dimmed" size="sm">
+            Every day in this mesocycle is finished.
+          </Text>
+        </Stack>
+      </PageContainer>
     );
   }
 
@@ -103,41 +108,43 @@ export function CurrentWorkoutPage() {
   );
 
   return (
-    <Stack>
-      <DayView
-        dayId={dayId}
-        mesoName={meso.name}
-        headerRight={
-          <Group gap={4} wrap="nowrap">
-            {dayPicker}
-          </Group>
-        }
-      />
-
-      {day && !day.finishedAt && (
-        <Group justify="flex-end">
-          <Button color="red" onClick={finishHandlers.open}>
-            Finish workout
-          </Button>
-        </Group>
-      )}
-      {day && day.finishedAt && (
-        <Group justify="flex-end">
-          <Text c="teal" fw={600} size="sm">
-            Workout finished
-          </Text>
-        </Group>
-      )}
-
-      {day && (
-        <FinishWorkoutModal
-          day={day}
-          mgName={mgName}
-          exName={exName}
-          opened={finishOpen}
-          onClose={finishHandlers.close}
+    <PageContainer>
+      <Stack>
+        <DayView
+          dayId={dayId}
+          mesoName={meso.name}
+          headerRight={
+            <Group gap={4} wrap="nowrap">
+              {dayPicker}
+            </Group>
+          }
         />
-      )}
-    </Stack>
+
+        {day && !day.finishedAt && (
+          <Group justify="flex-end">
+            <Button color="red" onClick={finishHandlers.open}>
+              Finish workout
+            </Button>
+          </Group>
+        )}
+        {day && day.finishedAt && (
+          <Group justify="flex-end">
+            <Text c="teal" fw={600} size="sm">
+              Workout finished
+            </Text>
+          </Group>
+        )}
+
+        {day && (
+          <FinishWorkoutModal
+            day={day}
+            mgName={mgName}
+            exName={exName}
+            opened={finishOpen}
+            onClose={finishHandlers.close}
+          />
+        )}
+      </Stack>
+    </PageContainer>
   );
 }

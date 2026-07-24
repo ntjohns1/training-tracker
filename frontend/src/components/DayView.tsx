@@ -81,6 +81,7 @@ export function DayView({
   }
 
   return (
+    /* Width is owned by PageContainer, which wraps this view. */
     <Stack gap="md">
       <DayHeader day={day} mesoName={mesoName} right={headerRight} />
 
@@ -145,8 +146,10 @@ function DayHeader({
 }) {
   const subtitleParts = [day.label, mesoName].filter(Boolean);
   return (
-    <Card padding="md" radius="md" bg="dark.6">
-      <Group justify="space-between" align="flex-start" wrap="nowrap">
+    // Header strip spec: 60px tall, 16px padding all round (min-height so the two-line
+    // WEEK/DAY + meso subtitle can grow rather than clip).
+    <Card p={16} mih={60} radius="md" bg="dark.6">
+      <Group justify="space-between" align="flex-start" wrap="nowrap" h="100%">
         <div>
           <Group gap={8} align="baseline">
             <Text fw={800} size="xl">

@@ -2,6 +2,7 @@ import { Badge, Button, Card, Group, Loader, Stack, Text, Title } from '@mantine
 import { IconPlus } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { useBootstrap } from '../api/hooks';
+import { PageContainer, PageHeader } from '../components/PageContainer';
 import { daysPerWeek, formatDate, isCurrent } from '../lib/format';
 
 export function MesocyclesPage() {
@@ -15,13 +16,16 @@ export function MesocyclesPage() {
   const mesocycles = (data?.mesocycles ?? []).filter((m) => !m.deletedAt);
 
   return (
-    <Stack>
-      <Group justify="space-between">
+    <PageContainer>
+      <PageHeader
+        right={
+          <Button leftSection={<IconPlus size={16} />} onClick={() => navigate('/mesocycles/new')}>
+            New mesocycle
+          </Button>
+        }
+      >
         <Title order={2}>Mesocycles</Title>
-        <Button leftSection={<IconPlus size={16} />} onClick={() => navigate('/mesocycles/new')}>
-          New mesocycle
-        </Button>
-      </Group>
+      </PageHeader>
       {mesocycles.length === 0 && <Text c="dimmed">No mesocycles yet.</Text>}
       <Stack gap="sm">
         {mesocycles.map((m) => {
@@ -59,6 +63,6 @@ export function MesocyclesPage() {
           );
         })}
       </Stack>
-    </Stack>
+    </PageContainer>
   );
 }

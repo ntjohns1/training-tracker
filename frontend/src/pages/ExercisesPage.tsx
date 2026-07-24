@@ -3,7 +3,6 @@ import {
   Group,
   Loader,
   Select,
-  Stack,
   Table,
   Text,
   TextInput,
@@ -11,6 +10,7 @@ import {
 } from '@mantine/core';
 import { useMemo, useState } from 'react';
 import { useBootstrap } from '../api/hooks';
+import { PageContainer, PageHeader } from '../components/PageContainer';
 import { muscleColor } from '../lib/muscleColors';
 
 // Read-only exercise library with search + muscle-group and equipment filters.
@@ -52,8 +52,10 @@ export function ExercisesPage() {
   if (isLoading) return <Loader />;
 
   return (
-    <Stack>
-      <Title order={2}>Exercises</Title>
+    <PageContainer>
+      <PageHeader>
+        <Title order={2}>Exercises</Title>
+      </PageHeader>
       <Group align="flex-end" wrap="wrap">
         <TextInput
           label="Search"
@@ -115,6 +117,6 @@ export function ExercisesPage() {
           </Table.Tbody>
         </Table>
       </Table.ScrollContainer>
-    </Stack>
+    </PageContainer>
   );
 }

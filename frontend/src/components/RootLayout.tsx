@@ -19,16 +19,23 @@ function isActive(pathname: string, to: string, end: boolean) {
   return end ? pathname === to : pathname.startsWith(to);
 }
 
+/** Sidebar collapses to the bottom nav below this width (see PageContainer.module.css). */
+const SIDEBAR_BREAKPOINT = 868;
+
 export function RootLayout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const isMobile = useMediaQuery('(max-width: 48em)');
+  const isMobile = useMediaQuery(`(max-width: ${SIDEBAR_BREAKPOINT - 0.02}px)`);
 
   return (
     <AppShell
       header={{ height: 56 }}
-      navbar={{ width: 260, breakpoint: 'sm', collapsed: { mobile: true, desktop: false } }}
-      footer={{ height: isMobile ? 60 : 0 }}
+      navbar={{
+        width: 280,
+        breakpoint: `${SIDEBAR_BREAKPOINT}px`,
+        collapsed: { mobile: true, desktop: false },
+      }}
+      footer={{ height: isMobile ? 56 : 0 }}
       padding="md"
     >
       <AppShell.Header>

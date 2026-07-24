@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import { useBootstrap, useDay } from '../api/hooks';
 import { DayView } from '../components/DayView';
 import { FinishWorkoutModal } from '../components/FinishWorkoutModal';
+import { PageContainer } from '../components/PageContainer';
 
 /** Direct link to a specific day (/days/:id). The primary entry point is Current workout. */
 export function DayViewPage() {
@@ -28,33 +29,35 @@ export function DayViewPage() {
   );
 
   return (
-    <Stack>
-      <DayView dayId={dayId} mesoName={mesoName} />
+    <PageContainer>
+      <Stack>
+        <DayView dayId={dayId} mesoName={mesoName} />
 
-      {day && !day.finishedAt && (
-        <Group justify="flex-end">
-          <Button color="red" onClick={finishHandlers.open}>
-            Finish workout
-          </Button>
-        </Group>
-      )}
-      {day?.finishedAt && (
-        <Group justify="flex-end">
-          <Text c="teal" fw={600} size="sm">
-            Workout finished
-          </Text>
-        </Group>
-      )}
+        {day && !day.finishedAt && (
+          <Group justify="flex-end">
+            <Button color="red" onClick={finishHandlers.open}>
+              Finish workout
+            </Button>
+          </Group>
+        )}
+        {day?.finishedAt && (
+          <Group justify="flex-end">
+            <Text c="teal" fw={600} size="sm">
+              Workout finished
+            </Text>
+          </Group>
+        )}
 
-      {day && (
-        <FinishWorkoutModal
-          day={day}
-          mgName={mgName}
-          exName={exName}
-          opened={finishOpen}
-          onClose={finishHandlers.close}
-        />
-      )}
-    </Stack>
+        {day && (
+          <FinishWorkoutModal
+            day={day}
+            mgName={mgName}
+            exName={exName}
+            opened={finishOpen}
+            onClose={finishHandlers.close}
+          />
+        )}
+      </Stack>
+    </PageContainer>
   );
 }
